@@ -1,0 +1,686 @@
+/* ═══════════════════════════════════════════════════
+   intro.css — intro scene styles
+═══════════════════════════════════════════════════ */
+
+#introScene {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  perspective: 1400px;
+}
+#introCard {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+#introCard.flip {
+  transition: transform 1.05s cubic-bezier(0.77, 0, 0.18, 1);
+  transform: rotateY(180deg);
+}
+#introFront {
+  position: absolute;
+  inset: 0;
+  background: #0d0e10;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  overflow: hidden;
+}
+#introFront::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(48, 205, 207, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(48, 205, 207, 0.028) 1px, transparent 1px);
+  background-size: 68px 68px;
+}
+#introFront::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 25%,
+    rgba(0, 0, 0, 0.78) 100%
+  );
+}
+#introBack {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: rotateY(180deg);
+}
+#introScene.done {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease 1s;
+}
+#scanLines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0.35;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.07) 3px,
+    rgba(0, 0, 0, 0.07) 4px
+  );
+}
+.bracket {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-color: rgba(48, 205, 207, 0.38);
+  border-style: solid;
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.bracket.tl {
+  top: 18px;
+  left: 18px;
+  border-width: 2px 0 0 2px;
+}
+.bracket.tr {
+  top: 18px;
+  right: 18px;
+  border-width: 2px 2px 0 0;
+}
+.bracket.bl {
+  bottom: 18px;
+  left: 18px;
+  border-width: 0 0 2px 2px;
+}
+.bracket.br {
+  bottom: 18px;
+  right: 18px;
+  border-width: 0 2px 2px 0;
+}
+#introFront.armed .bracket {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════
+   RAIN — sparse teal pixel rain
+═══════════════════════════════════════════════════ */
+#rainLayer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  overflow: hidden;
+}
+.rainDrop {
+  position: absolute;
+  top: -30px;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(48, 205, 207, 0.7),
+    transparent
+  );
+  border-radius: 1px;
+  animation: rainFall linear infinite;
+}
+@keyframes rainFall {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(110vh);
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   POWER SURGE SPARKS
+═══════════════════════════════════════════════════ */
+.surgeSpark {
+  position: fixed;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 220, 1);
+  box-shadow:
+    0 0 6px rgba(255, 255, 220, 0.9),
+    0 0 14px rgba(48, 205, 207, 1),
+    0 0 28px rgba(48, 205, 207, 0.6);
+  pointer-events: none;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+}
+
+/* ═══════════════════════════════════════════════════
+   NAME ROW
+═══════════════════════════════════════════════════ */
+#nameRow {
+  position: relative;
+  display: flex;
+  align-items: flex-end; /* FIX: Align to bottom for responsiveness */
+  justify-content: center;
+  z-index: 2;
+  width: 100%;
+}
+
+/* ═══════════════════════════════════════════════════
+   STREET LAMP — bottom:0 pins it to letter baseline
+═══════════════════════════════════════════════════ */
+#streetLamp {
+  position: absolute;
+  pointer-events: none;
+  z-index: 10;
+  width: 80px;
+  height: clamp(100px, calc(8vw * 3.5), 290px);
+  bottom: -4vw; /* negative = lower, positive = higher */
+}
+
+@media (max-width: 979px) {
+  #streetLamp {
+    bottom: -3vw;
+  }
+}
+
+@media (max-width: 768px) {
+  #streetLamp {
+    bottom: -2vw;
+  }
+}
+
+@media (max-width: 480px) {
+  #streetLamp {
+    bottom: 0vw;
+  }
+}
+
+@media (max-width: 420px) {
+  #streetLamp {
+    bottom: 2vw;
+  }
+}
+
+@media (max-width: 380px) {
+  #streetLamp {
+    bottom: 4vw;
+  }
+}
+
+@media (max-width: 320px) {
+  #streetLamp {
+    bottom: 6vw;
+  }
+}
+/* ═══════════════════════════════════════════════════
+   STREET LAMP — realistic modern shape
+═══════════════════════════════════════════════════ */
+.sl-pole {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    #c8d0d8 0%,
+    #9aa2aa 20%,
+    #7a8590 50%,
+    #5a6570 80%,
+    #3a4550 100%
+  );
+  border-radius: 3px 3px 1px 1px;
+  box-shadow:
+    inset 2px 0 3px rgba(255, 255, 255, 0.25),
+    inset -2px 0 3px rgba(0, 0, 0, 0.4),
+    3px 0 8px rgba(0, 0, 0, 0.5),
+    -1px 0 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Pole base foot */
+.sl-pole::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: -5px;
+  width: 15px;
+  height: 6px;
+  background: linear-gradient(180deg, #5a6570, #3a4550);
+  border-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* Pole neck joint */
+.sl-pole::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -3px;
+  width: 11px;
+  height: 10px;
+  background: linear-gradient(180deg, #d0d8e0, #8a9298);
+  border-radius: 3px 3px 1px 1px;
+  box-shadow:
+    inset 1px 0 2px rgba(255, 255, 255, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.sl-arm {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 72px;
+  height: 5px;
+  background: linear-gradient(180deg, #c8d0d8 0%, #9aa2aa 40%, #7a8590 100%);
+  border-radius: 2px 4px 4px 2px;
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.2),
+    inset 0 -2px 2px rgba(0, 0, 0, 0.3),
+    0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Curved arm top edge highlight */
+.sl-arm::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -6px;
+  width: 10px;
+  height: 16px;
+  background: linear-gradient(135deg, #c0c8d0 0%, #7a8590 100%);
+  border-radius: 3px 2px 2px 3px;
+  box-shadow:
+    inset 1px 0 2px rgba(255, 255, 255, 0.25),
+    2px 0 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Arm underside groove */
+.sl-arm::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  right: 8px;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.25);
+  transform: translateY(-50%);
+}
+
+.sl-drop {
+  position: absolute;
+  top: 5px;
+  left: 69px;
+  width: 3px;
+  height: 20px;
+  background: linear-gradient(180deg, #9aa2aa, #6a7580);
+  border-radius: 1px 1px 2px 2px;
+  box-shadow:
+    inset 1px 0 1px rgba(255, 255, 255, 0.15),
+    2px 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.sl-lantern {
+  position: absolute;
+  top: 25px;
+  left: 60px;
+  width: 18px;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+}
+
+.sl-cap {
+  width: 18px;
+  height: 5px;
+  background: linear-gradient(180deg, #d0d8e0 0%, #9aa2aa 60%, #7a8290 100%);
+  border-radius: 3px 3px 0 0;
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.3),
+    0 -2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+/* Cap rim */
+.sl-cap::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: -1px;
+  right: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, #5a6570, #8a9298, #5a6570);
+  border-radius: 1px;
+}
+
+.sl-glass {
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(
+    160deg,
+    rgba(20, 28, 36, 0.95) 0%,
+    rgba(10, 14, 18, 0.98) 100%
+  );
+  border: none;
+  border-left: 1.5px solid rgba(80, 95, 110, 0.8);
+  border-right: 1.5px solid rgba(40, 50, 60, 0.9);
+  border-bottom: 1.5px solid rgba(60, 75, 90, 0.7);
+  border-radius: 0 0 4px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Glass reflection streak */
+.sl-glass::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  width: 3px;
+  height: 8px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    transparent 100%
+  );
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Glass edge highlight */
+.sl-glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  pointer-events: none;
+}
+
+.sl-bulb {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 40% 35%,
+    rgba(255, 255, 220, 1) 0%,
+    rgba(48, 205, 207, 0.95) 55%,
+    rgba(48, 205, 207, 0.2) 100%
+  );
+  opacity: 0.15;
+  transition: opacity 0.6s ease;
+  will-change: opacity;
+  position: relative;
+  z-index: 2;
+}
+
+#streetLamp.lit .sl-bulb {
+  opacity: 1;
+  animation: bulbPulse 2s ease infinite;
+}
+#streetLamp.spent .sl-bulb {
+  opacity: 0.15;
+  animation: none;
+}
+
+@keyframes bulbPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 5px rgba(255, 255, 220, 0.9),
+      0 0 14px rgba(48, 205, 207, 0.8),
+      0 0 28px rgba(48, 205, 207, 0.4);
+  }
+  50% {
+    box-shadow:
+      0 0 9px rgba(255, 255, 220, 1),
+      0 0 24px rgba(48, 205, 207, 1),
+      0 0 50px rgba(48, 205, 207, 0.65);
+  }
+}
+
+.sl-base {
+  width: 18px;
+  height: 4px;
+  background: linear-gradient(180deg, #7a8290 0%, #4a5260 100%);
+  border-radius: 0 0 3px 3px;
+  box-shadow:
+    inset 0 -1px 2px rgba(0, 0, 0, 0.4),
+    0 3px 5px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+/* Base rim */
+.sl-base::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -1px;
+  right: -1px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ═══════════════════════════════════════════════════
+   LETTERS — start as grey burnt-out neon signs
+═══════════════════════════════════════════════════ */
+#letterSpans {
+  display: flex;
+  align-items: flex-end; /* FIX: Align to bottom */
+}
+.nl {
+  display: inline-block;
+  font-size: clamp(2.8rem, 8vw, 6.5rem);
+  font-weight: 700;
+  letter-spacing: 3px;
+  /* Burnt-out neon — visible but dead grey */
+  color: rgba(160, 165, 170, 0.45);
+  text-transform: uppercase;
+  will-change: color, text-shadow;
+  transform-origin: center bottom;
+  line-height: 1; /* FIX: Ensure consistent baseline */
+  transition:
+    color 0.4s ease,
+    text-shadow 0.4s ease;
+}
+
+/* A ignites — big flash */
+.nl.ignite {
+  animation: igniteFlash 0.55s ease forwards;
+}
+@keyframes igniteFlash {
+  0% {
+    color: #fff;
+    text-shadow:
+      0 0 12px rgba(255, 255, 220, 1),
+      0 0 32px rgba(48, 205, 207, 1),
+      0 0 70px rgba(48, 205, 207, 0.7);
+    transform: scaleY(0.75) scaleX(1.2);
+  }
+  50% {
+    text-shadow:
+      0 0 22px rgba(255, 255, 220, 1),
+      0 0 55px rgba(48, 205, 207, 1),
+      0 0 110px rgba(48, 205, 207, 0.8);
+    transform: scaleY(1.1) scaleX(0.95);
+  }
+  100% {
+    color: #30cdcf;
+    text-shadow:
+      0 0 8px rgba(48, 205, 207, 0.9),
+      0 0 22px rgba(48, 205, 207, 0.5);
+    transform: scaleY(1) scaleX(1);
+  }
+}
+
+/* Glitch reboot — each letter powers up with a static flicker */
+.nl.glitch {
+  animation: glitchReboot 0.38s ease forwards;
+}
+@keyframes glitchReboot {
+  0% {
+    color: rgba(160, 165, 170, 0.45);
+    text-shadow: none;
+    transform: translateX(0);
+  }
+  12% {
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow:
+      3px 0 rgba(255, 0, 80, 0.6),
+      -3px 0 rgba(0, 255, 200, 0.6);
+    transform: translateX(3px);
+  }
+  24% {
+    color: rgba(48, 205, 207, 0.2);
+    text-shadow: none;
+    transform: translateX(-2px);
+  }
+  36% {
+    color: rgba(255, 255, 255, 0.85);
+    text-shadow:
+      -2px 0 rgba(255, 0, 80, 0.4),
+      2px 0 rgba(0, 255, 200, 0.4);
+    transform: translateX(2px);
+  }
+  52% {
+    color: rgba(48, 205, 207, 0.5);
+    text-shadow: none;
+    transform: translateX(0);
+  }
+  68% {
+    color: rgba(255, 255, 220, 0.9);
+    text-shadow: 0 0 8px rgba(48, 205, 207, 0.7);
+  }
+  100% {
+    color: #30cdcf;
+    text-shadow:
+      0 0 8px rgba(48, 205, 207, 0.9),
+      0 0 22px rgba(48, 205, 207, 0.5);
+    transform: translateX(0);
+  }
+}
+
+/* Final lit state */
+.nl.lit {
+  color: #30cdcf;
+  text-shadow:
+    0 0 8px rgba(48, 205, 207, 0.9),
+    0 0 22px rgba(48, 205, 207, 0.5),
+    0 0 44px rgba(48, 205, 207, 0.2);
+}
+
+/* Spotlight sweep */
+#nameRow::after {
+  content: "";
+  position: absolute;
+  inset: -24px -48px;
+  background: radial-gradient(
+    ellipse 180px 300% at var(--spot-x, -30%) 50%,
+    rgba(48, 205, 207, 0.15) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+  opacity: 0;
+}
+#nameRow.spotlight::after {
+  opacity: 1;
+  animation: spotSweep 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes spotSweep {
+  0% {
+    --spot-x: -30%;
+  }
+  100% {
+    --spot-x: 125%;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   FALLING ORB + TRAIL + IMPACT
+═══════════════════════════════════════════════════ */
+#fallingOrb {
+  position: fixed;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 15px #fff;
+  pointer-events: none;
+  z-index: 10000;
+  opacity: 0;
+}
+
+.orbTrail {
+  position: fixed;
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 220, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: fadeOut 0.5s forwards;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: scale(0.1);
+  }
+}
+
+.impactRing {
+  position: fixed;
+  border: 2px solid #30cdcf;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: ringExpand 0.8s ease-out forwards;
+}
+
+@keyframes ringExpand {
+  from {
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  to {
+    width: 200px;
+    height: 200px;
+    opacity: 0;
+  }
+}
+
+#lastName {
+  font-size: 2.4rem;
+  letter-spacing: 0.5rem;
+  margin-top: 20px;
+  opacity: 0;
+  transition: opacity 1s;
+  color: #ffffff;
+}
+#lastName.show {
+  opacity: 1;
+}
+
+#lockLine {
+  width: 0;
+  height: 2px;
+  background: #30cdcf;
+  margin-top: 10px;
+  transition: width 0.8s ease-in-out;
+}

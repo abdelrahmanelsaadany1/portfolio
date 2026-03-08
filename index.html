@@ -4,15 +4,64 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Abdelrahman Elsaadany</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" type="image/png" href="images/A.gif" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="sections.css" />
+    <link rel="stylesheet" href="intro.css" />
+    <link rel="stylesheet" href="the road/about-timeline.css" />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="preconnect" href="https://prod.spline.design" crossorigin />
   </head>
   <body>
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+    <div id="scroll-progress"></div>
+
+    <!-- ═══════════════════════════════════════════
+         INTRO SCENE
+    ═══════════════════════════════════════════ -->
+    <div id="introScene">
+      <div id="introCard">
+        <div id="introFront">
+          <div id="flipShimmer"></div>
+          <div id="scanLines"></div>
+          <div class="bracket tl"></div>
+          <div class="bracket tr"></div>
+          <div class="bracket bl"></div>
+          <div class="bracket br"></div>
+          <div id="nameRow">
+            <div id="streetLamp">
+              <div class="sl-arm"></div>
+              <div class="sl-drop"></div>
+              <div class="sl-lantern">
+                <div class="sl-cap"></div>
+                <div class="sl-glass"><div class="sl-bulb"></div></div>
+                <div class="sl-base"></div>
+                <div class="sl-cone"></div>
+                <div class="sl-glow"></div>
+              </div>
+            </div>
+            <div id="letterSpans"></div>
+          </div>
+          <div id="lastName">ELSAADANY</div>
+          <div id="lockLine"></div>
+        </div>
+        <div id="introBack"></div>
+      </div>
+    </div>
+    <div id="trailContainer"></div>
+
+    <!-- ═══════════════════════════════════════════
+         MAIN CONTAINER
+    ═══════════════════════════════════════════ -->
     <div class="container">
       <video
         class="back-vid"
@@ -22,41 +71,697 @@
         loop
         playsinline
       ></video>
-      <header>
-        <div class="left">
+
+      <!-- ── HEADER ── -->
+      <header id="main-header">
+        <a href="#" class="nav-brand">
           <img src="images/A.gif" alt="MyLogo" />
-          <h1><span class="blue-name">Abdelrahman</span> Elsaadany</h1>
-        </div>
-        <ul>
-          <li><a href="">About</a></li>
-          <li><a href="">Skills</a></li>
-          <li><a href="">Projects</a></li>
-        </ul>
-        <div class="box-icons">
-          <a
-            href="https://www.linkedin.com/in/abdelrahman-elsaadany-a20"
-            target="_blank"
-          >
-            <i class="bx bxl-linkedin"></i>
-          </a>
-          <a href="https://github.com/abdelrahmanelsaadany1" target="_blank">
-            <i class="bx bxl-github"></i>
-          </a>
+          <span class="nav-brand-name">
+            <span>Abdelrahman</span
+            ><span class="brand-last-word"> Elsaadany</span>
+          </span>
+        </a>
+        <nav class="constellation-nav" aria-label="Main navigation">
+          <div class="constellation-canvas-wrap" id="constWrap">
+            <canvas id="constellation-canvas"></canvas>
+            <div class="c-links" id="cLinks">
+              <a class="c-link" href="#about" data-index="0"
+                ><div class="star"></div>
+                <span class="c-label">About</span></a
+              >
+              <a class="c-link" href="#projects" data-index="1"
+                ><div class="star"></div>
+                <span class="c-label">Projects</span></a
+              >
+              <a class="c-link" href="#contact" data-index="2"
+                ><div class="star"></div>
+                <span class="c-label">Contact</span></a
+              >
+            </div>
+          </div>
+        </nav>
+        <div class="nav-right-group">
+          <div class="nav-socials">
+            <a
+              href="https://www.linkedin.com/in/abdelrahman-elsaadany-a20"
+              target="_blank"
+              ><i class="bx bxl-linkedin"></i
+            ></a>
+            <a href="https://github.com/abdelrahmanelsaadany1" target="_blank"
+              ><i class="bx bxl-github"></i
+            ></a>
+          </div>
+
+          <button class="hamburger" id="hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+          </button>
         </div>
       </header>
-
-      <div class="spline">
-        <spline-viewer
-          url="https://prod.spline.design/xasrifDpZA-6mgqp/scene.splinecode"
-        ></spline-viewer>
+      <!-- Spider Hang CV -->
+      <div class="spider-pos" id="spiderPos">
+        <div class="spider-hang" id="spiderHang">
+          <canvas class="spider-canvas" id="spiderCanvas"></canvas>
+          <a
+            href="resume.pdf"
+            download="Abdelrahman Elsaadany CV.pdf"
+            class="spider-btn"
+            id="spiderBtn"
+          >
+            <i class="bx bx-download"></i>
+            <span>RESUME</span>
+          </a>
+        </div>
       </div>
+
+      <!-- ── MOBILE OVERLAY ── -->
+      <div class="mobile-overlay" id="mobileOverlay">
+        <canvas id="mobile-constellation"></canvas>
+        <nav class="mobile-links">
+          <a class="mobile-link" href="#about" onclick="closeMobile()"
+            ><div class="m-star"></div>
+            <span class="m-label">About</span></a
+          >
+          <a class="mobile-link" href="#projects" onclick="closeMobile()"
+            ><div class="m-star"></div>
+            <span class="m-label">Projects</span></a
+          >
+          <a class="mobile-link" href="#contact" onclick="closeMobile()"
+            ><div class="m-star"></div>
+            <span class="m-label">Contact</span></a
+          >
+        </nav>
+        <button class="mobile-back-btn" onclick="closeMobile()">
+          <i class="bx bx-arrow-back"></i><span>Back</span>
+        </button>
+      </div>
+
+      <!-- ═══════════════════════════════════════════
+           HERO — spider web + spline
+      ═══════════════════════════════════════════ -->
+      <section class="hero" id="about">
+        <div class="hero-content">
+          <div class="web-wrap">
+            <canvas id="webCanvas"></canvas>
+            <div class="web-center-node" id="webCenter">
+              <div class="wcn-rings"></div>
+              <div class="wcn-inner">
+                <span class="wcn-top">I AM A</span>
+                <span class="wcn-main"
+                  >FULL<span class="blue-name">-</span><br />STACK</span
+                >
+                <span class="wcn-sub">DEVELOPER</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hero-robot">
+          <spline-viewer
+            url="https://prod.spline.design/xasrifDpZA-6mgqp/scene.splinecode"
+          ></spline-viewer>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- ═══════════════════════════════════════════
+           ABOUT — road timeline
+      ═══════════════════════════════════════════ -->
+      <section class="section-page" id="about-section">
+        <div class="hs-outer" id="hsOuter">
+          <div class="hs-sticky">
+            <div class="hs-top">
+              <h2 class="hs-h2">The <span>Road</span></h2>
+            </div>
+
+            <div class="hs-progress">
+              <div class="hs-progress-fill" id="hsProgFill"></div>
+            </div>
+
+            <div class="hs-viewport" id="hsViewport">
+              <div class="hs-track" id="hsTrack">
+                <!-- ═══════════════════════════════════════════════════════
+     IMPROVED ROAD SVG — Replace the <svg> section in your HTML
+     This is the enhanced road design with better curves
+═══════════════════════════════════════════════════════ -->
+
+                <svg
+                  class="hs-svg"
+                  viewBox="0 0 4150 560"
+                  preserveAspectRatio="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <defs>
+                    <filter
+                      id="glowF"
+                      x="-2%"
+                      y="-200%"
+                      width="104%"
+                      height="500%"
+                    >
+                      <feGaussianBlur stdDeviation="6" result="b" />
+                      <feMerge>
+                        <feMergeNode in="b" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+
+                    <!-- Enhanced gradient for road surface -->
+                    <linearGradient
+                      id="asphaltGrad"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="0%" stop-color="rgba(48,205,207,0.08)" />
+                      <stop offset="30%" stop-color="rgba(255,255,255,0.03)" />
+                      <stop offset="50%" stop-color="rgba(48,205,207,0.05)" />
+                      <stop offset="70%" stop-color="rgba(255,255,255,0.02)" />
+                      <stop offset="100%" stop-color="rgba(48,205,207,0.08)" />
+                    </linearGradient>
+
+                    <!-- Clip path for road band -->
+                    <clipPath id="roadClip">
+                      <path
+                        d="
+        M 0,246 L 1640,246
+        C 1740,246 1812,386 1862,386
+        C 1912,386 1984,246 2084,246
+        L 4150,246
+        L 4150,334
+        L 2084,334
+        C 1984,334 1912,474 1862,474
+        C 1812,474 1740,334 1640,334
+        L 0,334 Z
+        "
+                      />
+                    </clipPath>
+                  </defs>
+
+                  <!-- Road surface with gradient fill -->
+                  <rect
+                    x="0"
+                    y="0"
+                    width="4150"
+                    height="560"
+                    fill="url(#asphaltGrad)"
+                    clip-path="url(#roadClip)"
+                  />
+
+                  <!-- Outer shoulder lines (subtle) -->
+                  <path
+                    d="M 0,244 L 1640,244 C 1740,244 1812,384 1862,384 C 1912,384 1984,244 2084,244 L 4150,244"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.08)"
+                    stroke-width="1.2"
+                  />
+                  <path
+                    d="M 0,336 L 1640,336 C 1740,336 1812,476 1862,476 C 1912,476 1984,336 2084,336 L 4150,336"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.08)"
+                    stroke-width="1.2"
+                  />
+
+                  <!-- Inner kerb lines (brighter) -->
+                  <path
+                    d="M 0,248 L 1640,248 C 1740,248 1812,388 1862,388 C 1912,388 1984,248 2084,248 L 4150,248"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.15)"
+                    stroke-width="1.8"
+                  />
+                  <path
+                    d="M 0,332 L 1640,332 C 1740,332 1812,472 1862,472 C 1912,472 1984,332 2084,332 L 4150,332"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.15)"
+                    stroke-width="1.8"
+                  />
+
+                  <!-- Center dashed line (animated) -->
+                  <path
+                    d="M 0,290 L 1640,290 C 1740,290 1812,430 1862,430 C 1912,430 1984,290 2084,290 L 4150,290"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.08)"
+                    stroke-width="2.5"
+                    stroke-dasharray="50 35"
+                    opacity="0.7"
+                  />
+
+                  <!-- Teal glow layer (for visual depth) -->
+                  <path
+                    id="hsRoadGlow"
+                    d="M 0,290 L 1640,290 C 1740,290 1812,430 1862,430 C 1912,430 1984,290 2084,290 L 4150,290"
+                    fill="none"
+                    stroke="rgba(48,205,207,0.25)"
+                    stroke-width="48"
+                    stroke-linecap="round"
+                    stroke-dasharray="9999 9999"
+                    stroke-dashoffset="9999"
+                    filter="url(#glowF)"
+                  />
+
+                  <!-- Teal main path (for hexapod to follow) -->
+                  <path
+                    id="hsRoadFill"
+                    d="M 0,290 L 1640,290 C 1740,290 1812,430 1862,430 C 1912,430 1984,290 2084,290 L 4150,290"
+                    fill="none"
+                    stroke="#30cdcf"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                    stroke-dasharray="9999 9999"
+                    stroke-dashoffset="9999"
+                  />
+
+                  <!-- Accent glow on road (subtle pulse effect) -->
+                  <path
+                    d="M 0,290 L 1640,290 C 1740,290 1812,430 1862,430 C 1912,430 1984,290 2084,290 L 4150,290"
+                    fill="none"
+                    stroke="rgba(48,205,207,0.12)"
+                    stroke-width="6"
+                    stroke-linecap="round"
+                    opacity="0.6"
+                  />
+                </svg>
+
+                <!-- NODE 1: Arab Computers -->
+                <div
+                  class="rn-node rn-ac"
+                  id="rnAc"
+                  style="left: 6.77%; top: 51.8%"
+                >
+                  <div class="rn-card">
+                    <div class="rn-card-live">Live Now</div>
+                    <div class="rn-card-date">Oct 2025 — Present</div>
+                    <div class="rn-card-title">Full Stack .NET Developer</div>
+                    <div class="rn-card-org">
+                      Arab Computers · Alexandria, Egypt
+                    </div>
+                    <div class="rn-card-tags">
+                      <span>ASP.NET Core</span><span>Angular</span>
+                      <span>CQRS</span><span>Docker</span
+                      ><span>Azure DevOps</span>
+                    </div>
+                  </div>
+                  <div class="rn-stem"></div>
+                  <div class="rn-dot">
+                    <div class="rn-dot-ring"></div>
+                    <div class="rn-dot-core"></div>
+                    <div class="rn-pulse"></div>
+                  </div>
+                </div>
+
+                <!-- NODE 2: ITI Internship -->
+                <div
+                  class="rn-node rn-iti"
+                  id="rnIti"
+                  style="left: 25.6%; top: 51.8%"
+                >
+                  <div class="rn-card">
+                    <div class="rn-card-date">Mar 2025 — Aug 2025</div>
+                    <div class="rn-card-title">Full Stack .NET Intern</div>
+                    <div class="rn-card-org">
+                      ITI · Intensive Code Camp · Alexandria
+                    </div>
+                    <div class="rn-card-tags">
+                      <span>ASP.NET Core</span><span>Angular</span>
+                      <span>EF Core</span><span>SQL Server</span>
+                    </div>
+                  </div>
+                  <div class="rn-stem"></div>
+                  <div class="rn-dot">
+                    <div class="rn-dot-ring"></div>
+                    <div class="rn-dot-core"></div>
+                    <div class="rn-pulse"></div>
+                  </div>
+                </div>
+
+                <!-- MILITARY DETOUR -->
+                <div
+                  class="rn-detour"
+                  id="rnMil"
+                  style="left: 44.9%; top: 76.8%"
+                >
+                  <div class="rn-detour-dot">
+                    <div class="rn-detour-core"></div>
+                  </div>
+                  <div class="rn-detour-stem"></div>
+                  <div class="rn-detour-sign">
+                    <div class="rn-detour-header">
+                      <span class="rn-detour-icon">⚠</span>
+                      <span class="rn-detour-label">Detour</span>
+                    </div>
+                    <div class="rn-detour-date">Dec 2024</div>
+                    <div class="rn-detour-title">Military Service</div>
+                    <div class="rn-detour-sub">
+                      Completed · Discipline &amp; Teamwork
+                    </div>
+                  </div>
+                </div>
+
+                <!-- NODE 3: IoT Training -->
+                <div
+                  class="rn-node rn-iot"
+                  id="rnIot"
+                  style="left: 66%; top: 51.8%"
+                >
+                  <div class="rn-card">
+                    <div class="rn-card-date">2022</div>
+                    <div class="rn-card-title">IoT Development Program</div>
+                    <div class="rn-card-org">ITI · Smart Village, Egypt</div>
+                    <div class="rn-card-tags">
+                      <span>IoTik</span><span>SigFox</span>
+                      <span>BLE Gateway</span><span>Sensors</span>
+                    </div>
+                  </div>
+                  <div class="rn-stem"></div>
+                  <div class="rn-dot">
+                    <div class="rn-dot-ring"></div>
+                    <div class="rn-dot-core"></div>
+                    <div class="rn-pulse"></div>
+                  </div>
+                </div>
+
+                <!-- NODE 4: Alexandria University -->
+                <div
+                  class="rn-node rn-asu"
+                  id="rnAsu"
+                  style="left: 90.4%; top: 51.8%"
+                >
+                  <div class="rn-card">
+                    <div class="rn-card-date">2019 — 2023</div>
+                    <div class="rn-card-title">B.Sc. Computer Science</div>
+                    <div class="rn-card-org">
+                      Alexandria University · Faculty of Science · CGPA 3.2
+                    </div>
+                    <div class="rn-card-tags">
+                      <span>OOP</span><span>Algorithms</span> <span>C#</span
+                      ><span>Java</span><span>Flutter</span>
+                    </div>
+                  </div>
+                  <div class="rn-stem"></div>
+                  <div class="rn-dot">
+                    <div class="rn-dot-ring"></div>
+                    <div class="rn-dot-core"></div>
+                    <div class="rn-pulse"></div>
+                  </div>
+                </div>
+              </div>
+              <!-- /hs-track -->
+            </div>
+            <!-- /hs-viewport -->
+
+            <div class="hs-bottom">
+              <div class="hs-dots">
+                <div class="hs-dot hs-dot-ac" id="hsDot0"></div>
+                <span class="hs-dot-label">Arab Computers</span>
+                <div class="hs-dot hs-dot-iti" id="hsDot1"></div>
+                <span class="hs-dot-label">ITI</span>
+                <div class="hs-dot hs-dot-mil" id="hsDotMil"></div>
+                <span class="hs-dot-label">Military</span>
+                <div class="hs-dot hs-dot-iot" id="hsDot2"></div>
+                <span class="hs-dot-label">IoT</span>
+                <div class="hs-dot hs-dot-asu" id="hsDot3"></div>
+                <span class="hs-dot-label">ASU</span>
+              </div>
+              <span class="hs-hint" id="hsHint">scroll to drive →</span>
+            </div>
+          </div>
+          <!-- /hs-sticky -->
+        </div>
+        <!-- /hs-outer -->
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- ═══════════════════════════════════════════
+           PROJECTS
+      ═══════════════════════════════════════════ -->
+      <section class="section-page" id="projects-section">
+        <div class="section-heading reveal">
+          <span class="sec-tag">// 02 — portfolio</span>
+          <h2>Featured <span>Projects</span></h2>
+          <span class="sec-line"></span>
+        </div>
+        <div class="projects-grid">
+          <div class="project-card reveal reveal-delay-1">
+            <div class="project-thumb">
+              🏪
+              <div class="corner tl"></div>
+              <div class="corner br"></div>
+            </div>
+            <div class="project-body">
+              <div class="project-tags">
+                <span class="project-tag">ASP.NET Core</span
+                ><span class="project-tag">Angular</span
+                ><span class="project-tag">SQL Server</span
+                ><span class="project-tag">Onion Arch</span>
+              </div>
+              <h3>E-Commerce Platform</h3>
+              <p>
+                Full-stack e-commerce with catalog, cart, checkout, order
+                management &amp; admin dashboard.
+              </p>
+              <div class="project-links">
+                <a href="#" class="project-link primary">Live Demo</a
+                ><a href="#" class="project-link secondary">GitHub</a>
+              </div>
+            </div>
+          </div>
+          <div class="project-card reveal reveal-delay-2">
+            <div class="project-thumb">
+              📋
+              <div class="corner tl"></div>
+              <div class="corner br"></div>
+            </div>
+            <div class="project-body">
+              <div class="project-tags">
+                <span class="project-tag">.NET</span
+                ><span class="project-tag">EF Core</span
+                ><span class="project-tag">Angular</span
+                ><span class="project-tag">CQRS</span>
+              </div>
+              <h3>Task Management App</h3>
+              <p>
+                Project tracker with real-time updates, role-based access and
+                drag-and-drop Kanban board.
+              </p>
+              <div class="project-links">
+                <a href="#" class="project-link primary">Live Demo</a
+                ><a href="#" class="project-link secondary">GitHub</a>
+              </div>
+            </div>
+          </div>
+          <div class="project-card reveal reveal-delay-3">
+            <div class="project-thumb">
+              💬
+              <div class="corner tl"></div>
+              <div class="corner br"></div>
+            </div>
+            <div class="project-body">
+              <div class="project-tags">
+                <span class="project-tag">SignalR</span
+                ><span class="project-tag">C#</span
+                ><span class="project-tag">JavaScript</span>
+              </div>
+              <h3>Real-Time Chat System</h3>
+              <p>
+                WebSocket-powered chat with private rooms, typing indicators and
+                message history.
+              </p>
+              <div class="project-links">
+                <a href="#" class="project-link primary">Live Demo</a
+                ><a href="#" class="project-link secondary">GitHub</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- ═══════════════════════════════════════════
+           CONTACT
+      ═══════════════════════════════════════════ -->
+      <section class="section-page" id="contact-section">
+        <div class="section-heading reveal">
+          <span class="sec-tag">// 03 — get in touch</span>
+          <h2>Contact <span>Me</span></h2>
+          <span class="sec-line"></span>
+        </div>
+        <div class="contact-wrap">
+          <div class="contact-info reveal reveal-delay-1">
+            <h3>Let's Build Something Together</h3>
+            <p>
+              Whether you have a project in mind, want to collaborate, or just
+              say hi — my inbox is always open.
+            </p>
+            <div class="contact-item">
+              <div class="contact-item-icon">
+                <i class="bx bx-envelope"></i>
+              </div>
+              <div class="contact-item-text">
+                <span class="contact-item-label">Email</span>
+                <span class="contact-item-val"
+                  ><a
+                    href="/cdn-cgi/l/email-protection"
+                    class="__cf_email__"
+                    data-cfemail="96f7f4f2f3fae4f7fefbf7f8f3fae5f7f7f2f7f8efa7aed6f1fbf7fffab8f5f9fb"
+                    >[email&#160;protected]</a
+                  ></span
+                >
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-item-icon">
+                <i class="bx bxl-linkedin"></i>
+              </div>
+              <div class="contact-item-text">
+                <span class="contact-item-label">LinkedIn</span>
+                <span class="contact-item-val">abdelrahman-elsaadany-a20</span>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-item-icon"><i class="bx bxl-github"></i></div>
+              <div class="contact-item-text">
+                <span class="contact-item-label">GitHub</span>
+                <span class="contact-item-val">abdelrahmanelsaadany1</span>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-item-icon"><i class="bx bx-map"></i></div>
+              <div class="contact-item-text">
+                <span class="contact-item-label">Location</span>
+                <span class="contact-item-val">Egypt · Open to Remote</span>
+              </div>
+            </div>
+          </div>
+          <div
+            class="contact-form-wrap reveal reveal-delay-2"
+            id="contactFormWrap"
+          >
+            <form
+              class="contact-form"
+              id="contactForm"
+              onsubmit="return false;"
+            >
+              <div class="form-group" id="fg-name">
+                <div class="field-header">
+                  <label for="cf-name">Your Name</label>
+                </div>
+                <input
+                  id="cf-name"
+                  type="text"
+                  placeholder="John Doe"
+                  autocomplete="off"
+                />
+                <div class="field-track">
+                  <div class="field-track-fill" id="ft-name"></div>
+                </div>
+              </div>
+              <div class="form-group" id="fg-email">
+                <div class="field-header">
+                  <label for="cf-email">Email Address</label>
+                </div>
+                <input
+                  id="cf-email"
+                  type="email"
+                  placeholder="john@example.com"
+                  autocomplete="off"
+                />
+                <div class="field-track">
+                  <div class="field-track-fill" id="ft-email"></div>
+                </div>
+              </div>
+              <div class="form-group" id="fg-subject">
+                <div class="field-header">
+                  <label for="cf-subject">Subject</label>
+                </div>
+                <input
+                  id="cf-subject"
+                  type="text"
+                  placeholder="Project Inquiry"
+                  autocomplete="off"
+                />
+                <div class="field-track">
+                  <div class="field-track-fill" id="ft-subject"></div>
+                </div>
+              </div>
+              <div class="form-group" id="fg-msg">
+                <div class="field-header">
+                  <label for="cf-msg">Message</label>
+                </div>
+                <textarea
+                  id="cf-msg"
+                  placeholder="Tell me about your project..."
+                ></textarea>
+                <div class="field-track">
+                  <div class="field-track-fill" id="ft-msg"></div>
+                </div>
+              </div>
+              <button type="submit" class="form-submit" id="submitBtn">
+                <span>Transmit Message</span><i class="bx bx-send"></i>
+              </button>
+            </form>
+            <div class="tx-overlay" id="txOverlay">
+              <canvas id="txCanvas"></canvas>
+              <div class="tx-inner">
+                <div class="tx-rings-wrap">
+                  <div class="tx-ring r1"></div>
+                  <div class="tx-ring r2"></div>
+                  <div class="tx-ring r3"></div>
+                  <div class="tx-checkmark">
+                    <svg viewBox="0 0 52 52" fill="none">
+                      <circle
+                        cx="26"
+                        cy="26"
+                        r="24"
+                        stroke="#30cdcf"
+                        stroke-width="2"
+                      />
+                      <polyline
+                        points="14,26 22,34 38,18"
+                        stroke="#30cdcf"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-dasharray="32"
+                        stroke-dashoffset="32"
+                        class="tx-check-path"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <div class="tx-terminal">
+                  <div class="tx-t-line" id="tl1">
+                    <span class="tx-prompt">›</span
+                    ><span class="tx-text"></span>
+                  </div>
+                  <div class="tx-t-line" id="tl2">
+                    <span class="tx-prompt">›</span
+                    ><span class="tx-text"></span>
+                  </div>
+                  <div class="tx-t-line" id="tl3">
+                    <span class="tx-prompt">›</span
+                    ><span class="tx-text"></span>
+                  </div>
+                  <div class="tx-t-line tx-final" id="tl4">
+                    <span class="tx-text"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
+    <!-- /container -->
 
     <script
       type="module"
       src="https://cdn.jsdelivr.net/npm/@splinetool/viewer/build/spline-viewer.js"
     ></script>
-
     <script src="script.js"></script>
+    <script src="sections.js"></script>
+    <script src="intro.js"></script>
+    <script src="the road/about-timeline.js"></script>
   </body>
 </html>
