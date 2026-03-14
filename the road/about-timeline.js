@@ -1,372 +1,512 @@
-/* ═══════════════════════════════════════════════════════
-   about-timeline.js — SCAVENGER HEXAPOD EDITION
-   ► Walking hexapod robot with mechanical leg animation
-   ► Glitch effect at military dip (downfall)
-   ► Smooth 180° head-turn when scrolling backward
-   ► Mobile: Vertical timeline layout
-═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   about-timeline.js  —  CONSTELLATION · STRAIGHT LINE · NO LAG
+   • rAF-throttled scroll — never reads DOM in scroll handler
+   • All values cached on init/resize
+   • CSS transform only for track pan (GPU)
+   • SVG line drawn via pre-cached strokeDashoffset
+   • Stars on a straight horizontal line
+   • Military star drops far below the line
+═══════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
 
-  const outer = document.getElementById("hsOuter");
-  const track = document.getElementById("hsTrack");
-  const roadFill = document.getElementById("hsRoadFill");
-  const roadGlow = document.getElementById("hsRoadGlow");
-  const progFill = document.getElementById("hsProgFill");
-  const hintEl = document.getElementById("hsHint");
+  var outer = document.getElementById("hsOuter");
+  var track = document.getElementById("hsTrack");
+  var progFill = document.getElementById("hsProgFill");
+  var hintEl = document.getElementById("hsHint");
 
-  if (!outer || !track || !roadFill) return;
+  if (!outer || !track) return;
 
-  /* ═══════════════════════════════════════
-     INJECT HEXAPOD SVG into hs-track
-  ═══════════════════════════════════════ */
-  const hexapod = document.createElement("div");
-  hexapod.id = "hsHexapod";
-  hexapod.style.cssText =
-    "position:absolute;width:80px;height:48px;" +
-    "transform-origin:40px 24px;pointer-events:none;" +
-    "z-index:20;will-change:transform,left,top;";
+  var TRACK_W = 5000;
+  var isMobile = window.innerWidth <= 700;
 
-  hexapod.innerHTML =
-    '<svg viewBox="0 0 80 48" width="80" height="48" xmlns="http://www.w3.org/2000/svg">' +
-    "<defs>" +
-    '<filter id="hexGlow" x="-50%" y="-100%" width="200%" height="300%">' +
-    '<feGaussianBlur stdDeviation="1.8" result="b"/>' +
-    '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>' +
-    "</filter>" +
-    '<filter id="hexGlitch" x="-20%" y="-20%" width="140%" height="140%">' +
-    '<feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" result="noise" seed="2"/>' +
-    '<feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G"/>' +
-    "</filter>" +
-    '<linearGradient id="hexBody" x1="0" y1="0" x2="0" y2="1">' +
-    '<stop offset="0%"   stop-color="#1a3a3a"/>' +
-    '<stop offset="50%"  stop-color="#0d2626"/>' +
-    '<stop offset="100%" stop-color="#061414"/>' +
-    "</linearGradient>" +
-    '<linearGradient id="hexHead" x1="0" y1="0" x2="0" y2="1">' +
-    '<stop offset="0%"   stop-color="#2a4a4a"/>' +
-    '<stop offset="100%" stop-color="#0f2e2e"/>' +
-    "</linearGradient>" +
-    "</defs>" +
-    /* shadow */
-    '<ellipse cx="40" cy="46.5" rx="32" ry="1.5" fill="rgba(0,0,0,0.6)"/>' +
-    /* main body segments */
-    '<rect x="18" y="18" width="44" height="16" rx="4" fill="url(#hexBody)" stroke="rgba(48,205,207,0.25)" stroke-width="0.9"/>' +
-    /* head (front) */
-    '<ellipse cx="62" cy="20" rx="8.5" ry="10" fill="url(#hexHead)" stroke="rgba(48,205,207,0.35)" stroke-width="1"/>' +
-    /* eyes (glow) */
-    '<circle cx="65" cy="17" r="2.2" fill="#30cdcf" opacity="0.9" filter="url(#hexGlow)"/>' +
-    '<circle cx="65" cy="17" r="1.2" fill="#e8ffff" opacity="0.95"/>' +
-    '<circle cx="59" cy="17" r="2.2" fill="#30cdcf" opacity="0.7" filter="url(#hexGlow)"/>' +
-    '<circle cx="59" cy="17" r="1.2" fill="#b0ffff" opacity="0.8"/>' +
-    /* antenna */
-    '<line x1="62" y1="9.5" x2="62" y2="4" stroke="rgba(48,205,207,0.4)" stroke-width="0.8" stroke-linecap="round"/>' +
-    '<circle cx="62" cy="3.5" r="1" fill="rgba(48,205,207,0.6)"/>' +
-    /* energy core on body */
-    '<circle cx="40" cy="26" r="3.5" fill="rgba(48,205,207,0.3)" stroke="#30cdcf" stroke-width="1"/>' +
-    '<circle cx="40" cy="26" r="2" fill="#30cdcf" opacity="0.6"/>' +
-    /* teal stripe down center */
-    '<line x1="40" y1="18" x2="40" y2="34" stroke="#30cdcf" stroke-width="1.2" opacity="0.5"/>' +
-    /* ─────────────────────────────────────
-       LEFT LEGS (3)
-    ───────────────────────────────────────*/
-    /* Left Front Leg */
-    '<g id="legLF" class="hex-leg">' +
-    '<line x1="55" y1="24" x2="70" y2="16" stroke="rgba(48,205,207,0.5)" stroke-width="1.2" stroke-linecap="round"/>' +
-    '<circle cx="70" cy="16" r="1.5" fill="rgba(48,205,207,0.7)"/>' +
-    "</g>" +
-    /* Left Mid Leg */
-    '<g id="legLM" class="hex-leg">' +
-    '<line x1="40" y1="34" x2="28" y2="42" stroke="rgba(48,205,207,0.5)" stroke-width="1.2" stroke-linecap="round"/>' +
-    '<circle cx="28" cy="42" r="1.5" fill="rgba(48,205,207,0.7)"/>' +
-    "</g>" +
-    /* Left Rear Leg */
-    '<g id="legLR" class="hex-leg">' +
-    '<line x1="25" y1="24" x2="8" y2="16" stroke="rgba(48,205,207,0.5)" stroke-width="1.2" stroke-linecap="round"/>' +
-    '<circle cx="8" cy="16" r="1.5" fill="rgba(48,205,207,0.7)"/>' +
-    "</g>" +
-    /* ─────────────────────────────────────
-       RIGHT LEGS (3)
-    ───────────────────────────────────────*/
-    /* Right Front Leg */
-    '<g id="legRF" class="hex-leg">' +
-    '<line x1="55" y1="28" x2="70" y2="36" stroke="rgba(48,205,207,0.5)" stroke-width="1.2" stroke-linecap="round"/>' +
-    '<circle cx="70" cy="36" r="1.5" fill="rgba(48,205,207,0.7)"/>' +
-    "</g>" +
-    /* Right Mid Leg */
-    '<g id="legRM" class="hex-leg">' +
-    '<line x1="40" y1="34" x2="52" y2="42" stroke="rgba(48,205,207,0.5)" stroke-width="1.2" stroke-linecap="round"/>' +
-    '<circle cx="52" cy="42" r="1.5" fill="rgba(48,205,207,0.7)"/>' +
-    "</g>" +
-    /* Right Rear Leg */
-    '<g id="legRR" class="hex-leg">' +
-    '<line x1="25" y1="28" x2="8" y2="36" stroke="rgba(48,205,207,0.5)" stroke-width="1.2" stroke-linecap="round"/>' +
-    '<circle cx="8" cy="36" r="1.5" fill="rgba(48,205,207,0.7)"/>' +
-    "</g>" +
-    "</svg>";
+  /* ── Star definitions ─────────────────────────────────
+     yf = fraction of track height
+     Normal stars sit at 0.42 (middle-ish)
+     Military drops to 0.78 (the downfall)
+  ─────────────────────────────────────────────────────── */
+  var STARS = [
+    {
+      id: "rnAc",
+      xf: 0.08,
+      yf: 0.42,
+      card: "above",
+      cls: "cs-ac",
+      showAt: 0.0,
+    },
+    {
+      id: "rnIti",
+      xf: 0.26,
+      yf: 0.42,
+      card: "above",
+      cls: "cs-iti",
+      showAt: 0.1,
+    },
+    {
+      id: "rnMil",
+      xf: 0.48,
+      yf: 0.62,
+      card: "below",
+      cls: "cs-mil",
+      showAt: 0.33,
+    },
+    {
+      id: "rnIot",
+      xf: 0.68,
+      yf: 0.42,
+      card: "above",
+      cls: "cs-iot",
+      showAt: 0.58,
+    },
+    {
+      id: "rnAsu",
+      xf: 0.88,
+      yf: 0.42,
+      card: "above",
+      cls: "cs-asu",
+      showAt: 0.82,
+    },
+  ];
 
-  track.appendChild(hexapod);
+  var DOTS = [
+    { id: "hsDot0", at: 0.0, sf: 0 },
+    { id: "hsDot1", at: 0.12, sf: 1 },
+    { id: "hsDotMil", at: 0.36, sf: 2 },
+    { id: "hsDot2", at: 0.6, sf: 3 },
+    { id: "hsDot3", at: 0.84, sf: 4 },
+  ];
 
-  /* ═══════════════════════════════════════
-     ANIMATION STATE & WALKING
-  ═══════════════════════════════════════ */
-  var curAngle = 0;
-  var tgtAngle = 0;
-  var lastRaw = 0;
-  var lastDir = 1;
-  var rafId = null;
-  var curRaw = 0;
-  var LERP = 0.09; /* lower = smoother / slower turn */
-  var walkPhase = 0; /* 0-1 for leg animation cycle */
-  var glitchIntensity = 0; /* 0-1 for military dip glitch */
+  var CARD_DATA = {
+    rnAc: {
+      tag: "Live Now",
+      date: "Oct 2025 — Present",
+      title: "Full Stack .NET Developer",
+      org: "Arab Computers · Alexandria, Egypt",
+      tags: ["ASP.NET Core", "Angular", "CQRS", "Docker", "Azure DevOps"],
+    },
+    rnIti: {
+      tag: "Internship",
+      date: "Mar 2025 — Aug 2025",
+      title: "Full Stack .NET Intern",
+      org: "ITI · Intensive Code Camp · Alexandria",
+      tags: ["ASP.NET Core", "Angular", "EF Core", "SQL Server"],
+    },
+    rnMil: {
+      mil: true,
+      date: "Dec 2024",
+      title: "Military Service",
+      org: "Completed · Discipline &amp; Teamwork",
+      tags: [],
+    },
+    rnIot: {
+      tag: "Training",
+      date: "2022",
+      title: "IoT Development Program",
+      org: "ITI · Smart Village, Egypt",
+      tags: ["IoTik", "SigFox", "BLE Gateway", "Sensors"],
+    },
+    rnAsu: {
+      tag: "Education",
+      date: "2019 — 2023",
+      title: "B.Sc. Computer Science",
+      org: "Alexandria University · CGPA 3.2",
+      tags: ["OOP", "Algorithms", "C#", "Java", "Flutter"],
+    },
+  };
 
-  function normDiff(from, to) {
-    var d = to - from;
-    while (d > 180) d -= 360;
-    while (d < -180) d += 360;
-    return d;
-  }
+  /* ══════════════════════════════════════════
+     BUILD STAR DOM  (runs once)
+  ══════════════════════════════════════════ */
+  STARS.forEach(function (s) {
+    var el = document.getElementById(s.id);
+    if (!el) return;
+    var d = CARD_DATA[s.id];
 
-  function tangentAngle(dist) {
-    var len = roadFill.getTotalLength();
-    var D = 18;
-    var a = roadFill.getPointAtLength(Math.max(0, dist - D));
-    var b = roadFill.getPointAtLength(Math.min(len, dist + D));
-    return Math.atan2(b.y - a.y, b.x - a.x) * (180 / Math.PI);
-  }
+    el.className = "cs-star " + s.cls;
+    el.style.cssText = "position:absolute;";
 
-  /* ─────────────────────────────────────
-     LEG ANIMATION HELPERS
-  ───────────────────────────────────────*/
-  function easeInOutSine(t) {
-    return -(Math.cos(Math.PI * t) - 1) / 2;
-  }
+    var tagsHTML = d.tags
+      .map(function (t) {
+        return "<span>" + t + "</span>";
+      })
+      .join("");
+    var tagLine = d.mil
+      ? '<div class="cs-mil-warning">⚠ Service Interrupted</div>'
+      : d.tag
+        ? '<div class="cs-card-tag">' + d.tag + "</div>"
+        : "";
 
-  function animateLeg(legId, phase, offset) {
-    var leg = document.getElementById(legId);
-    if (!leg) return;
-    var line = leg.querySelector("line");
-    var circle = leg.querySelector("circle");
-    if (!line || !circle) return;
+    var cardCls =
+      "cs-card " +
+      (s.card === "above" ? "card-above" : "card-below") +
+      (d.mil ? " cs-mil-card" : "");
+    var armCls = "cs-arm " + (s.card === "above" ? "arm-up" : "arm-down");
 
-    var t = (phase + offset) % 1;
-    var lift = Math.sin(t * Math.PI) * 3; /* lift height */
-    var x1 =
-      parseFloat(line.getAttribute("data-x1")) ||
-      parseFloat(line.getAttribute("x1"));
-    var y1 =
-      parseFloat(line.getAttribute("data-y1")) ||
-      parseFloat(line.getAttribute("y1"));
-    var x2 =
-      parseFloat(line.getAttribute("data-x2")) ||
-      parseFloat(line.getAttribute("x2"));
-    var y2 =
-      parseFloat(line.getAttribute("data-y2")) ||
-      parseFloat(line.getAttribute("y2"));
+    el.innerHTML =
+      '<div class="cs-star-dot">' +
+      '<div class="cs-star-ring"></div>' +
+      '<div class="cs-star-ring2"></div>' +
+      '<div class="cs-star-cross"></div>' +
+      "</div>" +
+      '<div class="' +
+      armCls +
+      '"></div>' +
+      '<div class="' +
+      cardCls +
+      '">' +
+      tagLine +
+      '<div class="cs-card-date">' +
+      d.date +
+      "</div>" +
+      '<div class="cs-card-title">' +
+      d.title +
+      "</div>" +
+      '<div class="cs-card-org">' +
+      d.org +
+      "</div>" +
+      (tagsHTML ? '<div class="cs-card-tags">' + tagsHTML + "</div>" : "") +
+      "</div>";
+  });
 
-    if (!line.getAttribute("data-x1")) {
-      line.setAttribute("data-x1", x1);
-      line.setAttribute("data-y1", y1);
-      line.setAttribute("data-x2", x2);
-      line.setAttribute("data-y2", y2);
-    }
+  /* rebuild dot star spans */
+  DOTS.forEach(function (d) {
+    var el = document.getElementById(d.id);
+    if (!el || el.querySelector(".hs-dot-star")) return;
+    var span = document.createElement("div");
+    span.className = "hs-dot-star";
+    el.insertBefore(span, el.firstChild);
+  });
 
-    var newY2 = y2 - lift;
-    line.setAttribute("y2", newY2);
-    circle.setAttribute("cy", newY2);
-  }
+  /* cache element refs — avoid getElementById in hot scroll loop */
+  var starEls = STARS.map(function (s) {
+    return document.getElementById(s.id);
+  });
+  var dotEls = DOTS.map(function (d) {
+    return document.getElementById(d.id);
+  });
+  var bgCanvas = document.createElement("canvas");
+  bgCanvas.id = "csBgCanvas";
+  track.insertBefore(bgCanvas, track.firstChild);
 
-  function updateLegAnimations(phase, direction) {
-    if (direction > 0) {
-      /* forward walk */
-      animateLeg("legLF", phase, 0);
-      animateLeg("legLM", phase, 0.33);
-      animateLeg("legLR", phase, 0.66);
-      animateLeg("legRF", phase, 0.33);
-      animateLeg("legRM", phase, 0.66);
-      animateLeg("legRR", phase, 0);
-    } else {
-      /* backward walk */
-      animateLeg("legLF", phase, 0.33);
-      animateLeg("legLM", phase, 0.66);
-      animateLeg("legLR", phase, 0);
-      animateLeg("legRF", phase, 0.66);
-      animateLeg("legRM", phase, 0);
-      animateLeg("legRR", phase, 0.33);
-    }
-  }
-
-  /* ─────────────────────────────────────
-     GLITCH EFFECT AT MILITARY DIP
-  ───────────────────────────────────────*/
-  function updateGlitchEffect(raw) {
-    var militaryPos = 0.33; /* military is at 33% */
-    var glitchRange = 0.08; /* glitch ±8% around military */
-    var distFromMil = Math.abs(raw - militaryPos);
-
-    if (distFromMil < glitchRange) {
-      glitchIntensity = 1 - distFromMil / glitchRange;
-      var filter = document.getElementById("hexGlitch");
-      if (filter) {
-        var displace = filter.querySelector("feDisplacementMap");
-        if (displace) {
-          displace.setAttribute("scale", glitchIntensity * 2.5);
-        }
+  var lastBgH = 0;
+  function paintBgStars(H) {
+    if (H === lastBgH) return;
+    lastBgH = H;
+    bgCanvas.width = TRACK_W;
+    bgCanvas.height = H;
+    var ctx = bgCanvas.getContext("2d");
+    var sizes = [0.4, 0.8, 1.2];
+    sizes.forEach(function (r) {
+      for (var i = 0; i < 65; i++) {
+        var x = Math.random() * TRACK_W;
+        var y = Math.random() * H;
+        var a = (Math.random() * 0.38 + 0.07).toFixed(2);
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 6.2832);
+        ctx.fillStyle = "rgba(200,240,255," + a + ")";
+        ctx.fill();
       }
-      /* add color shift */
-      hexapod.style.filter = `hue-rotate(${glitchIntensity * 15}deg) brightness(${1 - glitchIntensity * 0.2})`;
-    } else {
-      glitchIntensity = 0;
-      hexapod.style.filter = "none";
-    }
-  }
-
-  function renderHexapod() {
-    var len = roadFill.getTotalLength();
-    var pt = roadFill.getPointAtLength(curRaw * len);
-    var diff = normDiff(curAngle, tgtAngle);
-    curAngle += diff * LERP;
-
-    /* update position */
-    hexapod.style.left = pt.x - 40 + "px";
-    hexapod.style.top = pt.y - 24 + "px";
-    hexapod.style.transform = "rotate(" + curAngle + "deg)";
-
-    /* update leg animation */
-    walkPhase += 0.03 * lastDir;
-    if (walkPhase > 1) walkPhase -= 1;
-    if (walkPhase < 0) walkPhase += 1;
-    updateLegAnimations(walkPhase, lastDir);
-
-    /* update glitch at military */
-    updateGlitchEffect(curRaw);
-  }
-
-  function animLoop() {
-    renderHexapod();
-    if (Math.abs(normDiff(curAngle, tgtAngle)) > 0.08) {
-      rafId = requestAnimationFrame(animLoop);
-    } else {
-      rafId = null;
-    }
-  }
-
-  function kickAnim() {
-    if (!rafId) rafId = requestAnimationFrame(animLoop);
-  }
-
-  function updateHexapod(raw) {
-    curRaw = raw;
-    var dist = raw * roadFill.getTotalLength();
-    var angle = tangentAngle(dist);
-    if (lastDir < 0) {
-      /* scrolling back → flip */
-      angle += 180;
-      while (angle > 180) angle -= 360;
-      while (angle < -180) angle += 360;
-    }
-    tgtAngle = angle;
-    kickAnim();
-  }
-
-  /* ═══════════════════════════════════════════════════════
-     YOUR ORIGINAL SCROLL LOGIC — UNTOUCHED FROM HERE DOWN
-  ═══════════════════════════════════════════════════════ */
-  requestAnimationFrame(function () {
-    var totalLen = roadFill.getTotalLength();
-
-    [roadFill, roadGlow].forEach(function (el) {
-      if (!el) return;
-      el.style.strokeDasharray = totalLen;
-      el.style.strokeDashoffset = totalLen;
     });
+  }
 
-    var TRACK_W = 4150;
+  /* ══════════════════════════════════════════
+     SVG LINE  —  straight across + drop for military
+     Built once; length cached; never re-read in scroll
+  ══════════════════════════════════════════ */
+  var svgEl, lineMain, lineGlow, lineFill;
+  var pathLen = 0; /* cached — never call getTotalLength in scroll */
 
-    var NODES = [
-      { el: document.getElementById("rnAc"), showAt: 0.0 },
-      { el: document.getElementById("rnIti"), showAt: 0.16 },
-      { el: document.getElementById("rnMil"), showAt: 0.33 },
-      { el: document.getElementById("rnIot"), showAt: 0.52 },
-      { el: document.getElementById("rnAsu"), showAt: 0.74 },
-    ];
+  function buildSVG(H) {
+    if (svgEl && svgEl.parentNode) svgEl.parentNode.removeChild(svgEl);
 
-    var DOTS = [
-      { el: document.getElementById("hsDot0"), at: 0.0 },
-      { el: document.getElementById("hsDot1"), at: 0.16 },
-      { el: document.getElementById("hsDotMil"), at: 0.33 },
-      { el: document.getElementById("hsDot2"), at: 0.52 },
-      { el: document.getElementById("hsDot3"), at: 0.74 },
-    ];
+    /* Y of the main horizontal line */
+    var lineY = STARS[0].yf * H; /* 0.42 * H */
 
-    function update() {
-      if (window.innerWidth <= 700) return;
+    /* The path:
+       - straight from x=0 to just before military x
+       - drop down to military y
+       - go back up to line y
+       - straight to end
+    */
+    var milX = STARS[2].xf * TRACK_W;
+    var milY = STARS[2].yf * H;
+    var dropW = 50; /* horizontal spread of the drop curve */
 
-      var rect = outer.getBoundingClientRect();
-      var total = outer.offsetHeight - window.innerHeight;
-      var raw = Math.max(0, Math.min(1, -rect.top / Math.max(total, 1)));
+    var d =
+      "M 0," +
+      lineY +
+      " L " +
+      (milX - dropW) +
+      "," +
+      lineY +
+      " C " +
+      (milX - dropW / 2) +
+      "," +
+      lineY +
+      " " +
+      (milX - dropW / 2) +
+      "," +
+      milY +
+      " " +
+      milX +
+      "," +
+      milY +
+      " C " +
+      (milX + dropW / 2) +
+      "," +
+      milY +
+      " " +
+      (milX + dropW / 2) +
+      "," +
+      lineY +
+      " " +
+      (milX + dropW) +
+      "," +
+      lineY +
+      " L " +
+      TRACK_W +
+      "," +
+      lineY;
 
-      if (Math.abs(raw - lastRaw) < 0.0003) return;
+    var ns = "http://www.w3.org/2000/svg";
+    svgEl = document.createElementNS(ns, "svg");
+    svgEl.setAttribute("class", "hs-svg");
+    svgEl.setAttribute("xmlns", ns);
+    svgEl.style.cssText =
+      "position:absolute;inset:0;width:" +
+      TRACK_W +
+      "px;height:" +
+      H +
+      "px;pointer-events:none;z-index:1;overflow:visible;";
 
-      lastDir = raw >= lastRaw ? 1 : -1;
-      lastRaw = raw;
+    var defs = document.createElementNS(ns, "defs");
+    defs.innerHTML =
+      '<filter id="csGF" x="-2%" y="-300%" width="104%" height="700%">' +
+      '<feGaussianBlur stdDeviation="6" result="b"/>' +
+      '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>' +
+      "</filter>";
+    svgEl.appendChild(defs);
 
-      var maxPan = TRACK_W - window.innerWidth;
-      track.style.transform = "translateX(" + -(raw * maxPan) + "px)";
+    /* ambient dashed base line */
+    var base = document.createElementNS(ns, "path");
+    base.setAttribute("d", d);
+    base.setAttribute("fill", "none");
+    base.setAttribute("stroke", "rgba(0,221,200,0.08)");
+    base.setAttribute("stroke-width", "1.5");
+    base.setAttribute("stroke-dasharray", "8 14");
+    svgEl.appendChild(base);
 
-      if (progFill) progFill.style.width = raw * 100 + "%";
+    /* glow layer */
+    lineGlow = document.createElementNS(ns, "path");
+    lineGlow.setAttribute("d", d);
+    lineGlow.setAttribute("fill", "none");
+    lineGlow.setAttribute("stroke", "rgba(0,221,200,0.12)");
+    lineGlow.setAttribute("stroke-width", "18");
+    lineGlow.setAttribute("stroke-linecap", "round");
+    lineGlow.setAttribute("filter", "url(#csGF)");
+    svgEl.appendChild(lineGlow);
 
-      var offset = totalLen * (1 - raw);
-      roadFill.style.strokeDashoffset = offset;
-      if (roadGlow) roadGlow.style.strokeDashoffset = offset;
+    /* main teal line */
+    lineFill = document.createElementNS(ns, "path");
+    lineFill.setAttribute("d", d);
+    lineFill.setAttribute("fill", "none");
+    lineFill.setAttribute("stroke", "#00ddc8");
+    lineFill.setAttribute("stroke-width", "2");
+    lineFill.setAttribute("stroke-linecap", "round");
+    svgEl.appendChild(lineFill);
 
-      NODES.forEach(function (n) {
-        if (n.el && raw >= n.showAt) n.el.classList.add("revealed");
-      });
+    /* insert SVG before stars */
+    var firstStar = document.getElementById("rnAc");
+    track.insertBefore(svgEl, firstStar || null);
 
-      if (hintEl && raw > 0.02) hintEl.classList.add("done");
+    /* cache total length HERE — only once */
+    pathLen = lineFill.getTotalLength();
+    lineFill.style.strokeDasharray = pathLen;
+    lineFill.style.strokeDashoffset = pathLen;
+    lineGlow.style.strokeDasharray = pathLen;
+    lineGlow.style.strokeDashoffset = pathLen;
+  }
 
-      DOTS.forEach(function (d) {
-        if (d.el) d.el.classList.toggle("active", raw >= d.at);
-      });
+  /* ══════════════════════════════════════════
+     POSITION STARS  (runs on init + resize)
+  ══════════════════════════════════════════ */
+  function positionStars(H) {
+    for (var i = 0; i < STARS.length; i++) {
+      var el = starEls[i];
+      if (!el) continue;
+      el.style.left = STARS[i].xf * TRACK_W + "px";
+      el.style.top = STARS[i].yf * H + "px";
+    }
+  }
 
-      updateHexapod(raw); /* ← hexapod update */
+  /* ══════════════════════════════════════════
+     CACHED SCROLL VALUES
+     Re-computed only on resize, never in scroll handler
+  ══════════════════════════════════════════ */
+  var cache = {
+    maxPan: 0,
+    total: 0,
+    outerTop: 0 /* outer.getBoundingClientRect().top + scrollY */,
+  };
+
+  function refreshCache() {
+    cache.maxPan = TRACK_W - window.innerWidth;
+    cache.total = outer.offsetHeight - window.innerHeight;
+    cache.outerTop = outer.getBoundingClientRect().top + window.scrollY;
+  }
+
+  /* ══════════════════════════════════════════
+     rAF-THROTTLED SCROLL
+  ══════════════════════════════════════════ */
+  var ticking = false;
+  var lastRaw = -1;
+
+  function onScroll() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(processScroll);
+    }
+  }
+
+  function processScroll() {
+    ticking = false;
+    if (isMobile) return;
+
+    var scrollY = window.scrollY;
+    var raw = (scrollY - cache.outerTop) / Math.max(cache.total, 1);
+    raw = raw < 0 ? 0 : raw > 1 ? 1 : raw;
+
+    if (Math.abs(raw - lastRaw) < 0.0006) return;
+    lastRaw = raw;
+
+    /* pan track — GPU transform */
+    var pan = raw * cache.maxPan;
+    track.style.transform = "translateX(" + -pan + "px)";
+
+    /* progress bar */
+    if (progFill) progFill.style.width = raw * 100 + "%";
+
+    /* draw line — no DOM read, just set cached value */
+    if (lineFill && pathLen) {
+      var off = pathLen * (1 - raw);
+      lineFill.style.strokeDashoffset = off;
+      lineGlow.style.strokeDashoffset = off;
     }
 
-    function setupMobile() {
-      NODES.forEach(function (n) {
-        if (n.el) n.el.classList.add("revealed");
-      });
-      roadFill.style.strokeDashoffset = 0;
-      if (roadGlow) roadGlow.style.strokeDashoffset = 0;
-      hexapod.style.display = "none";
+    /* reveal stars — cached refs, no getElementById */
+    for (var i = 0; i < starEls.length; i++) {
+      var el = starEls[i];
+      if (!el) continue;
+      if (raw >= STARS[i].showAt) {
+        if (!el.classList.contains("revealed")) el.classList.add("revealed");
+      } else if (raw < STARS[i].showAt - 0.02) {
+        if (el.classList.contains("revealed")) el.classList.remove("revealed");
+      }
     }
 
-    if (window.innerWidth <= 700) {
-      setupMobile();
+    /* hint */
+    if (hintEl && raw > 0.02 && !hintEl.classList.contains("done")) {
+      hintEl.classList.add("done");
+    }
+
+    /* active dots — cached refs */
+    for (var j = 0; j < dotEls.length; j++) {
+      var dotEl = dotEls[j];
+      if (!dotEl) continue;
+      var nextAt = DOTS[j + 1] ? DOTS[j + 1].at : 1.1;
+      var isActive =
+        j === dotEls.length - 1
+          ? raw >= DOTS[j].at
+          : raw >= DOTS[j].at && raw < nextAt;
+      dotEl.classList.toggle("active", isActive);
+    }
+  }
+
+  /* ══════════════════════════════════════════
+     DOT CLICK — smooth scroll to star
+  ══════════════════════════════════════════ */
+  function snapToStar(starIndex) {
+    var s = STARS[starIndex];
+    var starX = s.xf * TRACK_W;
+    var raw = (starX - window.innerWidth / 2) / cache.maxPan;
+    raw = raw < 0 ? 0 : raw > 1 ? 1 : raw;
+    var targetY = cache.outerTop + raw * cache.total;
+    window.scrollTo({ top: targetY, behavior: "smooth" });
+  }
+
+  DOTS.forEach(function (d) {
+    var el = document.getElementById(d.id);
+    if (!el) return;
+    el.addEventListener("click", function () {
+      snapToStar(d.sf);
+    });
+  });
+
+  /* ══════════════════════════════════════════
+     MOBILE SETUP
+  ══════════════════════════════════════════ */
+  function setupMobile() {
+    STARS.forEach(function (s) {
+      var el = document.getElementById(s.id);
+      if (el) el.classList.add("revealed");
+    });
+  }
+
+  /* ══════════════════════════════════════════
+     INIT
+  ══════════════════════════════════════════ */
+  function init() {
+    var H = track.offsetHeight || window.innerHeight * 0.72;
+
+    /* hint compositor to promote track to its own layer */
+    track.style.willChange = "transform";
+
+    paintBgStars(H);
+    positionStars(H);
+
+    if (!isMobile) {
+      buildSVG(H);
+      refreshCache();
+
+      /* show first star + dot immediately */
+      var first = document.getElementById("rnAc");
+      var dot0 = document.getElementById("hsDot0");
+      if (first) first.classList.add("revealed");
+      if (dot0) dot0.classList.add("active");
+
+      window.addEventListener("scroll", onScroll, { passive: true });
+      processScroll();
     } else {
-      var acEl = document.getElementById("rnAc");
-      var d0 = document.getElementById("hsDot0");
-      if (acEl) acEl.classList.add("revealed");
-      if (d0) d0.classList.add("active");
-
-      curRaw = 0;
-      renderHexapod();
-
-      window.addEventListener("scroll", update, { passive: true });
-      update();
+      setupMobile();
     }
+  }
 
-    window.addEventListener(
-      "resize",
-      function () {
-        if (window.innerWidth <= 700) setupMobile();
-        else {
-          hexapod.style.display = "block";
-          update();
+  /* ── Resize: debounced ── */
+  var resizeTimer;
+  window.addEventListener(
+    "resize",
+    function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        isMobile = window.innerWidth <= 700;
+        var H = track.offsetHeight || window.innerHeight * 0.72;
+        paintBgStars(H);
+        positionStars(H);
+        if (!isMobile) {
+          buildSVG(H);
+          refreshCache();
+          lastRaw = -1;
+          processScroll();
+        } else {
+          setupMobile();
         }
-      },
-      { passive: true },
-    );
+      }, 120);
+    },
+    { passive: true },
+  );
+
+  /* Run after layout is ready */
+  requestAnimationFrame(function () {
+    requestAnimationFrame(init);
   });
 })();

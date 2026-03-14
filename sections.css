@@ -1101,3 +1101,153 @@
     gap: 20px;
   }
 }
+
+/* ════════════════════════════════════════════════════
+   SECTOR_01 — GLASS CARD LAYER
+   Drop this after your original styles.
+   Upgrades project cards + contact panels with
+   frosted glass, corner brackets, and top edge glow.
+════════════════════════════════════════════════════ */
+
+/* ── Project cards → glass ── */
+.project-card {
+  background: rgba(2, 8, 18, 0.82);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border-radius: 14px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* Animated corner brackets — top corners via card pseudo */
+.project-card::before,
+.project-card::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: rgba(48, 205, 207, 0.35);
+  border-style: solid;
+  z-index: 3;
+  pointer-events: none;
+  transition:
+    width 0.35s ease,
+    height 0.35s ease,
+    border-color 0.35s ease;
+}
+.project-card::before {
+  top: 10px;
+  left: 10px;
+  border-width: 1.5px 0 0 1.5px;
+  border-radius: 3px 0 0 0;
+}
+.project-card::after {
+  top: 10px;
+  right: 10px;
+  border-width: 1.5px 1.5px 0 0;
+  border-radius: 0 3px 0 0;
+}
+.project-card:hover::before,
+.project-card:hover::after {
+  width: 22px;
+  height: 22px;
+  border-color: rgba(48, 205, 207, 0.85);
+}
+
+/* Bottom corner brackets via project-body pseudo */
+.project-body::before,
+.project-body::after {
+  content: "";
+  position: absolute;
+  bottom: 14px;
+  width: 12px;
+  height: 12px;
+  border-color: rgba(48, 205, 207, 0.18);
+  border-style: solid;
+  pointer-events: none;
+  transition:
+    width 0.35s ease,
+    height 0.35s ease,
+    border-color 0.35s ease;
+}
+.project-body::before {
+  left: 14px;
+  border-width: 0 0 1px 1px;
+  border-radius: 0 0 0 3px;
+}
+.project-body::after {
+  right: 14px;
+  border-width: 0 1px 1px 0;
+  border-radius: 0 0 3px 0;
+}
+.project-card:hover .project-body::before,
+.project-card:hover .project-body::after {
+  width: 18px;
+  height: 18px;
+  border-color: rgba(48, 205, 207, 0.5);
+}
+
+/* Top shimmer edge */
+.project-card .project-thumb::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(48, 205, 207, 0.3),
+    transparent
+  );
+  z-index: 2;
+}
+
+/* ── Contact panels → glass ── */
+.contact-info,
+.contact-form-wrap {
+  background: rgba(2, 8, 18, 0.82);
+  border: 1px solid rgba(48, 205, 207, 0.1);
+  border-radius: 14px;
+  padding: 38px;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Top shimmer edge on contact panels */
+.contact-info::before,
+.contact-form-wrap::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(48, 205, 207, 0.22),
+    transparent
+  );
+}
+
+/* Road section cards → glass */
+.rn-card {
+  background: rgba(2, 8, 18, 0.85) !important;
+  border: 1px solid rgba(48, 205, 207, 0.12) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45) !important;
+}
+.rn-detour-sign {
+  background: rgba(2, 8, 18, 0.85) !important;
+  border: 1px solid rgba(48, 205, 207, 0.15) !important;
+  backdrop-filter: blur(18px) !important;
+}
