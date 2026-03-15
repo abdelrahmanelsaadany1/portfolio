@@ -1,0 +1,146 @@
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════ */
+@media (min-width: 1021px) and (max-width: 1260px) {
+  .brand-last {
+    display: none;
+  }
+  .c-label {
+    font-size: 0.48rem;
+    letter-spacing: 2px;
+  }
+  .nav-socials {
+    gap: 8px;
+  }
+  .nav-socials a {
+    width: 30px;
+    height: 30px;
+    font-size: 15px;
+  }
+  header {
+    padding: 0 clamp(12px, 2vw, 28px);
+  }
+}
+
+@media (max-width: 1020px) {
+  header {
+    grid-template-columns: 1fr 1fr;
+  }
+  .constellation-nav {
+    display: none;
+  }
+  .hamburger {
+    display: flex;
+  }
+  .brand-last {
+    display: none;
+  }
+}
+
+@media (min-width: 1021px) {
+  .mobile-overlay {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    padding-top: var(--nav-h);
+  }
+  .hero-content {
+    flex: unset;
+    width: 100%;
+    height: auto;
+    padding: 40px 4vw 10px;
+  }
+  .web-wrap {
+    width: min(400px, 90vw);
+  }
+  .hero-robot {
+    flex: unset;
+    width: 100%;
+    height: 62vw;
+    min-height: 280px;
+  }
+  .hero::before {
+    width: 100%;
+    font-size: 38vw;
+    top: 28%;
+    transform: translateY(0);
+  }
+  .hero::after {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  header {
+    padding: 0 12px;
+  }
+  .nav-brand {
+    gap: 10px;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .nav-brand-img-wrap {
+    width: 32px;
+    height: 32px;
+  }
+  .nav-brand img {
+    width: 32px;
+    height: 32px;
+  }
+  .nav-brand-name .brand-first {
+    font-size: 0.82rem;
+  }
+  .nav-brand-name .brand-last {
+    font-size: 0.56rem;
+    letter-spacing: 3px;
+  }
+  .nav-right-group {
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .nav-socials {
+    gap: 8px;
+  }
+  .nav-socials a {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 380px) {
+  .nav-socials {
+    display: none;
+  }
+}
+
+@media (max-width: 1020px) {
+  .spider-pos {
+    left: auto;
+    right: 16px;
+    transform: none;
+  }
+  .spider-canvas {
+    height: 36px !important;
+  }
+  .spider-btn {
+    padding: 7px 14px;
+    font-size: 0.6rem;
+    letter-spacing: 1.5px;
+  }
+  .spider-btn i {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .spider-pos {
+    right: 10px;
+  }
+}

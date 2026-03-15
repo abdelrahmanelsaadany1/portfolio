@@ -1,0 +1,104 @@
+/* ═══════════════════════════════════════════════════
+   CURSOR
+═══════════════════════════════════════════════════ */
+@media (hover: hover) and (pointer: fine) {
+  * {
+    cursor: none !important;
+  }
+  #cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    background: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(0, 221, 200, 0.95) 50%,
+      rgba(0, 221, 200, 0.2) 100%
+    );
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999999;
+    transform: translate(-50%, -50%);
+    box-shadow:
+      0 0 6px rgba(255, 255, 255, 0.9),
+      0 0 14px var(--teal),
+      0 0 28px rgba(0, 221, 200, 0.4);
+    animation: orbPulse 2s ease infinite;
+    will-change: left, top;
+    transition:
+      width 0.2s,
+      height 0.2s;
+  }
+  @keyframes orbPulse {
+    0%,
+    100% {
+      box-shadow:
+        0 0 6px rgba(255, 255, 255, 0.9),
+        0 0 14px var(--teal),
+        0 0 28px rgba(0, 221, 200, 0.4);
+    }
+    50% {
+      box-shadow:
+        0 0 10px rgba(255, 255, 255, 1),
+        0 0 22px var(--teal),
+        0 0 48px rgba(0, 221, 200, 0.6);
+    }
+  }
+  body.cursor-hover #cursor-dot {
+    width: 14px;
+    height: 14px;
+    background: radial-gradient(circle, #fff 0%, var(--teal) 60%);
+    box-shadow:
+      0 0 12px #fff,
+      0 0 28px var(--teal),
+      0 0 56px rgba(0, 221, 200, 0.5);
+  }
+  body.cursor-click #cursor-dot {
+    background: #fff;
+    width: 16px;
+    height: 16px;
+    box-shadow:
+      0 0 20px #fff,
+      0 0 40px var(--teal),
+      0 0 80px rgba(0, 221, 200, 0.4);
+  }
+  .cursor-particle {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999997;
+    transform: translate(-50%, -50%);
+    animation: particleFade 0.55s ease forwards;
+  }
+  @keyframes particleFade {
+    0% {
+      opacity: 0.9;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0);
+    }
+  }
+  .cursor-ripple {
+    position: fixed;
+    border: 1.5px solid rgba(0, 221, 200, 0.7);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999996;
+    transform: translate(-50%, -50%) scale(0);
+    animation: rippleOut 0.65s ease-out forwards;
+  }
+  @keyframes rippleOut {
+    0% {
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(6);
+      opacity: 0;
+    }
+  }
+}

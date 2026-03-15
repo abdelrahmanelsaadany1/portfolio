@@ -1,0 +1,147 @@
+/* PROJECTS */
+#projects-section {
+  background: radial-gradient(
+    ellipse 70% 50% at 0% 50%,
+    rgba(48, 205, 207, 0.035) 0%,
+    transparent 65%
+  );
+}
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 28px;
+  max-width: 1200px;
+  width: 100%;
+}
+.project-card {
+  background: rgba(13, 14, 16, 0.75);
+  border: 1px solid rgba(48, 205, 207, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  transition:
+    border-color 0.4s,
+    box-shadow 0.4s,
+    transform 0.3s;
+  cursor: pointer;
+}
+.project-card:hover {
+  border-color: rgba(48, 205, 207, 0.3);
+  box-shadow:
+    0 0 40px rgba(48, 205, 207, 0.08),
+    0 24px 60px rgba(0, 0, 0, 0.6);
+  transform: translateY(-6px);
+}
+.project-thumb {
+  width: 100%;
+  height: 200px;
+  background: rgba(48, 205, 207, 0.04);
+  border-bottom: 1px solid rgba(48, 205, 207, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.project-thumb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 6px,
+    rgba(48, 205, 207, 0.018) 6px,
+    rgba(48, 205, 207, 0.018) 7px
+  );
+}
+.project-thumb .corner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: var(--teal);
+  border-style: solid;
+  opacity: 0.5;
+  transition: opacity 0.3s;
+}
+.project-card:hover .corner {
+  opacity: 1;
+}
+.corner.tl {
+  top: 10px;
+  left: 10px;
+  border-width: 2px 0 0 2px;
+}
+.corner.br {
+  bottom: 10px;
+  right: 10px;
+  border-width: 0 2px 2px 0;
+}
+.project-body {
+  padding: 26px 24px 24px;
+}
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.project-tag {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.52rem;
+  letter-spacing: 2px;
+  padding: 4px 10px;
+  border: 1px solid rgba(48, 205, 207, 0.22);
+  border-radius: 2px;
+  color: rgba(48, 205, 207, 0.7);
+  text-transform: uppercase;
+  background: rgba(48, 205, 207, 0.04);
+}
+.project-body h3 {
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  color: #fff;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+}
+.project-body p {
+  font-family: Arial, sans-serif;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.7;
+  margin: 0 0 20px;
+}
+.project-links {
+  display: flex;
+  gap: 12px;
+}
+.project-link {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.58rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+.project-link.primary {
+  background: rgba(48, 205, 207, 0.1);
+  border: 1px solid rgba(48, 205, 207, 0.4);
+  color: var(--teal);
+}
+.project-link.primary:hover {
+  background: rgba(48, 205, 207, 0.18);
+  box-shadow: 0 0 20px rgba(48, 205, 207, 0.2);
+}
+.project-link.secondary {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.45);
+}
+.project-link.secondary:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.75);
+}

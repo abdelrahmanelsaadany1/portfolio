@@ -1,0 +1,60 @@
+/* ═══════════════════════════════════════════════════
+   SECTOR_01 — Abdelrahman Elsaadany Portfolio
+   PREMIUM REMASTER — Cinematic · Immersive · Award-level
+   Accent: #00ddc8 · Display: Rajdhani + Share Tech Mono
+═══════════════════════════════════════════════════ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --void: #02050a;
+  --teal: #00ddc8;
+  --teal-05: rgba(0, 221, 200, 0.05);
+  --teal-10: rgba(0, 221, 200, 0.1);
+  --teal-18: rgba(0, 221, 200, 0.18);
+  --teal-30: rgba(0, 221, 200, 0.3);
+  --teal-60: rgba(0, 221, 200, 0.6);
+  --glass: rgba(2, 10, 20, 0.88);
+  --border: rgba(0, 221, 200, 0.12);
+  --text: rgba(224, 232, 228, 0.92);
+  --dim: rgba(224, 232, 228, 0.45);
+  --faint: rgba(224, 232, 228, 0.14);
+  --nav-h: 76px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --font-mono: "Share Tech Mono", monospace;
+  --font-ui: "Rajdhani", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #03060e;
+  color: var(--text);
+  font-family: var(--font-ui);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.back-vid {
+  display: none;
+}
+.container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.blue-name {
+  color: var(--teal);
+}
