@@ -1,0 +1,104 @@
+PROJECT CONTEXT:
+I have a personal portfolio website with this design system:
+- Background: #03060e (near-black deep navy)
+- Primary accent: #00ddc8 (teal/cyan)
+- Text: rgba(224, 232, 228, 0.92) (off-white)
+- Display font: Rajdhani 700
+- Mono font: Share Tech Mono
+- Aesthetic: deep space / sci-fi terminal / constellation map
+- Glass panels: rgba(2, 8, 18, 0.82) + backdrop-filter blur(22px)
+- Borders: 1px solid rgba(0, 221, 200, 0.12)
+- Everything glows with teal box-shadow
+- Animations use requestAnimationFrame or GSAP
+- No frameworks — pure HTML, CSS, vanilla JS
+
+REFERENCE CONCEPT I LOVE:
+I have seen a contact form where the HTML form inputs (name, email, checkbox, submit) are overlaid on a large SVG canvas. The SVG contains animated mechanical machines — gears, pulleys, a spray hand, a grabbing hand, scales, a car, timing chains, spiral springs, weight objects — all connected together. As the user interacts with the form fields, the machines react:
+- Typing a valid name → gears start spinning, which drives a piston, which powers a spray gun that slowly paints the submit button visible
+- Typing a valid email → a spiral spring winds up, a hammer strikes, a grabbing hand closes, a car launches on a ramp
+- Checking a checkbox → a pulley system pulls a rope that rotates the submit button into place
+- All conditions met + submit clicked → all SVG elements fade out randomly with staggered opacity
+
+The key idea: the form fields are invisible inputs floating over a large SVG mechanical illustration. Filling the form DRIVES the machines. The machines are the visual feedback. GSAP handles all animation. The SVG is pointer-events:none so inputs work normally underneath.
+
+YOUR TASK:
+Create a completely new version of this concept adapted to my theme. Same core idea — HTML form inputs overlaid on a large SVG canvas with interconnected animated machines that react to form interaction — but completely redesigned to match my dark sci-fi space theme.
+
+SPECIFIC REQUIREMENTS:
+
+1. COLOR SCHEME:
+- Background: #03060e
+- SVG strokes: #00ddc8 (teal) with varying opacity
+- SVG fills: rgba(0, 221, 200, 0.08) for panels, #00ddc8 for active elements
+- Glowing effects: filter: drop-shadow(0 0 6px #00ddc8) on active SVG parts
+- White/off-white: rgba(224, 232, 228, 0.9) for secondary elements
+
+2. THEME-APPROPRIATE MACHINES (replace the mechanical workshop machines with space/sci-fi equivalents):
+Instead of gears + spray gun + car ramp, use machines like:
+- A satellite dish that rotates and locks on signal when name is valid
+- Antenna arrays that extend/retract
+- A radar sweep circle that activates
+- Circuit board traces that illuminate path by path
+- A waveform oscilloscope that goes from flat to active sine wave
+- Orbital rings that start spinning around a planet
+- A telescope that extends and focuses
+- Energy coils / tesla coil arcs between nodes
+- Particle accelerator ring with a particle traveling around it
+- A signal tower that pulses outward rings when activated
+- Countdown display segments that fill in
+- A docking mechanism that locks two pieces together
+
+3. FORM FIELDS (same 4 fields):
+- Name input → triggers machine A
+- Email input → triggers machine B  
+- Checkbox (agree) → triggers machine C / repositions submit
+- Submit button → hidden/invisible until conditions met, revealed by machine animations
+
+4. SVG SETUP:
+- viewBox="0 0 1000 1000" or wider
+- Form container absolutely positioned over SVG, centered
+- SVG is pointer-events: none
+- Inputs are minimal — dark background, teal border on focus, teal border when valid
+- Input placeholder text in Share Tech Mono font
+- Valid state: border becomes full teal with glow
+
+5. ANIMATION REQUIREMENTS (GSAP):
+- All SVG animations use GSAP timelines
+- Machines should have idle/ambient animations even before interaction
+- Active machines should have satisfying mechanical feedback
+- Connecting lines between machines should draw themselves (stroke-dashoffset)
+- Particle effects along paths when machines are active
+- On submit (all valid): SVG elements dissolve with staggered random opacity fade, then form submits
+
+6. SPECIFIC INTERACTION MAPPING:
+- Name valid (>3 chars) → satellite dish rotates to locked position, radar sweep activates, circuit traces light up path to email field
+- Name invalid → dish returns to searching position, radar goes dark, traces dim
+- Email valid (regex) → oscilloscope waveform animates from flat to active, orbital rings begin spinning, energy coils arc
+- Email invalid → waveform flattens, rings slow to stop
+- Checkbox checked → docking mechanism locks, submit button rotates/slides into final position
+- All valid → full system "ONLINE" state — all machines active simultaneously, ambient particle flow across all connections
+- Submit click (all valid) → "TRANSMISSION INITIATED" sequence — machines one by one power down with particle burst, SVG fades, form disappears
+
+7. LAYOUT:
+- Container fixed, centered on screen
+- Form inputs stacked vertically, width ~270px
+- SVG canvas ~1000px wide, positioned absolutely behind/around form
+- On mobile: SVG hidden or simplified, form inputs only
+
+8. CODE REQUIREMENTS:
+- Pure HTML + CSS + vanilla JS
+- GSAP 3 loaded from CDN (gsap.min.js)
+- Single HTML file with inline SVG
+- No external dependencies except GSAP
+- Commented code explaining each machine section
+- layoutPreparation() function to set initial positions
+- Each machine has its own createXxxTimeline() function
+- State object tracking: nameValid, emailValid, checkboxChecked, submitReady
+
+9. QUALITY BAR:
+- This should look like it belongs on an Awwwards site
+- The machines should feel physically connected — when machine A moves, it should visually drive machine B through a visible connector (line, path, chain)
+- Teal glow should intensify as more fields are completed — the whole canvas gets brighter
+- The submit button should feel earned — it's dim/invisible until the user completes the form
+
+Generate the complete HTML file with all SVG, CSS, and JavaScript. Make it production-ready and visually impressive.
