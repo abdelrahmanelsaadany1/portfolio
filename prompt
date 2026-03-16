@@ -398,3 +398,310 @@ Everything in ONE HTML file with inline CSS and inline JS"**
 
 
 The reason the first character was better is it was drawn entirely on Canvas with proper ctx.save()/ctx.restore(), gradient fills, quadratic bezier legs, and was redrawn every single frame — giving it smooth organic movement. The later versions tried SVG attributes which are jerky and limited. Always use Canvas 2D for the character.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Saadany</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html, body {
+    width:100%; height:100%;
+    overflow:hidden;
+    background:#f5f2ee;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /*
+    #stage holds character + word as one unit.
+    It starts off-screen left, slides to center.
+  */
+  #stage {
+    display: flex;
+    align-items: center;   /* vertically center char with word midline */
+    position: relative;
+    will-change: transform;
+  }
+
+  /* Character SVG container — no gap between it and the word */
+  #charWrap {
+    flex-shrink: 0;
+    /* shift down so character stands at word baseline level */
+    align-self: flex-end;
+    margin-bottom: 0.08em;  /* fine-tune vertical alignment */
+    position: relative;
+  }
+
+  #charWrap svg {
+    display: block;
+    overflow: visible;
+  }
+
+  #word {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(64px, 11vw, 150px);
+    letter-spacing: -.02em;
+    color: #1c1a22;
+    line-height: 1;
+    user-select: none;
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+
+  <div id="charWrap">
+    <!--
+      SVG coordinate space:
+        - Origin (0,0) = bottom-center of feet
+        - Character is drawn UPWARD (negative Y)
+        - RIGHT edge of SVG (x=42) is where the hands press the S
+        - Total height roughly 120px at 1:1 scale
+    -->
+    <svg id="charSvg" width="60" height="130"
+         viewBox="-30 -130 72 140"
+         xmlns="http://www.w3.org/2000/svg">
+
+      <!-- ── LEGS (attached to body bottom center) ───────────────── -->
+      <!-- Left leg: hip at (-8, -32), foot at bottom -->
+      <line id="legL"
+            x1="-8" y1="-32"
+            x2="-10" y2="-4"
+            stroke="#2a2520" stroke-width="8" stroke-linecap="round"/>
+      <!-- Right leg: hip at (8, -32) -->
+      <line id="legR"
+            x1="8" y1="-32"
+            x2="10" y2="-4"
+            stroke="#2a2520" stroke-width="8" stroke-linecap="round"/>
+
+      <!-- Feet (shoes) -->
+      <ellipse id="footL" cx="-10" cy="0" rx="11" ry="5.5"
+               fill="#ece0cc" stroke="#2a2520" stroke-width="1.8"/>
+      <ellipse id="footR" cx="10"  cy="0" rx="11" ry="5.5"
+               fill="#ece0cc" stroke="#2a2520" stroke-width="1.8"/>
+
+      <!-- ── BODY ────────────────────────────────────────────────── -->
+      <!-- Body: from y=-90 to y=-34, centered, leaning right -->
+      <rect id="body"
+            x="-20" y="-92" width="40" height="58" rx="16"
+            fill="url(#bodyG)" stroke="#2a2520" stroke-width="2.2"/>
+      <!-- Belly oval highlight -->
+      <ellipse cx="0" cy="-62" rx="12" ry="8" fill="rgba(255,255,255,0.3)"/>
+
+      <!-- ── ARMS — both reach RIGHT to press the S ─────────────── -->
+      <!--
+        Shoulder L: (-20, -78)  →  hand at (42, -72)   upper arm
+        Shoulder R: (-20, -60)  →  hand at (42, -56)   lower arm
+        Both hands at x=42 (right edge) = touching the S
+      -->
+      <line id="armL"
+            x1="-20" y1="-78"
+            x2="42"  y2="-72"
+            stroke="#2a2520" stroke-width="6.5" stroke-linecap="round"/>
+      <circle id="handL" cx="42" cy="-72" r="6"
+              fill="#f0e8d8" stroke="#2a2520" stroke-width="1.9"/>
+
+      <line id="armR"
+            x1="-20" y1="-60"
+            x2="42"  y2="-56"
+            stroke="#2a2520" stroke-width="6.5" stroke-linecap="round"/>
+      <circle id="handR" cx="42" cy="-56" r="6"
+              fill="#f0e8d8" stroke="#2a2520" stroke-width="1.9"/>
+
+      <!-- ── HEAD ───────────────────────────────────────────────── -->
+      <circle cx="0" cy="-110" r="20"
+              fill="url(#headG)" stroke="#2a2520" stroke-width="2.2"/>
+
+      <!-- Eyes — looking RIGHT -->
+      <circle cx="-7" cy="-112" r="5"   fill="white" stroke="#2a2520" stroke-width="1.5"/>
+      <circle cx="7"  cy="-112" r="5"   fill="white" stroke="#2a2520" stroke-width="1.5"/>
+      <!-- Pupils shifted right -->
+      <circle id="pupL" cx="-5"  cy="-112" r="2.8" fill="#1c1a22"/>
+      <circle id="pupR" cx="9"   cy="-112" r="2.8" fill="#1c1a22"/>
+      <!-- Shine -->
+      <circle cx="-6"  cy="-114" r="1.2" fill="rgba(255,255,255,0.92)"/>
+      <circle cx="8"   cy="-114" r="1.2" fill="rgba(255,255,255,0.92)"/>
+
+      <!-- Angry brows (pushing effort) -->
+      <line x1="-13" y1="-121" x2="-3" y2="-118"
+            stroke="#2a2520" stroke-width="2.2" stroke-linecap="round"/>
+      <line x1="13"  y1="-121" x2="3"  y2="-118"
+            stroke="#2a2520" stroke-width="2.2" stroke-linecap="round"/>
+
+      <!-- Gritted mouth -->
+      <path id="mouthPath"
+            d="M -6 -104 L 6 -104"
+            fill="none" stroke="#2a2520" stroke-width="2.2" stroke-linecap="round"/>
+
+      <!-- Ground shadow -->
+      <ellipse cx="0" cy="7" rx="20" ry="4" fill="rgba(0,0,0,0.08)"/>
+
+      <defs>
+        <linearGradient id="bodyG" x1="0" y1="-92" x2="0" y2="-34" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stop-color="#f8f3ec"/>
+          <stop offset="100%" stop-color="#e8d9c4"/>
+        </linearGradient>
+        <linearGradient id="headG" x1="0" y1="-130" x2="0" y2="-90" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stop-color="#f8f3ec"/>
+          <stop offset="100%" stop-color="#e8d9c4"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+
+  <div id="word">Saadany</div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  const stage   = document.getElementById('stage');
+  const legL    = document.getElementById('legL');
+  const legR    = document.getElementById('legR');
+  const footL   = document.getElementById('footL');
+  const footR   = document.getElementById('footR');
+  const charSvg = document.getElementById('charSvg');
+
+  let frame   = 0;
+  let running = false;
+
+  // ── Leg animation: tight stride close to body center ──────────────
+  // Hips stay fixed at (-8,-32) and (8,-32).
+  // Only feet swing forward/back by a small amount.
+  function animLegs () {
+    if (!running) return;
+    frame++;
+
+    const s = Math.sin(frame * 0.30);   // stride oscillation
+
+    // Left leg — swings opposite to right
+    const lx = -8 + s * 9;
+    const ly = -4 + Math.abs(s) * 10;
+    legL.setAttribute('x2', lx);
+    legL.setAttribute('y2', ly);
+    footL.setAttribute('cx', lx);
+    footL.setAttribute('cy', ly + 4);
+
+    // Right leg — opposite phase
+    const rx =  8 - s * 9;
+    const ry = -4 + Math.abs(s) * 10;
+    legR.setAttribute('x2', rx);
+    legR.setAttribute('y2', ry);
+    footR.setAttribute('cx', rx);
+    footR.setAttribute('cy', ry + 4);
+
+    // Slight body bob — pivot the SVG up/down
+    charSvg.style.transform = `translateY(${Math.sin(frame * 0.30) * 2.5}px)`;
+
+    requestAnimationFrame(animLegs);
+  }
+
+  // ── On arrival: plant feet, recoil arms, squash ───────────────────
+  function onArrived () {
+    running = false;
+
+    // Plant feet symmetrically under body
+    legL.setAttribute('x2', '-10');  legL.setAttribute('y2', '-4');
+    legR.setAttribute('x2',  '10');  legR.setAttribute('y2', '-4');
+    footL.setAttribute('cx', '-10'); footL.setAttribute('cy', '0');
+    footR.setAttribute('cx',  '10'); footR.setAttribute('cy', '0');
+    charSvg.style.transform = '';
+
+    // Quick squash-and-stretch on the whole stage
+    gsap.fromTo(stage,
+      { scaleX: 1.15, scaleY: 0.88 },
+      { scaleX: 1,    scaleY: 1,
+        duration: 0.65,
+        ease: 'elastic.out(1.1, 0.4)',
+        transformOrigin: 'center center' }
+    );
+  }
+
+  // ── Boot ──────────────────────────────────────────────────────────
+  function go () {
+    // Measure stage (char + word) so we can center it
+    const stageW  = stage.offsetWidth;
+    const centerX = (window.innerWidth  - stageW) / 2;
+    const centerY = (window.innerHeight - stage.offsetHeight) / 2;
+
+    // Position stage off-screen to the LEFT
+    gsap.set(stage, {
+      position: 'fixed',
+      top:  centerY,
+      left: -stageW - 80,
+    });
+
+    // Start leg animation
+    running = true;
+    animLegs();
+
+    // Slide everything to horizontal center
+    gsap.to(stage, {
+      left: centerX,
+      duration: 1.15,
+      ease: 'power2.out',
+      onComplete: onArrived,
+    });
+  }
+
+  // Wait for font render
+  setTimeout(go, 350);
+}());
+</script>
+</body>
+</html>
