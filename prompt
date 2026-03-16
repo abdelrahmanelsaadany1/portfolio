@@ -102,3 +102,80 @@ Instead of gears + spray gun + car ramp, use machines like:
 - The submit button should feel earned — it's dim/invisible until the user completes the form
 
 Generate the complete HTML file with all SVG, CSS, and JavaScript. Make it production-ready and visually impressive.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+The Final Intro Prompt for Claude
+Role: You are an expert Creative Developer specializing in Three.js and GSAP.
+
+Task: Create a cinematic, physics-based intro for "ABDELRAHMAN ELSAADANY".
+
+The Scene:
+
+The Character: Design a 3D mascot (inspired by the Ribbit aesthetic—think a playful, striped "pill" shape with expressive eyes).
+
+The Action: The name starts off-screen. The character enters from the left, pushing the letter "A".
+
+The Momentum: As the character pushes, the name should slide toward the center of the screen.
+
+The "Squash": Implement a "compression" effect—when the character pushes hard, the space between the letters should tighten (staggered delay), and when it stops in the center, the letters should "spring" back to their natural spacing.
+
+Technical Requirements:
+
+Framework: Three.js for the 3D environment and GSAP for the timeline orchestration.
+
+Typography: Use a high-contrast Serif font. Split the name into individual meshes so each letter responds to the push.
+
+Physics: Simulate the "heavy" feeling of the name. The character should lean forward to show effort while moving.
+
+Style: Clean white background, a vertical lavender bar on the left.
+
+Code Standards: * Provide the full HTML/SCSS/JS.
+
+Remove all comments from the SCSS blocks.
+
+Map the name characters manually in the logic (const name = [...])—do not use automated mapping.
+
+Goal: Create a high-end "hero" intro that makes the name "ABDELRAHMAN ELSAADANY" feel like a physical, interactive object delivered by a playful character.
