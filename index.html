@@ -240,188 +240,77 @@
     <div class="section-divider"></div>
 
     <!-- ═══════════════════════════════════════════
-           PROJECTS — 3-card focus carousel
+           PROJECTS — Cinematic filmstrip
       ═══════════════════════════════════════════ -->
-    <section class="section-page proj-section" id="projects-section">
-      <div class="section-heading reveal">
-        <h2>Featured <span>Projects</span></h2>
-        <span class="sec-line"></span>
-      </div>
-
-      <div class="proj-viewport" id="projViewport">
-        <div class="proj-track" id="projTrack">
-          <div class="proj-card" data-index="0">
-            <div class="proj-card-inner">
-              <div class="proj-card-top">
-                <span class="proj-emoji">🏪</span>
-                <span class="proj-live-badge">LIVE</span>
-              </div>
-              <div class="proj-tags">
-                <span class="project-tag">ASP.NET Core</span>
-                <span class="project-tag">Angular</span>
-                <span class="project-tag">SQL Server</span>
-                <span class="project-tag">Stripe</span>
-              </div>
-              <h3 class="proj-title">E-Commerce Platform</h3>
-              <p class="proj-desc">
-                Full-stack e-commerce with catalog, cart, Stripe checkout, order
-                management and admin dashboard.
-              </p>
-              <div class="proj-links">
-                <a href="#" class="proj-btn-live"
-                  ><i class="bx bx-link-external"></i> Live Demo</a
-                >
-                <a href="#" class="proj-btn-github"
-                  ><i class="bx bxl-github"></i> GitHub</a
-                >
-              </div>
-            </div>
-          </div>
-
-          <div class="proj-card" data-index="1">
-            <div class="proj-card-inner">
-              <div class="proj-card-top">
-                <span class="proj-emoji">📋</span>
-                <span class="proj-live-badge">LIVE</span>
-              </div>
-              <div class="proj-tags">
-                <span class="project-tag">.NET</span>
-                <span class="project-tag">Angular</span>
-                <span class="project-tag">CQRS</span>
-                <span class="project-tag">SignalR</span>
-              </div>
-              <h3 class="proj-title">Task Management App</h3>
-              <p class="proj-desc">
-                Project tracker with real-time updates, role-based access and
-                drag-and-drop Kanban board.
-              </p>
-              <div class="proj-links">
-                <a href="#" class="proj-btn-live"
-                  ><i class="bx bx-link-external"></i> Live Demo</a
-                >
-                <a href="#" class="proj-btn-github"
-                  ><i class="bx bxl-github"></i> GitHub</a
-                >
-              </div>
-            </div>
-          </div>
-
-          <div class="proj-card" data-index="2">
-            <div class="proj-card-inner">
-              <div class="proj-card-top">
-                <span class="proj-emoji">💬</span>
-                <span class="proj-live-badge">LIVE</span>
-              </div>
-              <div class="proj-tags">
-                <span class="project-tag">SignalR</span>
-                <span class="project-tag">C#</span>
-                <span class="project-tag">Redis</span>
-                <span class="project-tag">JavaScript</span>
-              </div>
-              <h3 class="proj-title">Real-Time Chat System</h3>
-              <p class="proj-desc">
-                WebSocket-powered chat with private rooms, typing indicators,
-                read receipts and message history.
-              </p>
-              <div class="proj-links">
-                <a href="#" class="proj-btn-live"
-                  ><i class="bx bx-link-external"></i> Live Demo</a
-                >
-                <a href="#" class="proj-btn-github"
-                  ><i class="bx bxl-github"></i> GitHub</a
-                >
-              </div>
-            </div>
-          </div>
-
-          <div class="proj-card" data-index="3">
-            <div class="proj-card-inner">
-              <div class="proj-card-top">
-                <span class="proj-emoji">🔐</span>
-              </div>
-              <div class="proj-tags">
-                <span class="project-tag">ASP.NET</span>
-                <span class="project-tag">Identity</span>
-                <span class="project-tag">OAuth2</span>
-                <span class="project-tag">JWT</span>
-              </div>
-              <h3 class="proj-title">Auth &amp; Identity Server</h3>
-              <p class="proj-desc">
-                Centralized auth service with OAuth2, social login, TOTP 2FA,
-                and refresh token rotation.
-              </p>
-              <div class="proj-links">
-                <a href="#" class="proj-btn-github"
-                  ><i class="bx bxl-github"></i> GitHub</a
-                >
-              </div>
-            </div>
-          </div>
-
-          <div class="proj-card" data-index="4">
-            <div class="proj-card-inner">
-              <div class="proj-card-top">
-                <span class="proj-emoji">📊</span>
-              </div>
-              <div class="proj-tags">
-                <span class="project-tag">.NET</span>
-                <span class="project-tag">Hangfire</span>
-                <span class="project-tag">Chart.js</span>
-                <span class="project-tag">Angular</span>
-              </div>
-              <h3 class="proj-title">Analytics Dashboard</h3>
-              <p class="proj-desc">
-                Real-time analytics platform with background job processing,
-                live charts, and scheduled PDF reports.
-              </p>
-              <div class="proj-links">
-                <a href="#" class="proj-btn-github"
-                  ><i class="bx bxl-github"></i> GitHub</a
-                >
-              </div>
-            </div>
-          </div>
-
-          <div class="proj-card" data-index="5">
-            <div class="proj-card-inner">
-              <div class="proj-card-top">
-                <span class="proj-emoji">🌐</span>
-              </div>
-              <div class="proj-tags">
-                <span class="project-tag">Microservices</span>
-                <span class="project-tag">RabbitMQ</span>
-                <span class="project-tag">Docker</span>
-                <span class="project-tag">Ocelot</span>
-              </div>
-              <h3 class="proj-title">Microservices Gateway</h3>
-              <p class="proj-desc">
-                API gateway with Consul service discovery, RabbitMQ messaging,
-                and fully containerized deployment.
-              </p>
-              <div class="proj-links">
-                <a href="#" class="proj-btn-github"
-                  ><i class="bx bxl-github"></i> GitHub</a
-                >
-              </div>
-            </div>
-          </div>
+    <section class="section-page pw-section" id="projects-section">
+      <!-- heading row -->
+      <div class="pw-top">
+        <div class="pw-heading-block">
+          <h2 class="pw-heading"><span>Projects</span></h2>
+          <span class="pw-heading-line"></span>
+        </div>
+        <div class="pw-counter-block">
+          <span class="pw-cur" id="pwCur">01</span>
+          <svg class="pw-arc-svg" viewBox="0 0 48 48">
+            <circle
+              cx="24"
+              cy="24"
+              r="20"
+              fill="none"
+              stroke="rgba(48,205,207,0.12)"
+              stroke-width="1"
+            />
+            <circle
+              id="pwArcCircle"
+              cx="24"
+              cy="24"
+              r="20"
+              fill="none"
+              stroke="#30cdcf"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-dasharray="125.66"
+              stroke-dashoffset="125.66"
+              transform="rotate(-90 24 24)"
+            />
+          </svg>
+          <span class="pw-tot" id="pwTot">08</span>
         </div>
       </div>
 
-      <!-- nav dots — large hit area, no arrows -->
-      <div class="proj-dots" id="projDots">
-        <button
-          class="proj-dot active"
-          data-dot="0"
-          aria-label="Project 1"
-        ></button>
-        <button class="proj-dot" data-dot="1" aria-label="Project 2"></button>
-        <button class="proj-dot" data-dot="2" aria-label="Project 3"></button>
-        <button class="proj-dot" data-dot="3" aria-label="Project 4"></button>
-        <button class="proj-dot" data-dot="4" aria-label="Project 5"></button>
-        <button class="proj-dot" data-dot="5" aria-label="Project 6"></button>
+      <!-- filmstrip viewport -->
+      <div class="pw-film-outer" id="pwOuter">
+        <div class="pw-film-track" id="pwTrack">
+          <!-- cards injected by JS -->
+        </div>
       </div>
+
+      <!-- dot nav -->
+      <div class="pw-dots" id="pwDots"></div>
     </section>
+
+    <!-- MODAL -->
+    <div id="modal-overlay">
+      <div id="modal">
+        <button class="m-close" id="m-close">
+          <svg viewBox="0 0 12 12">
+            <line x1="1" y1="1" x2="11" y2="11" />
+            <line x1="11" y1="1" x2="1" y2="11" />
+          </svg>
+        </button>
+        <div class="m-art" id="m-art"></div>
+        <div class="m-body">
+          <div class="m-meta">
+            <span class="m-num" id="m-num"></span>
+            <span class="m-badge" id="m-badge">Live</span>
+          </div>
+          <div class="m-title" id="m-title"></div>
+          <div class="m-desc" id="m-desc"></div>
+          <div class="m-tags" id="m-tags"></div>
+          <div class="m-links" id="m-links"></div>
+        </div>
+      </div>
+    </div>
 
     <div class="section-divider"></div>
 
@@ -459,6 +348,10 @@
           </p>
 
           <div class="ct-contact-links">
+            <!-- ── paste this inside .ct-contact-links, replacing the old 3 items ── -->
+
+            <!-- ── paste this inside .ct-contact-links, replacing the old items ── -->
+
             <div class="contact-item">
               <div class="contact-item-icon">
                 <i class="bx bx-envelope"></i>
@@ -466,16 +359,14 @@
               <div class="contact-item-text">
                 <span class="contact-item-label">Email</span>
                 <a
-                  href="/cdn-cgi/l/email-protection#9cfdfef8f9f0eefdf4f1fdf2f9f0effdfdf8fdf2e5ada4dcfbf1fdf5f0b2fff3f1"
+                  href="mailto:abdelrahmanelsaadany18@gmail.com"
                   class="contact-item-val"
-                  ><span
-                    class="__cf_email__"
-                    data-cfemail="2f4e4d4b4a435d4e47424e414a435c4e4e4b4e41561e176f48424e4643014c4042"
-                    >[email&#160;protected]</span
-                  ></a
                 >
+                  abdelrahmanelsaadany18@gmail.com
+                </a>
               </div>
             </div>
+
             <div class="contact-item">
               <div class="contact-item-icon">
                 <i class="bx bxl-linkedin"></i>
@@ -487,12 +378,16 @@
                   target="_blank"
                   rel="noopener"
                   class="contact-item-val"
-                  >abdelrahman-elsaadany-a20</a
                 >
+                  LinkedIn Profile
+                </a>
               </div>
             </div>
+
             <div class="contact-item">
-              <div class="contact-item-icon"><i class="bx bxl-github"></i></div>
+              <div class="contact-item-icon">
+                <i class="bx bxl-github"></i>
+              </div>
               <div class="contact-item-text">
                 <span class="contact-item-label">GitHub</span>
                 <a
@@ -500,15 +395,21 @@
                   target="_blank"
                   rel="noopener"
                   class="contact-item-val"
-                  >abdelrahmanelsaadany1</a
                 >
+                  GitHub Profile
+                </a>
               </div>
             </div>
+
             <div class="contact-item">
-              <div class="contact-item-icon"><i class="bx bx-map"></i></div>
+              <div class="contact-item-icon">
+                <i class="bx bx-map"></i>
+              </div>
               <div class="contact-item-text">
                 <span class="contact-item-label">Location</span>
-                <span class="contact-item-val">Egypt · Open to Remote</span>
+                <span class="contact-item-val"
+                  >Alexandria, Egypt · Open to Remote & Relocation</span
+                >
               </div>
             </div>
           </div>
@@ -1056,6 +957,7 @@
     <script src="js/spider-hang-cv.js"></script>
     <script src="js/cursor-cloud.js"></script>
     <script src="js/sections-core.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="js/contact-form.js"></script>
     <script src="the road/about-timeline.js"></script>
   </body>

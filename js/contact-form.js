@@ -5,6 +5,22 @@
 (function () {
   "use strict";
 
+  /* ── EmailJS config ── */
+  const EMAILJS_PUBLIC_KEY = "Ql1HPMPlLD2I-OK9q";
+  const EMAILJS_SERVICE_ID = "service_fwksmhj";
+  const EMAILJS_TEMPLATE_ID = "template_kslv46h";
+
+  /* ── Init EmailJS ── */
+  if (window.emailjs) {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+  } else {
+    const sdk = document.createElement("script");
+    sdk.src =
+      "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
+    sdk.onload = () => emailjs.init(EMAILJS_PUBLIC_KEY);
+    document.head.appendChild(sdk);
+  }
+
   /* ── DOM guards ── */
   const formWrap = document.getElementById("ct-form-wrap");
   const flashEl = document.getElementById("ct-flash");
@@ -119,7 +135,7 @@
     G.to("#ct-core", { opacity: coreAlp, duration: 0.9 });
   }
 
-  /* ── Sync UI (dots, progress bar, button) ── */
+  /* ── Sync UI ── */
   const LABELS = ["0 / 3", "1 / 3", "2 / 3", "Ready →"];
 
   function syncUI() {
@@ -166,7 +182,6 @@
   }
 
   /* ── Hint helpers ── */
-  const timers = {};
   function showHint(id, msg) {
     const el = document.getElementById(id);
     if (el) {
@@ -183,112 +198,201 @@
     if (!el) return;
     el.classList.toggle("valid", state === "valid");
     el.classList.toggle("error", state === "error");
+    el.classList.toggle("none", state === "none");
   }
 
-  /* ── Field: Name ── */
-  document.getElementById("ct-in").addEventListener("input", (e) => {
-    clearTimeout(timers.n);
-    hideHint("ct-hn");
-    const v = e.target.value.trim();
+  /* ════════════════════════════════════════════════════
+     FIELD: NAME
+     — live: clears error as soon as it becomes valid
+     — blur: shows error if left empty or too short
+  ════════════════════════════════════════════════════ */
+  const nameInput = document.getElementById("ct-in");
+
+  nameInput.addEventListener("input", () => {
+    const v = nameInput.value.trim();
     const ok = v.length >= 2;
-    if (ok !== S.name) {
-      S.name = ok;
-      setFieldState("ct-fn", ok ? "valid" : "none");
-      if (ok) {
+    if (ok) {
+      // valid while typing → clear error immediately
+      hideHint("ct-hn");
+      setFieldState("ct-fn", "valid");
+      if (!S.name) {
+        S.name = true;
         placeParticle("a", 270);
         G.to("#ct-pa", { opacity: 1, duration: 0.5 });
         startOrbit("a", 270, 14);
-      } else stopOrbit("a");
-      syncUI();
-    }
-    if (!ok && v.length > 0) {
-      timers.n = setTimeout(() => {
-        setFieldState("ct-fn", "error");
-        showHint("ct-hn", "What should I call you?");
-      }, 800);
+        syncUI();
+      }
     } else {
-      setFieldState("ct-fn", ok ? "valid" : "none");
+      // not valid yet — only clear the green, don't show error while typing
+      if (S.name) {
+        S.name = false;
+        setFieldState("ct-fn", "none");
+        stopOrbit("a");
+        syncUI();
+      }
     }
   });
 
-  /* ── Field: Email ── */
-  document.getElementById("ct-ie").addEventListener("input", (e) => {
-    clearTimeout(timers.e);
-    hideHint("ct-he");
-    const v = e.target.value.trim();
+  nameInput.addEventListener("blur", () => {
+    const v = nameInput.value.trim();
+    if (v.length === 0) {
+      setFieldState("ct-fn", "error");
+      showHint("ct-hn", "Name is required.");
+    } else if (v.length < 2) {
+      setFieldState("ct-fn", "error");
+      showHint("ct-hn", "Name's too short");
+    }
+  });
+
+  /* ════════════════════════════════════════════════════
+     FIELD: EMAIL
+  ════════════════════════════════════════════════════ */
+  const emailInput = document.getElementById("ct-ie");
+
+  emailInput.addEventListener("input", () => {
+    const v = emailInput.value.trim();
     const ok = EMAIL_RE.test(v);
-    if (ok !== S.email) {
-      S.email = ok;
-      setFieldState("ct-fe", ok ? "valid" : "none");
-      if (ok) {
+    if (ok) {
+      hideHint("ct-he");
+      setFieldState("ct-fe", "valid");
+      if (!S.email) {
+        S.email = true;
         placeParticle("b", 0);
         G.to("#ct-pb", { opacity: 1, duration: 0.5 });
         startOrbit("b", 0, 9);
-      } else stopOrbit("b");
-      syncUI();
-    }
-    if (!ok && v.length > 4) {
-      timers.e = setTimeout(() => {
-        setFieldState("ct-fe", "error");
-        showHint("ct-he", "Try name@domain.com");
-      }, 800);
+        syncUI();
+      }
     } else {
-      setFieldState("ct-fe", ok ? "valid" : "none");
+      if (S.email) {
+        S.email = false;
+        setFieldState("ct-fe", "none");
+        stopOrbit("b");
+        syncUI();
+      }
     }
   });
 
-  /* ── Field: Message ── */
-  document.getElementById("ct-im").addEventListener("input", (e) => {
-    clearTimeout(timers.m);
-    hideHint("ct-hm");
-    const v = e.target.value.trim();
+  emailInput.addEventListener("blur", () => {
+    const v = emailInput.value.trim();
+    if (v.length === 0) {
+      setFieldState("ct-fe", "error");
+      showHint("ct-he", "Email is required.");
+    } else if (!EMAIL_RE.test(v)) {
+      setFieldState("ct-fe", "error");
+      showHint("ct-he", "Please enter a valid email address.");
+    }
+  });
+
+  /* ════════════════════════════════════════════════════
+     FIELD: MESSAGE
+  ════════════════════════════════════════════════════ */
+  const msgInput = document.getElementById("ct-im");
+
+  msgInput.addEventListener("input", () => {
+    const v = msgInput.value.trim();
     const ok = v.length >= 10;
-    if (ok !== S.msg) {
-      S.msg = ok;
-      setFieldState("ct-fm", ok ? "valid" : "none");
-      if (ok) {
+    if (ok) {
+      hideHint("ct-hm");
+      setFieldState("ct-fm", "valid");
+      if (!S.msg) {
+        S.msg = true;
         placeParticle("c", 90);
         G.to("#ct-pc", { opacity: 1, duration: 0.5 });
         startOrbit("c", 90, 5.5);
-      } else stopOrbit("c");
-      syncUI();
-    }
-    if (!ok && v.length > 0) {
-      timers.m = setTimeout(() => {
-        setFieldState("ct-fm", "error");
-        showHint("ct-hm", "Tell me a little more");
-      }, 800);
+        syncUI();
+      }
     } else {
-      setFieldState("ct-fm", ok ? "valid" : "none");
+      if (S.msg) {
+        S.msg = false;
+        setFieldState("ct-fm", "none");
+        stopOrbit("c");
+        syncUI();
+      }
+    }
+  });
+
+  msgInput.addEventListener("blur", () => {
+    const v = msgInput.value.trim();
+    if (v.length === 0) {
+      setFieldState("ct-fm", "error");
+      showHint("ct-hm", "Message is required.");
+    } else if (v.length < 10) {
+      setFieldState("ct-fm", "error");
+      showHint("ct-hm", "Too short — tell me a little more.");
     }
   });
 
   /* ── Submit ── */
   document.getElementById("ct-btn").addEventListener("click", () => {
     if (!S.ready || S.busy) return;
+
+    /* Final validation pass before sending */
+    let hasError = false;
+
+    const nv = nameInput.value.trim();
+    if (nv.length < 2) {
+      setFieldState("ct-fn", "error");
+      showHint(
+        "ct-hn",
+        nv.length === 0 ? "Name is required." : "Name's too short",
+      );
+      hasError = true;
+    }
+
+    const ev = emailInput.value.trim();
+    if (!EMAIL_RE.test(ev)) {
+      setFieldState("ct-fe", "error");
+      showHint(
+        "ct-he",
+        ev.length === 0
+          ? "Email is required."
+          : "Please enter a valid email address.",
+      );
+      hasError = true;
+    }
+
+    const mv = msgInput.value.trim();
+    if (mv.length < 10) {
+      setFieldState("ct-fm", "error");
+      showHint(
+        "ct-hm",
+        mv.length === 0
+          ? "Message is required."
+          : "Too short — tell me a little more.",
+      );
+      hasError = true;
+    }
+
+    if (hasError) return;
+
     S.busy = true;
+    const btn = document.getElementById("ct-btn");
+    btn.textContent = "Sending...";
+    btn.setAttribute("disabled", "");
 
-    // ── BACKEND PLACEHOLDER ──────────────────
-    // Formspree — uncomment and replace YOUR_ID:
-    // fetch('https://formspree.io/f/YOUR_ID', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    //   body: JSON.stringify({
-    //     name:    document.getElementById('ct-in').value.trim(),
-    //     email:   document.getElementById('ct-ie').value.trim(),
-    //     message: document.getElementById('ct-im').value.trim()
-    //   })
-    // });
-    // ─────────────────────────────────────────
-
-    runCollision();
+    emailjs
+      .send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        name: nv,
+        email: ev,
+        message: mv,
+      })
+      .then(() => {
+        runCollision();
+      })
+      .catch((err) => {
+        console.error("EmailJS error:", err);
+        btn.textContent = "Transmit Message";
+        btn.removeAttribute("disabled");
+        btn.classList.add("ready");
+        S.busy = false;
+        showHint("ct-hm", "Something went wrong — please try again.");
+      });
   });
 
   /* ── Collision + success sequence ── */
   function runCollision() {
     const tl = G.timeline();
 
-    // Converge particles to center
     tl.call(() => {
       Object.keys(orb).forEach((k) => {
         if (orb[k].tl) orb[k].tl.kill();
@@ -311,7 +415,6 @@
       });
     });
 
-    // Burst
     tl.to(
       "#ct-cburst",
       { opacity: 1, attr: { r: 50 }, duration: 0.13, ease: "power4.out" },
@@ -323,7 +426,6 @@
       0.75,
     );
 
-    // Rays
     tl.call(
       () => {
         G.set("#ct-rays", { opacity: 1 });
@@ -351,7 +453,6 @@
       0.63,
     );
 
-    // Shockwaves
     tl.to("#ct-sw1", { attr: { r: 340 }, opacity: 0.75, duration: 0.09 }, 0.63);
     tl.to("#ct-sw1", { opacity: 0, duration: 0.6, ease: "power2.out" }, 0.72);
     tl.to("#ct-sw2", { attr: { r: 380 }, opacity: 0.45, duration: 0.09 }, 0.73);
@@ -359,7 +460,6 @@
     tl.to("#ct-sw3", { attr: { r: 420 }, opacity: 0.2, duration: 0.09 }, 0.83);
     tl.to("#ct-sw3", { opacity: 0, duration: 0.5 }, 0.92);
 
-    // Ring dies
     tl.to("#ct-rp", { opacity: 0.7, duration: 0.1 }, 0.63);
     tl.to(
       [
@@ -381,13 +481,11 @@
     );
     tl.to(["#ct-pa", "#ct-pb", "#ct-pc"], { opacity: 0, duration: 0.35 }, 0.65);
 
-    // Flash
     if (flashEl) {
       tl.to("#ct-flash", { opacity: 0.14, duration: 0.14 }, 0.63);
       tl.to("#ct-flash", { opacity: 0, duration: 0.7 }, 0.77);
     }
 
-    // Success
     tl.to(
       "#ct-success",
       { opacity: 1, duration: 0.75, ease: "power2.out" },
@@ -401,9 +499,7 @@
     G.to("#ct-success", {
       opacity: 0,
       duration: 0.4,
-      onComplete: () => {
-        successEl.classList.remove("show");
-      },
+      onComplete: () => successEl.classList.remove("show"),
     });
 
     Object.assign(S, {
@@ -426,17 +522,17 @@
     });
     ["ct-fn", "ct-fe", "ct-fm"].forEach((id) => {
       const el = document.getElementById(id);
-      if (el) el.classList.remove("valid", "error");
+      if (el) el.classList.remove("valid", "error", "none");
     });
     ["ct-hn", "ct-he", "ct-hm"].forEach((id) => hideHint(id));
 
     const btn = document.getElementById("ct-btn");
     if (btn) {
+      btn.textContent = "Transmit Message";
       btn.classList.remove("ready");
       btn.setAttribute("disabled", "");
     }
 
-    // Restore ring
     G.set(["#ct-sw1", "#ct-sw2", "#ct-sw3"], { attr: { r: 8 }, opacity: 0 });
     G.set("#ct-cburst", { opacity: 0, attr: { r: 18 } });
     G.set("#ct-rays", { opacity: 0 });
