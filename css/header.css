@@ -256,20 +256,16 @@ header.scrolled {
 }
 
 .nav-brand-name .brand-last {
-  color: var(--teal);
+  color: #30cdcf;
   font-size: clamp(0.62rem, 1.1vw, 0.78rem);
   font-weight: 400;
   letter-spacing: 4px;
   text-transform: uppercase;
   font-family: var(--font-mono);
-  opacity: 0.85;
-  transition:
-    opacity 0.3s ease,
-    letter-spacing 0.4s var(--ease);
+  transition: letter-spacing 0.4s var(--ease);
 }
 
 .nav-brand:hover .nav-brand-name .brand-last {
-  opacity: 1;
   letter-spacing: 5px;
 }
 

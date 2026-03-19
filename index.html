@@ -104,7 +104,7 @@
         <canvas class="spider-canvas" id="spiderCanvas"></canvas>
         <a
           href="resume.pdf"
-          download="Abdelrahman Elsaadany CV.pdf"
+          download="Abdelrahman Elsaadany Resume.pdf"
           class="spider-btn"
           id="spiderBtn"
         >
@@ -139,29 +139,49 @@
     <!-- ═══════════════════════════════════════════
            HERO — spider web + spline
       ═══════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════
+       HERO — spider web + spline
+  ═══════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════
+       HERO — bio + spider web + spline
+  ═══════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════
+       HERO — bio + spider web + spline
+  ═══════════════════════════════════════════ -->
     <section class="hero" id="about">
       <div class="hero-content">
+        <!-- ── Bio text (top 25vh) ── -->
+        <div class="hero-bio">
+          <h1 class="hero-bio-line">
+            Sharpened by 1 year of experience —
+            <span
+              >I build full stack .NET applications from database design and API
+              architecture to Angular UI.</span
+            >
+          </h1>
+        </div>
+
+        <!-- ── Spider web (bottom 25vh) ── -->
         <div class="web-wrap">
           <canvas id="webCanvas"></canvas>
           <div class="web-center-node" id="webCenter">
             <div class="wcn-rings"></div>
             <div class="wcn-inner">
               <span class="wcn-top">I AM A</span>
-              <span class="wcn-main"
-                >FULL<span class="blue-name">-</span><br />STACK</span
-              >
+              <span class="wcn-main">.NET</span>
               <span class="wcn-sub">DEVELOPER</span>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- ── Robot Spline (right 50%) ── -->
       <div class="hero-robot">
         <spline-viewer
           url="https://prod.spline.design/xasrifDpZA-6mgqp/scene.splinecode"
         ></spline-viewer>
       </div>
     </section>
-
     <div class="section-divider"></div>
 
     <!-- ═══════════════════════════════════════════

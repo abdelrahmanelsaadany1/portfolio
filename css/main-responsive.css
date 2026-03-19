@@ -2,9 +2,6 @@
    RESPONSIVE
 ═══════════════════════════════════════════════════ */
 @media (min-width: 1021px) and (max-width: 1260px) {
-  .brand-last {
-    display: none;
-  }
   .c-label {
     font-size: 0.48rem;
     letter-spacing: 2px;
@@ -31,9 +28,6 @@
   }
   .hamburger {
     display: flex;
-  }
-  .brand-last {
-    display: none;
   }
 }
 

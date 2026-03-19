@@ -38,7 +38,9 @@
     introParticles = [];
 
   function resize() {
-    const sz = wrap.offsetWidth;
+    const w = wrap.offsetWidth;
+    const h = wrap.offsetHeight;
+    const sz = Math.min(w, h, 450);
     const dpr = window.devicePixelRatio || 1;
     canvas.width = sz * dpr;
     canvas.height = sz * dpr;

@@ -10,9 +10,13 @@
 
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
-  const CW = 40,
-    CH = 86,
-    BASE_EY = 84;
+
+  /* ── Size: smaller on mobile so spider looks proportional ── */
+  const isMobile = window.innerWidth <= 768;
+  const CW = isMobile ? 32 : 40;
+  const CH = isMobile ? 70 : 86;
+  const BASE_EY = isMobile ? 68 : 84;
+
   canvas.width = CW * dpr;
   canvas.height = CH * dpr;
   canvas.style.width = CW + "px";
@@ -222,7 +226,7 @@
     setTimeout(() => {
       const a = document.createElement("a");
       a.href = "resume.pdf";
-      a.download = "Abdelrahman Elsaadany CV.pdf";
+      a.download = "Abdelrahman Elsaadany Resume.pdf";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -233,5 +237,6 @@
       }, 350);
     }, 750);
   });
+
   animate();
 })();
