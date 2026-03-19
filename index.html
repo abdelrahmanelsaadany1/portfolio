@@ -49,343 +49,430 @@
     <!-- ═══════════════════════════════════════════
          MAIN CONTAINER
     ═══════════════════════════════════════════ -->
-    <div class="container">
-      <video
-        class="back-vid"
-        src="videos/galaxy.mp4"
-        autoplay
-        muted
-        loop
-        playsinline
-      ></video>
 
-      <!-- ── HEADER ── -->
-      <header id="main-header">
-        <a href="#" class="nav-brand">
-          <div class="nav-brand-img-wrap">
-            <img src="images/A.gif" alt="MyLogo" />
-          </div>
-          <span class="nav-brand-name">
-            <span class="brand-first">Abdelrahman</span>
-            <span class="brand-last">Elsaadany</span>
-          </span>
-        </a>
-        <nav class="constellation-nav" aria-label="Main navigation">
-          <div class="constellation-canvas-wrap" id="constWrap">
-            <canvas id="constellation-canvas"></canvas>
-            <div class="c-links" id="cLinks">
-              <a class="c-link" href="#about" data-index="0"
-                ><div class="star"></div>
-                <span class="c-label">About</span></a
-              >
-              <a class="c-link" href="#projects" data-index="1"
-                ><div class="star"></div>
-                <span class="c-label">Projects</span></a
-              >
-              <a class="c-link" href="#contact" data-index="2"
-                ><div class="star"></div>
-                <span class="c-label">Contact</span></a
-              >
-            </div>
-          </div>
-        </nav>
-        <div class="nav-right-group">
-          <div class="nav-socials">
-            <!-- FIX 1: Added missing opening <a tag for LinkedIn -->
-            <a
-              href="https://www.linkedin.com/in/abdelrahman-elsaadany-a20"
-              target="_blank"
-              ><i class="bx bxl-linkedin"></i
-            ></a>
-            <a href="https://github.com/abdelrahmanelsaadany1" target="_blank"
-              ><i class="bx bxl-github"></i
-            ></a>
-          </div>
-
-          <button class="hamburger" id="hamburger" aria-label="Menu">
-            <span></span><span></span><span></span>
-          </button>
+    <!-- ── HEADER ── -->
+    <header id="main-header">
+      <a href="#" class="nav-brand">
+        <div class="nav-brand-img-wrap">
+          <img src="images/A.gif" alt="MyLogo" />
         </div>
-      </header>
-
-      <!-- Spider Hang CV -->
-      <div class="spider-pos" id="spiderPos">
-        <div class="spider-hang" id="spiderHang">
-          <canvas class="spider-canvas" id="spiderCanvas"></canvas>
-          <!-- FIX 2: Added missing opening <a tag for Resume download -->
+        <span class="nav-brand-name">
+          <span class="brand-first">Abdelrahman</span>
+          <span class="brand-last">Elsaadany</span>
+        </span>
+      </a>
+      <nav class="constellation-nav" aria-label="Main navigation">
+        <div class="constellation-canvas-wrap" id="constWrap">
+          <canvas id="constellation-canvas"></canvas>
+          <div class="c-links" id="cLinks">
+            <a class="c-link" href="#about" data-index="0"
+              ><div class="star"></div>
+              <span class="c-label">About</span></a
+            >
+            <a class="c-link" href="#projects" data-index="1"
+              ><div class="star"></div>
+              <span class="c-label">Projects</span></a
+            >
+            <a class="c-link" href="#contact" data-index="2"
+              ><div class="star"></div>
+              <span class="c-label">Contact</span></a
+            >
+          </div>
+        </div>
+      </nav>
+      <div class="nav-right-group">
+        <div class="nav-socials">
           <a
-            href="resume.pdf"
-            download="Abdelrahman Elsaadany CV.pdf"
-            class="spider-btn"
-            id="spiderBtn"
-          >
-            <i class="bx bx-download"></i>
-            <span>RESUME</span>
-          </a>
+            href="https://www.linkedin.com/in/abdelrahman-elsaadany-a20"
+            target="_blank"
+            ><i class="bx bxl-linkedin"></i
+          ></a>
+          <a href="https://github.com/abdelrahmanelsaadany1" target="_blank"
+            ><i class="bx bxl-github"></i
+          ></a>
         </div>
-      </div>
 
-      <!-- ── MOBILE OVERLAY ── -->
-      <div class="mobile-overlay" id="mobileOverlay">
-        <canvas id="mobile-constellation"></canvas>
-        <nav class="mobile-links">
-          <a class="mobile-link" href="#about" onclick="closeMobile()"
-            ><div class="m-star"></div>
-            <span class="m-label">About</span></a
-          >
-          <a class="mobile-link" href="#projects" onclick="closeMobile()"
-            ><div class="m-star"></div>
-            <span class="m-label">Projects</span></a
-          >
-          <a class="mobile-link" href="#contact" onclick="closeMobile()"
-            ><div class="m-star"></div>
-            <span class="m-label">Contact</span></a
-          >
-        </nav>
-        <button class="mobile-back-btn" onclick="closeMobile()">
-          <i class="bx bx-arrow-back"></i><span>Back</span>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
         </button>
       </div>
+    </header>
 
-      <!-- ═══════════════════════════════════════════
+    <!-- Spider Hang CV -->
+    <div class="spider-pos" id="spiderPos">
+      <div class="spider-hang" id="spiderHang">
+        <canvas class="spider-canvas" id="spiderCanvas"></canvas>
+        <a
+          href="resume.pdf"
+          download="Abdelrahman Elsaadany CV.pdf"
+          class="spider-btn"
+          id="spiderBtn"
+        >
+          <i class="bx bx-download"></i>
+          <span>RESUME</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── MOBILE OVERLAY ── -->
+    <div class="mobile-overlay" id="mobileOverlay">
+      <canvas id="mobile-constellation"></canvas>
+      <nav class="mobile-links">
+        <a class="mobile-link" href="#about" onclick="closeMobile()"
+          ><div class="m-star"></div>
+          <span class="m-label">About</span></a
+        >
+        <a class="mobile-link" href="#projects" onclick="closeMobile()"
+          ><div class="m-star"></div>
+          <span class="m-label">Projects</span></a
+        >
+        <a class="mobile-link" href="#contact" onclick="closeMobile()"
+          ><div class="m-star"></div>
+          <span class="m-label">Contact</span></a
+        >
+      </nav>
+      <button class="mobile-back-btn" onclick="closeMobile()">
+        <i class="bx bx-arrow-back"></i><span>Back</span>
+      </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
            HERO — spider web + spline
       ═══════════════════════════════════════════ -->
-      <section class="hero" id="about">
-        <div class="hero-content">
-          <div class="web-wrap">
-            <canvas id="webCanvas"></canvas>
-            <div class="web-center-node" id="webCenter">
-              <div class="wcn-rings"></div>
-              <div class="wcn-inner">
-                <span class="wcn-top">I AM A</span>
-                <span class="wcn-main"
-                  >FULL<span class="blue-name">-</span><br />STACK</span
-                >
-                <span class="wcn-sub">DEVELOPER</span>
-              </div>
+    <section class="hero" id="about">
+      <div class="hero-content">
+        <div class="web-wrap">
+          <canvas id="webCanvas"></canvas>
+          <div class="web-center-node" id="webCenter">
+            <div class="wcn-rings"></div>
+            <div class="wcn-inner">
+              <span class="wcn-top">I AM A</span>
+              <span class="wcn-main"
+                >FULL<span class="blue-name">-</span><br />STACK</span
+              >
+              <span class="wcn-sub">DEVELOPER</span>
             </div>
           </div>
         </div>
-        <div class="hero-robot">
-          <spline-viewer
-            url="https://prod.spline.design/xasrifDpZA-6mgqp/scene.splinecode"
-          ></spline-viewer>
-        </div>
-      </section>
+      </div>
+      <div class="hero-robot">
+        <spline-viewer
+          url="https://prod.spline.design/xasrifDpZA-6mgqp/scene.splinecode"
+        ></spline-viewer>
+      </div>
+    </section>
 
-      <div class="section-divider"></div>
+    <div class="section-divider"></div>
 
-      <!-- ═══════════════════════════════════════════
+    <!-- ═══════════════════════════════════════════
            ABOUT — constellation journey
       ═══════════════════════════════════════════ -->
-      <section class="section-page" id="about-section">
-        <div class="hs-outer" id="hsOuter">
-          <div class="hs-sticky">
-            <div class="hs-top">
-              <h2 class="hs-h2">The <span>Journey</span></h2>
-              <span class="hs-section-tag">// 01 — experience</span>
-            </div>
+    <section class="section-page" id="about-section">
+      <div class="hs-outer" id="hsOuter">
+        <div class="hs-sticky">
+          <div class="hs-top">
+            <h2 class="hs-h2">The <span>Journey</span></h2>
+          </div>
 
-            <div class="hs-progress">
-              <div class="hs-progress-fill" id="hsProgFill"></div>
-            </div>
+          <div class="hs-progress">
+            <div class="hs-progress-fill" id="hsProgFill"></div>
+          </div>
 
-            <div class="hs-viewport" id="hsViewport">
-              <div class="hs-track" id="hsTrack">
-                <!-- SVG constellation canvas is injected by JS -->
-
-                <!-- STAR 1: Arab Computers (current — highest point) -->
-                <div
-                  class="cs-star cs-ac"
-                  id="rnAc"
-                  style="position: absolute"
-                ></div>
-
-                <!-- STAR 2: ITI Internship -->
-                <div
-                  class="cs-star cs-iti"
-                  id="rnIti"
-                  style="position: absolute"
-                ></div>
-
-                <!-- STAR 3: Military — the downfall (lowest point) -->
-                <div
-                  class="cs-star cs-mil"
-                  id="rnMil"
-                  style="position: absolute"
-                ></div>
-
-                <!-- STAR 4: IoT Training -->
-                <div
-                  class="cs-star cs-iot"
-                  id="rnIot"
-                  style="position: absolute"
-                ></div>
-
-                <!-- STAR 5: Alexandria University (foundation) -->
-                <div
-                  class="cs-star cs-asu"
-                  id="rnAsu"
-                  style="position: absolute"
-                ></div>
-              </div>
-              <!-- /hs-track -->
-            </div>
-            <!-- /hs-viewport -->
-
-            <div class="hs-bottom">
-              <div class="hs-dots">
-                <div class="hs-dot hs-dot-ac" id="hsDot0">
-                  <div class="hs-dot-star"></div>
-                  <span class="hs-dot-label">Arab Computers</span>
-                </div>
-
-                <div class="hs-dot hs-dot-iti" id="hsDot1">
-                  <div class="hs-dot-star"></div>
-                  <span class="hs-dot-label">ITI</span>
-                </div>
-
-                <div class="hs-dot hs-dot-mil" id="hsDotMil">
-                  <div class="hs-dot-star"></div>
-                  <span class="hs-dot-label">Military</span>
-                </div>
-
-                <div class="hs-dot hs-dot-iot" id="hsDot2">
-                  <div class="hs-dot-star"></div>
-                  <span class="hs-dot-label">IoT</span>
-                </div>
-
-                <div class="hs-dot hs-dot-asu" id="hsDot3">
-                  <div class="hs-dot-star"></div>
-                  <span class="hs-dot-label">ASU</span>
-                </div>
-              </div>
-              <span class="hs-hint" id="hsHint">scroll to explore →</span>
+          <div class="hs-viewport" id="hsViewport">
+            <div class="hs-track" id="hsTrack">
+              <div
+                class="cs-star cs-ac"
+                id="rnAc"
+                style="position: absolute"
+              ></div>
+              <div
+                class="cs-star cs-iti"
+                id="rnIti"
+                style="position: absolute"
+              ></div>
+              <div
+                class="cs-star cs-mil"
+                id="rnMil"
+                style="position: absolute"
+              ></div>
+              <div
+                class="cs-star cs-iot"
+                id="rnIot"
+                style="position: absolute"
+              ></div>
+              <div
+                class="cs-star cs-asu"
+                id="rnAsu"
+                style="position: absolute"
+              ></div>
             </div>
           </div>
-          <!-- /hs-sticky -->
+
+          <div class="hs-bottom">
+            <div class="hs-dots">
+              <div class="hs-dot hs-dot-ac" id="hsDot0">
+                <div class="hs-dot-star"></div>
+                <span class="hs-dot-label">Arab Computers</span>
+              </div>
+              <div class="hs-dot hs-dot-iti" id="hsDot1">
+                <div class="hs-dot-star"></div>
+                <span class="hs-dot-label">ITI</span>
+              </div>
+              <div class="hs-dot hs-dot-mil" id="hsDotMil">
+                <div class="hs-dot-star"></div>
+                <span class="hs-dot-label">Military</span>
+              </div>
+              <div class="hs-dot hs-dot-iot" id="hsDot2">
+                <div class="hs-dot-star"></div>
+                <span class="hs-dot-label">IoT</span>
+              </div>
+              <div class="hs-dot hs-dot-asu" id="hsDot3">
+                <div class="hs-dot-star"></div>
+                <span class="hs-dot-label">ASU</span>
+              </div>
+            </div>
+            <span class="hs-hint" id="hsHint">scroll to explore →</span>
+          </div>
         </div>
-        <!-- /hs-outer -->
-      </section>
+      </div>
+    </section>
 
-      <div class="section-divider"></div>
+    <div class="section-divider"></div>
 
-      <!-- ═══════════════════════════════════════════
-           PROJECTS
+    <!-- ═══════════════════════════════════════════
+           PROJECTS — 3-card focus carousel
       ═══════════════════════════════════════════ -->
-      <section class="section-page" id="projects-section">
-        <div class="section-heading reveal">
-          <span class="sec-tag">// 02 — portfolio</span>
-          <h2>Featured <span>Projects</span></h2>
-          <span class="sec-line"></span>
-        </div>
-        <div class="projects-grid">
-          <div class="project-card reveal reveal-delay-1">
-            <div class="project-thumb">
-              🏪
-              <div class="corner tl"></div>
-              <div class="corner br"></div>
-            </div>
-            <div class="project-body">
-              <div class="project-tags">
-                <span class="project-tag">ASP.NET Core</span
-                ><span class="project-tag">Angular</span
-                ><span class="project-tag">SQL Server</span
-                ><span class="project-tag">Onion Arch</span>
+    <section class="section-page proj-section" id="projects-section">
+      <div class="section-heading reveal">
+        <h2>Featured <span>Projects</span></h2>
+        <span class="sec-line"></span>
+      </div>
+
+      <div class="proj-viewport" id="projViewport">
+        <div class="proj-track" id="projTrack">
+          <div class="proj-card" data-index="0">
+            <div class="proj-card-inner">
+              <div class="proj-card-top">
+                <span class="proj-emoji">🏪</span>
+                <span class="proj-live-badge">LIVE</span>
               </div>
-              <h3>E-Commerce Platform</h3>
-              <p>
-                Full-stack e-commerce with catalog, cart, checkout, order
-                management &amp; admin dashboard.
+              <div class="proj-tags">
+                <span class="project-tag">ASP.NET Core</span>
+                <span class="project-tag">Angular</span>
+                <span class="project-tag">SQL Server</span>
+                <span class="project-tag">Stripe</span>
+              </div>
+              <h3 class="proj-title">E-Commerce Platform</h3>
+              <p class="proj-desc">
+                Full-stack e-commerce with catalog, cart, Stripe checkout, order
+                management and admin dashboard.
               </p>
-              <div class="project-links">
-                <a href="#" class="project-link primary">Live Demo</a
-                ><a href="#" class="project-link secondary">GitHub</a>
+              <div class="proj-links">
+                <a href="#" class="proj-btn-live"
+                  ><i class="bx bx-link-external"></i> Live Demo</a
+                >
+                <a href="#" class="proj-btn-github"
+                  ><i class="bx bxl-github"></i> GitHub</a
+                >
               </div>
             </div>
           </div>
-          <div class="project-card reveal reveal-delay-2">
-            <div class="project-thumb">
-              📋
-              <div class="corner tl"></div>
-              <div class="corner br"></div>
-            </div>
-            <div class="project-body">
-              <div class="project-tags">
-                <span class="project-tag">.NET</span
-                ><span class="project-tag">EF Core</span
-                ><span class="project-tag">Angular</span
-                ><span class="project-tag">CQRS</span>
+
+          <div class="proj-card" data-index="1">
+            <div class="proj-card-inner">
+              <div class="proj-card-top">
+                <span class="proj-emoji">📋</span>
+                <span class="proj-live-badge">LIVE</span>
               </div>
-              <h3>Task Management App</h3>
-              <p>
+              <div class="proj-tags">
+                <span class="project-tag">.NET</span>
+                <span class="project-tag">Angular</span>
+                <span class="project-tag">CQRS</span>
+                <span class="project-tag">SignalR</span>
+              </div>
+              <h3 class="proj-title">Task Management App</h3>
+              <p class="proj-desc">
                 Project tracker with real-time updates, role-based access and
                 drag-and-drop Kanban board.
               </p>
-              <div class="project-links">
-                <a href="#" class="project-link primary">Live Demo</a
-                ><a href="#" class="project-link secondary">GitHub</a>
+              <div class="proj-links">
+                <a href="#" class="proj-btn-live"
+                  ><i class="bx bx-link-external"></i> Live Demo</a
+                >
+                <a href="#" class="proj-btn-github"
+                  ><i class="bx bxl-github"></i> GitHub</a
+                >
               </div>
             </div>
           </div>
-          <div class="project-card reveal reveal-delay-3">
-            <div class="project-thumb">
-              💬
-              <div class="corner tl"></div>
-              <div class="corner br"></div>
-            </div>
-            <div class="project-body">
-              <div class="project-tags">
-                <span class="project-tag">SignalR</span
-                ><span class="project-tag">C#</span
-                ><span class="project-tag">JavaScript</span>
+
+          <div class="proj-card" data-index="2">
+            <div class="proj-card-inner">
+              <div class="proj-card-top">
+                <span class="proj-emoji">💬</span>
+                <span class="proj-live-badge">LIVE</span>
               </div>
-              <h3>Real-Time Chat System</h3>
-              <p>
-                WebSocket-powered chat with private rooms, typing indicators and
-                message history.
+              <div class="proj-tags">
+                <span class="project-tag">SignalR</span>
+                <span class="project-tag">C#</span>
+                <span class="project-tag">Redis</span>
+                <span class="project-tag">JavaScript</span>
+              </div>
+              <h3 class="proj-title">Real-Time Chat System</h3>
+              <p class="proj-desc">
+                WebSocket-powered chat with private rooms, typing indicators,
+                read receipts and message history.
               </p>
-              <div class="project-links">
-                <a href="#" class="project-link primary">Live Demo</a
-                ><a href="#" class="project-link secondary">GitHub</a>
+              <div class="proj-links">
+                <a href="#" class="proj-btn-live"
+                  ><i class="bx bx-link-external"></i> Live Demo</a
+                >
+                <a href="#" class="proj-btn-github"
+                  ><i class="bx bxl-github"></i> GitHub</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="proj-card" data-index="3">
+            <div class="proj-card-inner">
+              <div class="proj-card-top">
+                <span class="proj-emoji">🔐</span>
+              </div>
+              <div class="proj-tags">
+                <span class="project-tag">ASP.NET</span>
+                <span class="project-tag">Identity</span>
+                <span class="project-tag">OAuth2</span>
+                <span class="project-tag">JWT</span>
+              </div>
+              <h3 class="proj-title">Auth &amp; Identity Server</h3>
+              <p class="proj-desc">
+                Centralized auth service with OAuth2, social login, TOTP 2FA,
+                and refresh token rotation.
+              </p>
+              <div class="proj-links">
+                <a href="#" class="proj-btn-github"
+                  ><i class="bx bxl-github"></i> GitHub</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="proj-card" data-index="4">
+            <div class="proj-card-inner">
+              <div class="proj-card-top">
+                <span class="proj-emoji">📊</span>
+              </div>
+              <div class="proj-tags">
+                <span class="project-tag">.NET</span>
+                <span class="project-tag">Hangfire</span>
+                <span class="project-tag">Chart.js</span>
+                <span class="project-tag">Angular</span>
+              </div>
+              <h3 class="proj-title">Analytics Dashboard</h3>
+              <p class="proj-desc">
+                Real-time analytics platform with background job processing,
+                live charts, and scheduled PDF reports.
+              </p>
+              <div class="proj-links">
+                <a href="#" class="proj-btn-github"
+                  ><i class="bx bxl-github"></i> GitHub</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="proj-card" data-index="5">
+            <div class="proj-card-inner">
+              <div class="proj-card-top">
+                <span class="proj-emoji">🌐</span>
+              </div>
+              <div class="proj-tags">
+                <span class="project-tag">Microservices</span>
+                <span class="project-tag">RabbitMQ</span>
+                <span class="project-tag">Docker</span>
+                <span class="project-tag">Ocelot</span>
+              </div>
+              <h3 class="proj-title">Microservices Gateway</h3>
+              <p class="proj-desc">
+                API gateway with Consul service discovery, RabbitMQ messaging,
+                and fully containerized deployment.
+              </p>
+              <div class="proj-links">
+                <a href="#" class="proj-btn-github"
+                  ><i class="bx bxl-github"></i> GitHub</a
+                >
               </div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      <div class="section-divider"></div>
+      <!-- nav dots — large hit area, no arrows -->
+      <div class="proj-dots" id="projDots">
+        <button
+          class="proj-dot active"
+          data-dot="0"
+          aria-label="Project 1"
+        ></button>
+        <button class="proj-dot" data-dot="1" aria-label="Project 2"></button>
+        <button class="proj-dot" data-dot="2" aria-label="Project 3"></button>
+        <button class="proj-dot" data-dot="3" aria-label="Project 4"></button>
+        <button class="proj-dot" data-dot="4" aria-label="Project 5"></button>
+        <button class="proj-dot" data-dot="5" aria-label="Project 6"></button>
+      </div>
+    </section>
 
-      <!-- ═══════════════════════════════════════════
-           CONTACT
+    <div class="section-divider"></div>
+
+    <!-- ═══════════════════════════════════════════
+           CONTACT — new orbital ring form
       ═══════════════════════════════════════════ -->
-      <section class="section-page" id="contact-section">
-        <div class="section-heading reveal">
-          <span class="sec-tag">// 03 — get in touch</span>
-          <h2>Contact <span>Me</span></h2>
-          <span class="sec-line"></span>
+    <section class="section-page contact-section-new" id="contact-section">
+      <div class="section-heading reveal">
+        <h2>Contact <span>Me</span></h2>
+        <span class="sec-line"></span>
+      </div>
+
+      <!-- Success overlay (scoped inside section) -->
+      <div id="ct-flash"></div>
+      <div id="ct-success">
+        <div class="ct-s-emblem">
+          <svg viewBox="0 0 32 32"><polyline points="5,16 12,23 27,8" /></svg>
         </div>
-        <div class="contact-wrap">
-          <div class="contact-info reveal reveal-delay-1">
-            <h3>Let's Build Something Together</h3>
-            <p>
-              Whether you have a project in mind, want to collaborate, or just
-              say hi — my inbox is always open.
-            </p>
+        <h2>Thanks! You'll hear<br />from me <span>shortly.</span></h2>
+        <p>
+          Your message landed safely. I'll get back to you within a day or two.
+        </p>
+        <button id="ct-btn-reset">Send another message</button>
+      </div>
+
+      <div class="ct-wrap reveal reveal-delay-1">
+        <!-- ── LEFT: info panel ── -->
+        <div class="ct-left">
+          <h3 class="ct-headline">
+            Let's build<br />something<br /><em id="ct-em-word">great</em>.
+          </h3>
+          <p class="ct-subtext">
+            Whether you have a project in mind, want to collaborate, or just say
+            hi — my inbox is always open.
+          </p>
+
+          <div class="ct-contact-links">
             <div class="contact-item">
               <div class="contact-item-icon">
                 <i class="bx bx-envelope"></i>
               </div>
               <div class="contact-item-text">
                 <span class="contact-item-label">Email</span>
-                <span class="contact-item-val">
-                  <!-- FIX 3: Added missing opening <a tag for email -->
-                  <a
-                    href="/cdn-cgi/l/email-protection"
+                <a
+                  href="/cdn-cgi/l/email-protection#9cfdfef8f9f0eefdf4f1fdf2f9f0effdfdf8fdf2e5ada4dcfbf1fdf5f0b2fff3f1"
+                  class="contact-item-val"
+                  ><span
                     class="__cf_email__"
-                    data-cfemail="96f7f4f2f3fae4f7fefbf7f8f3fae5f7f7f2f7f8efa7aed6f1fbf7fffab8f5f9fb"
-                    >[email&#160;protected]</a
-                  ></span
+                    data-cfemail="2f4e4d4b4a435d4e47424e414a435c4e4e4b4e41561e176f48424e4643014c4042"
+                    >[email&#160;protected]</span
+                  ></a
                 >
               </div>
             </div>
@@ -395,14 +482,26 @@
               </div>
               <div class="contact-item-text">
                 <span class="contact-item-label">LinkedIn</span>
-                <span class="contact-item-val">abdelrahman-elsaadany-a20</span>
+                <a
+                  href="https://www.linkedin.com/in/abdelrahman-elsaadany-a20"
+                  target="_blank"
+                  rel="noopener"
+                  class="contact-item-val"
+                  >abdelrahman-elsaadany-a20</a
+                >
               </div>
             </div>
             <div class="contact-item">
               <div class="contact-item-icon"><i class="bx bxl-github"></i></div>
               <div class="contact-item-text">
                 <span class="contact-item-label">GitHub</span>
-                <span class="contact-item-val">abdelrahmanelsaadany1</span>
+                <a
+                  href="https://github.com/abdelrahmanelsaadany1"
+                  target="_blank"
+                  rel="noopener"
+                  class="contact-item-val"
+                  >abdelrahmanelsaadany1</a
+                >
               </div>
             </div>
             <div class="contact-item">
@@ -413,127 +512,531 @@
               </div>
             </div>
           </div>
-          <div
-            class="contact-form-wrap reveal reveal-delay-2"
-            id="contactFormWrap"
+        </div>
+
+        <!-- ── RIGHT: ring + form ── -->
+        <div class="ct-right">
+          <!-- Ring SVG -->
+          <svg
+            id="ct-ring-svg"
+            viewBox="0 0 800 800"
+            xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="xMidYMid meet"
           >
-            <form
-              class="contact-form"
-              id="contactForm"
-              onsubmit="return false;"
+            <defs>
+              <filter
+                id="ct-glow-p"
+                x="-80%"
+                y="-80%"
+                width="260%"
+                height="260%"
+              >
+                <feGaussianBlur stdDeviation="6" result="b" />
+                <feMerge>
+                  <feMergeNode in="b" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              <filter
+                id="ct-glow-lg"
+                x="-120%"
+                y="-120%"
+                width="340%"
+                height="340%"
+              >
+                <feGaussianBlur stdDeviation="14" result="b" />
+                <feMerge>
+                  <feMergeNode in="b" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              <filter
+                id="ct-glow-sm"
+                x="-40%"
+                y="-40%"
+                width="180%"
+                height="180%"
+              >
+                <feGaussianBlur stdDeviation="3" result="b" />
+                <feMerge>
+                  <feMergeNode in="b" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              <radialGradient id="ct-rg-center" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#30cdcf" stop-opacity="0.10" />
+                <stop offset="100%" stop-color="#30cdcf" stop-opacity="0" />
+              </radialGradient>
+            </defs>
+            <circle
+              cx="400"
+              cy="400"
+              r="380"
+              fill="none"
+              stroke="#30cdcf"
+              stroke-width="0.5"
+              opacity="0.04"
+            />
+            <circle
+              cx="400"
+              cy="400"
+              r="345"
+              fill="none"
+              stroke="#30cdcf"
+              stroke-width="0.5"
+              opacity="0.07"
+            />
+            <circle
+              cx="400"
+              cy="400"
+              r="308"
+              fill="none"
+              stroke="#30cdcf"
+              stroke-width="22"
+              opacity="0.022"
+            />
+            <circle
+              id="ct-tr-out"
+              cx="400"
+              cy="400"
+              r="319"
+              fill="none"
+              stroke="#30cdcf"
+              stroke-width="0.8"
+              opacity="0.14"
+            />
+            <circle
+              id="ct-tr-mid"
+              cx="400"
+              cy="400"
+              r="308"
+              fill="none"
+              stroke="#30cdcf"
+              stroke-width="1.6"
+              opacity="0.20"
+            />
+            <circle
+              id="ct-tr-in"
+              cx="400"
+              cy="400"
+              r="297"
+              fill="none"
+              stroke="#30cdcf"
+              stroke-width="0.8"
+              opacity="0.14"
+            />
+            <g
+              id="ct-ticks"
+              stroke="#30cdcf"
+              stroke-linecap="round"
+              opacity="0.22"
             >
-              <div class="form-group" id="fg-name">
-                <div class="field-header">
-                  <label for="cf-name">Your Name</label>
-                </div>
-                <input
-                  id="cf-name"
-                  type="text"
-                  placeholder="John Doe"
-                  autocomplete="off"
-                />
-                <div class="field-track">
-                  <div class="field-track-fill" id="ft-name"></div>
-                </div>
+              <line x1="400" y1="86" x2="400" y2="100" stroke-width="2.2" />
+              <line x1="714" y1="400" x2="700" y2="400" stroke-width="2.2" />
+              <line x1="400" y1="714" x2="400" y2="700" stroke-width="2.2" />
+              <line x1="86" y1="400" x2="100" y2="400" stroke-width="2.2" />
+              <line
+                x1="620.9"
+                y1="179.1"
+                x2="611.1"
+                y2="188.9"
+                stroke-width="1.2"
+              />
+              <line
+                x1="620.9"
+                y1="620.9"
+                x2="611.1"
+                y2="611.1"
+                stroke-width="1.2"
+              />
+              <line
+                x1="179.1"
+                y1="620.9"
+                x2="188.9"
+                y2="611.1"
+                stroke-width="1.2"
+              />
+              <line
+                x1="179.1"
+                y1="179.1"
+                x2="188.9"
+                y2="188.9"
+                stroke-width="1.2"
+              />
+              <line
+                x1="516.8"
+                y1="95.4"
+                x2="513.5"
+                y2="104.4"
+                stroke-width="0.7"
+              />
+              <line
+                x1="283.2"
+                y1="95.4"
+                x2="286.5"
+                y2="104.4"
+                stroke-width="0.7"
+              />
+              <line
+                x1="704.6"
+                y1="283.2"
+                x2="695.6"
+                y2="286.5"
+                stroke-width="0.7"
+              />
+              <line
+                x1="704.6"
+                y1="516.8"
+                x2="695.6"
+                y2="513.5"
+                stroke-width="0.7"
+              />
+              <line
+                x1="516.8"
+                y1="704.6"
+                x2="513.5"
+                y2="695.6"
+                stroke-width="0.7"
+              />
+              <line
+                x1="283.2"
+                y1="704.6"
+                x2="286.5"
+                y2="695.6"
+                stroke-width="0.7"
+              />
+              <line
+                x1="95.4"
+                y1="516.8"
+                x2="104.4"
+                y2="513.5"
+                stroke-width="0.7"
+              />
+              <line
+                x1="95.4"
+                y1="283.2"
+                x2="104.4"
+                y2="286.5"
+                stroke-width="0.7"
+              />
+            </g>
+            <g id="ct-nd0" filter="url(#ct-glow-sm)">
+              <circle
+                cx="400"
+                cy="92"
+                r="9"
+                fill="#03060e"
+                stroke="#30cdcf"
+                stroke-width="1"
+                opacity="0.5"
+              />
+              <circle cx="400" cy="92" r="3.5" fill="#30cdcf" opacity="0.55" />
+            </g>
+            <g id="ct-nd1" filter="url(#ct-glow-sm)">
+              <circle
+                cx="708"
+                cy="400"
+                r="9"
+                fill="#03060e"
+                stroke="#30cdcf"
+                stroke-width="1"
+                opacity="0.5"
+              />
+              <circle cx="708" cy="400" r="3.5" fill="#30cdcf" opacity="0.55" />
+            </g>
+            <g id="ct-nd2" filter="url(#ct-glow-sm)">
+              <circle
+                cx="400"
+                cy="708"
+                r="9"
+                fill="#03060e"
+                stroke="#30cdcf"
+                stroke-width="1"
+                opacity="0.5"
+              />
+              <circle cx="400" cy="708" r="3.5" fill="#30cdcf" opacity="0.55" />
+            </g>
+            <g id="ct-nd3" filter="url(#ct-glow-sm)">
+              <circle
+                cx="92"
+                cy="400"
+                r="9"
+                fill="#03060e"
+                stroke="#30cdcf"
+                stroke-width="1"
+                opacity="0.5"
+              />
+              <circle cx="92" cy="400" r="3.5" fill="#30cdcf" opacity="0.55" />
+            </g>
+            <circle
+              id="ct-amb"
+              cx="400"
+              cy="400"
+              r="308"
+              fill="none"
+              stroke="#30cdcf"
+              stroke-width="1.5"
+              stroke-dasharray="16 2400"
+              opacity="0.55"
+            />
+            <circle
+              id="ct-core"
+              cx="400"
+              cy="400"
+              r="260"
+              fill="url(#ct-rg-center)"
+              opacity="0"
+            />
+            <circle
+              id="ct-rp"
+              cx="400"
+              cy="400"
+              r="308"
+              fill="none"
+              stroke="#30cdcf"
+              stroke-width="10"
+              opacity="0"
+            />
+            <circle
+              cx="400"
+              cy="400"
+              r="240"
+              fill="none"
+              stroke="#30cdcf"
+              stroke-width="0.5"
+              opacity="0.06"
+            />
+            <circle
+              cx="400"
+              cy="400"
+              r="190"
+              fill="none"
+              stroke="#30cdcf"
+              stroke-width="0.5"
+              opacity="0.04"
+            />
+
+            <!-- Particles -->
+            <g id="ct-pa" opacity="0" filter="url(#ct-glow-p)">
+              <circle id="ct-pa-c" cx="400" cy="92" r="6" fill="#30cdcf" />
+              <circle
+                id="ct-pa-h"
+                cx="400"
+                cy="92"
+                r="11"
+                fill="none"
+                stroke="#30cdcf"
+                stroke-width="1"
+                opacity="0.35"
+              />
+            </g>
+            <g id="ct-pb" opacity="0" filter="url(#ct-glow-p)">
+              <circle id="ct-pb-c" cx="708" cy="400" r="6" fill="#30cdcf" />
+              <circle
+                id="ct-pb-h"
+                cx="708"
+                cy="400"
+                r="11"
+                fill="none"
+                stroke="#30cdcf"
+                stroke-width="1"
+                opacity="0.35"
+              />
+            </g>
+            <g id="ct-pc" opacity="0" filter="url(#ct-glow-lg)">
+              <circle id="ct-pc-c" cx="400" cy="708" r="7.5" fill="#30cdcf" />
+              <circle
+                id="ct-pc-h"
+                cx="400"
+                cy="708"
+                r="14"
+                fill="none"
+                stroke="#30cdcf"
+                stroke-width="1.5"
+                opacity="0.45"
+              />
+            </g>
+
+            <!-- Shockwaves -->
+            <circle
+              id="ct-sw1"
+              cx="400"
+              cy="400"
+              r="8"
+              fill="none"
+              stroke="#30cdcf"
+              stroke-width="3"
+              opacity="0"
+            />
+            <circle
+              id="ct-sw2"
+              cx="400"
+              cy="400"
+              r="8"
+              fill="none"
+              stroke="#30cdcf"
+              stroke-width="1.8"
+              opacity="0"
+            />
+            <circle
+              id="ct-sw3"
+              cx="400"
+              cy="400"
+              r="8"
+              fill="none"
+              stroke="#30cdcf"
+              stroke-width="1"
+              opacity="0"
+            />
+            <circle
+              id="ct-cburst"
+              cx="400"
+              cy="400"
+              r="18"
+              fill="#30cdcf"
+              opacity="0"
+            />
+            <g id="ct-rays" stroke="#30cdcf" stroke-linecap="round" opacity="0">
+              <line
+                id="ct-r0"
+                x1="400"
+                y1="400"
+                x2="400"
+                y2="400"
+                stroke-width="1.5"
+              />
+              <line
+                id="ct-r1"
+                x1="400"
+                y1="400"
+                x2="400"
+                y2="400"
+                stroke-width="1.5"
+              />
+              <line
+                id="ct-r2"
+                x1="400"
+                y1="400"
+                x2="400"
+                y2="400"
+                stroke-width="1.5"
+              />
+              <line
+                id="ct-r3"
+                x1="400"
+                y1="400"
+                x2="400"
+                y2="400"
+                stroke-width="1.5"
+              />
+              <line
+                id="ct-r4"
+                x1="400"
+                y1="400"
+                x2="400"
+                y2="400"
+                stroke-width="1.2"
+              />
+              <line
+                id="ct-r5"
+                x1="400"
+                y1="400"
+                x2="400"
+                y2="400"
+                stroke-width="1.2"
+              />
+              <line
+                id="ct-r6"
+                x1="400"
+                y1="400"
+                x2="400"
+                y2="400"
+                stroke-width="1.2"
+              />
+              <line
+                id="ct-r7"
+                x1="400"
+                y1="400"
+                x2="400"
+                y2="400"
+                stroke-width="1.2"
+              />
+            </g>
+          </svg>
+
+          <!-- Form -->
+          <div id="ct-form-wrap">
+            <!-- progress -->
+            <div class="ct-progress-row">
+              <div class="ct-pdots">
+                <div class="ct-pdot" id="ct-d0"></div>
+                <div class="ct-pdot" id="ct-d1"></div>
+                <div class="ct-pdot" id="ct-d2"></div>
               </div>
-              <div class="form-group" id="fg-email">
-                <div class="field-header">
-                  <label for="cf-email">Email Address</label>
-                </div>
-                <input
-                  id="cf-email"
-                  type="email"
-                  placeholder="john@example.com"
-                  autocomplete="off"
-                />
-                <div class="field-track">
-                  <div class="field-track-fill" id="ft-email"></div>
-                </div>
+              <div class="ct-prog-track">
+                <div class="ct-prog-fill" id="ct-pfill"></div>
               </div>
-              <div class="form-group" id="fg-subject">
-                <div class="field-header">
-                  <label for="cf-subject">Subject</label>
-                </div>
-                <input
-                  id="cf-subject"
-                  type="text"
-                  placeholder="Project Inquiry"
-                  autocomplete="off"
-                />
-                <div class="field-track">
-                  <div class="field-track-fill" id="ft-subject"></div>
-                </div>
-              </div>
-              <div class="form-group" id="fg-msg">
-                <div class="field-header">
-                  <label for="cf-msg">Message</label>
-                </div>
-                <textarea
-                  id="cf-msg"
-                  placeholder="Tell me about your project..."
-                ></textarea>
-                <div class="field-track">
-                  <div class="field-track-fill" id="ft-msg"></div>
-                </div>
-              </div>
-              <button type="submit" class="form-submit" id="submitBtn">
-                <span>Transmit Message</span><i class="bx bx-send"></i>
-              </button>
-            </form>
-            <div class="tx-overlay" id="txOverlay">
-              <canvas id="txCanvas"></canvas>
-              <div class="tx-inner">
-                <div class="tx-rings-wrap">
-                  <div class="tx-ring r1"></div>
-                  <div class="tx-ring r2"></div>
-                  <div class="tx-ring r3"></div>
-                  <div class="tx-checkmark">
-                    <svg viewBox="0 0 52 52" fill="none">
-                      <circle
-                        cx="26"
-                        cy="26"
-                        r="24"
-                        stroke="#30cdcf"
-                        stroke-width="2"
-                      />
-                      <polyline
-                        points="14,26 22,34 38,18"
-                        stroke="#30cdcf"
-                        stroke-width="3"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-dasharray="32"
-                        stroke-dashoffset="32"
-                        class="tx-check-path"
-                      />
-                    </svg>
-                  </div>
-                </div>
-                <div class="tx-terminal">
-                  <div class="tx-t-line" id="tl1">
-                    <span class="tx-prompt">›</span
-                    ><span class="tx-text"></span>
-                  </div>
-                  <div class="tx-t-line" id="tl2">
-                    <span class="tx-prompt">›</span
-                    ><span class="tx-text"></span>
-                  </div>
-                  <div class="tx-t-line" id="tl3">
-                    <span class="tx-prompt">›</span
-                    ><span class="tx-text"></span>
-                  </div>
-                  <div class="tx-t-line tx-final" id="tl4">
-                    <span class="tx-text"></span>
-                  </div>
-                </div>
-              </div>
+              <span class="ct-prog-label" id="ct-plbl">0 / 3</span>
             </div>
+
+            <!-- name -->
+            <div class="ct-field" id="ct-fn">
+              <label for="ct-in">Name</label>
+              <input
+                type="text"
+                id="ct-in"
+                placeholder="Your name"
+                autocomplete="off"
+                spellcheck="false"
+              />
+              <span class="ct-fcheck"
+                ><svg viewBox="0 0 14 14">
+                  <polyline points="2,7 5.5,10.5 12,3.5" /></svg
+              ></span>
+              <span class="ct-fhint" id="ct-hn"></span>
+            </div>
+
+            <!-- email -->
+            <div class="ct-field" id="ct-fe">
+              <label for="ct-ie">Email</label>
+              <input
+                type="email"
+                id="ct-ie"
+                placeholder="your@email.com"
+                autocomplete="off"
+                spellcheck="false"
+              />
+              <span class="ct-fcheck"
+                ><svg viewBox="0 0 14 14">
+                  <polyline points="2,7 5.5,10.5 12,3.5" /></svg
+              ></span>
+              <span class="ct-fhint" id="ct-he"></span>
+            </div>
+
+            <!-- message -->
+            <div class="ct-field ct-textarea-f" id="ct-fm">
+              <label for="ct-im">Message</label>
+              <textarea
+                id="ct-im"
+                placeholder="Tell me about your project..."
+              ></textarea>
+              <span class="ct-fcheck"
+                ><svg viewBox="0 0 14 14">
+                  <polyline points="2,7 5.5,10.5 12,3.5" /></svg
+              ></span>
+              <span class="ct-fhint" id="ct-hm"></span>
+            </div>
+
+            <button id="ct-btn" disabled>Transmit Message</button>
           </div>
         </div>
-      </section>
-    </div>
-    <!-- /container -->
+      </div>
+    </section>
 
+    <script
+      data-cfasync="false"
+      src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"
+    ></script>
     <script
       type="module"
       src="https://cdn.jsdelivr.net/npm/@splinetool/viewer/build/spline-viewer.js"

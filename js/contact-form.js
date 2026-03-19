@@ -1,323 +1,467 @@
-/* ═══════════════════════════════════════════════════
-   ELECTRIC SWITCHES — Contact Form
-═══════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════
+   CONTACT FORM — Orbital Ring Particle System
+   Preserves site theme (--teal: #30cdcf)
+════════════════════════════════════════════════════ */
 (function () {
   "use strict";
 
   /* ── DOM guards ── */
-  const formWrap = document.getElementById("contactFormWrap");
-  const cForm = document.getElementById("contactForm");
-  const txOverlay = document.getElementById("txOverlay");
-  const txCanvas = document.getElementById("txCanvas");
-  if (!formWrap || !cForm || !txOverlay) return;
+  const formWrap = document.getElementById("ct-form-wrap");
+  const flashEl = document.getElementById("ct-flash");
+  const successEl = document.getElementById("ct-success");
+  if (!formWrap || !successEl) return;
 
-  /* ── Field definitions ── */
-  const FIELDS = [
-    {
-      fg: "fg-name",
-      input: "cf-name",
-      ft: "ft-name",
-      validate: (v) => v.trim().length > 2,
-    },
-    {
-      fg: "fg-email",
-      input: "cf-email",
-      ft: "ft-email",
-      validate: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()),
-    },
-    {
-      fg: "fg-subject",
-      input: "cf-subject",
-      ft: "ft-subject",
-      validate: (v) => v.trim().length > 1,
-    },
-    {
-      fg: "fg-msg",
-      input: "cf-msg",
-      ft: "ft-msg",
-      validate: (v) => v.trim().length > 5,
-    },
-  ];
+  /* GSAP required */
+  const G = window.gsap;
+  if (!G) {
+    console.warn("contact-form.js: GSAP not found");
+    return;
+  }
 
-  /* ── Build switches into each .field-header ── */
-  FIELDS.forEach((f) => {
-    const fg = document.getElementById(f.fg);
-    if (!fg) return;
-    const hdr = fg.querySelector(".field-header");
-    if (!hdr) return;
-
-    const esw = document.createElement("div");
-    esw.className = "esw";
-    esw.id = "esw-" + f.input;
-    esw.innerHTML = `
-      <div class="esw-dot" id="dot-${f.input}"></div>
-      <div class="esw-body">
-        <div class="esw-lever" id="lev-${f.input}"></div>
-        <div class="esw-spark" id="spark-${f.input}"></div>
-      </div>
-    `;
-    hdr.appendChild(esw);
-  });
+  /* ── Constants ── */
+  const CX = 400,
+    CY = 400,
+    R = 308;
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   /* ── State ── */
-  const state = {};
-  FIELDS.forEach((f) => (state[f.input] = false));
+  const S = {
+    name: false,
+    email: false,
+    msg: false,
+    ready: false,
+    busy: false,
+  };
 
-  function countOn() {
-    return Object.values(state).filter(Boolean).length;
+  const orb = {
+    a: { angle: 270, tl: null },
+    b: { angle: 0, tl: null },
+    c: { angle: 90, tl: null },
+  };
+
+  /* ── Particle helpers ── */
+  function toXY(deg) {
+    const r = ((deg - 90) * Math.PI) / 180;
+    return { x: CX + R * Math.cos(r), y: CY + R * Math.sin(r) };
   }
 
-  /* ── Flip switch ON/OFF ── */
-  function flipOn(f) {
-    const fg = document.getElementById(f.fg);
-    const spark = document.getElementById("spark-" + f.input);
-    if (!fg) return;
-    fg.classList.add("fg-on");
-    state[f.input] = true;
-    /* spark */
-    if (spark) {
-      spark.classList.remove("fire");
-      void spark.offsetWidth; /* reflow */
-      spark.classList.add("fire");
-      setTimeout(() => spark.classList.remove("fire"), 350);
-    }
-    /* fill track */
-    updateTrack(f);
-    updateSubmitBtn();
-  }
-
-  function flipOff(f) {
-    const fg = document.getElementById(f.fg);
-    if (!fg) return;
-    fg.classList.remove("fg-on");
-    state[f.input] = false;
-    updateTrack(f);
-    updateSubmitBtn();
-  }
-
-  function updateTrack(f) {
-    const el = document.getElementById(f.input);
-    const ft = document.getElementById(f.ft);
-    if (!el || !ft) return;
-    if (state[f.input]) {
-      ft.style.width = "100%";
-    } else {
-      /* partial fill based on current value length for in-progress feel */
-      const val = el.value.trim();
-      const prog = Math.min(val.length / 12, 0.85);
-      ft.style.width = prog * 100 + "%";
-    }
-  }
-
-  function updateSubmitBtn() {
-    const btn = document.getElementById("submitBtn");
-    if (!btn) return;
-    const allOn = countOn() === FIELDS.length;
-    btn.disabled = !allOn;
-    if (allOn) {
-      btn.style.borderColor = "var(--teal)";
-      btn.style.boxShadow = "0 0 24px rgba(48,205,207,.35)";
-    } else {
-      btn.style.borderColor = "";
-      btn.style.boxShadow = "";
-    }
-  }
-
-  /* initial state — disable submit */
-  updateSubmitBtn();
-
-  /* ── Wire inputs ── */
-  FIELDS.forEach((f) => {
-    const el = document.getElementById(f.input);
-    if (!el) return;
-
-    el.addEventListener("input", () => {
-      const ok = f.validate(el.value);
-      if (ok && !state[f.input]) flipOn(f);
-      if (!ok && state[f.input]) flipOff(f);
-      if (!state[f.input]) updateTrack(f);
-    });
-
-    el.addEventListener("focus", () => {
-      /* subtle track hint */
-      const ft = document.getElementById(f.ft);
-      if (ft && !state[f.input]) {
-        const val = el.value.trim();
-        ft.style.width = Math.max((val.length / 12) * 85, 8) + "%";
+  function placeParticle(key, deg) {
+    const { x, y } = toXY(deg);
+    ["c", "h"].forEach((s) => {
+      const el = document.getElementById(`ct-p${key}-${s}`);
+      if (el) {
+        el.setAttribute("cx", x);
+        el.setAttribute("cy", y);
       }
     });
-
-    el.addEventListener("blur", () => {
-      if (!state[f.input]) updateTrack(f);
-    });
-  });
-
-  /* ════════════════════════════════════════════════
-     TRANSMISSION COMPLETE — cinematic sequence
-  ════════════════════════════════════════════════ */
-
-  /* particle system on the overlay canvas */
-  let txParts = [];
-  let txRaf = null;
-
-  function txResizeCanvas() {
-    const r = txOverlay.getBoundingClientRect();
-    txCanvas.width = r.width;
-    txCanvas.height = r.height;
   }
 
-  function txSpawnParticles() {
-    txParts = [];
-    const cx = txCanvas.width / 2,
-      cy = txCanvas.height / 2;
-    for (let i = 0; i < 80; i++) {
-      const ang = Math.random() * Math.PI * 2;
-      const spd = 0.6 + Math.random() * 2.8;
-      txParts.push({
-        x: cx,
-        y: cy,
-        vx: Math.cos(ang) * spd,
-        vy: Math.sin(ang) * spd,
-        life: 1,
-        decay: 0.008 + Math.random() * 0.012,
-        size: 1 + Math.random() * 2.5,
-        color: Math.random() > 0.5 ? "48,205,207" : "200,255,255",
+  function startOrbit(key, startDeg, secs) {
+    const o = orb[key];
+    o.angle = startDeg;
+    if (o.tl) o.tl.kill();
+    const prx = { a: startDeg };
+    o.tl = G.to(prx, {
+      a: startDeg + 360,
+      duration: secs,
+      repeat: -1,
+      ease: "none",
+      onUpdate() {
+        o.angle = prx.a % 360;
+        placeParticle(key, o.angle);
+      },
+    });
+  }
+
+  function stopOrbit(key) {
+    if (orb[key].tl) {
+      orb[key].tl.kill();
+      orb[key].tl = null;
+    }
+    G.to(`#ct-p${key}`, { opacity: 0, duration: 0.4 });
+  }
+
+  /* ── Ambient ring animations ── */
+  function ambient() {
+    G.to("#ct-amb", {
+      rotation: 360,
+      transformOrigin: `${CX}px ${CY}px`,
+      duration: 16,
+      repeat: -1,
+      ease: "none",
+    });
+    G.to(["#ct-nd0", "#ct-nd1", "#ct-nd2", "#ct-nd3"], {
+      opacity: 0.9,
+      duration: 2.4,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+      stagger: 0.6,
+    });
+    G.to("#ct-ticks", {
+      opacity: 0.45,
+      duration: 4,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+    });
+  }
+
+  /* ── Ring glow level (0–3) ── */
+  function setGlow(n) {
+    const midAlpha = [0.2, 0.4, 0.62, 0.92][n];
+    const edgeAlpha = [0.14, 0.28, 0.48, 0.72][n];
+    const energyAlp = [0, 0.04, 0.1, 0.22][n];
+    const coreAlp = [0, 0, 0.6, 1][n];
+    G.to("#ct-tr-mid", { opacity: midAlpha, duration: 0.7 });
+    G.to(["#ct-tr-out", "#ct-tr-in"], { opacity: edgeAlpha, duration: 0.7 });
+    G.to("#ct-rp", { opacity: energyAlp, duration: 0.7 });
+    G.to("#ct-core", { opacity: coreAlp, duration: 0.9 });
+  }
+
+  /* ── Sync UI (dots, progress bar, button) ── */
+  const LABELS = ["0 / 3", "1 / 3", "2 / 3", "Ready →"];
+
+  function syncUI() {
+    const count = [S.name, S.email, S.msg].filter(Boolean).length;
+
+    document.getElementById("ct-d0").classList.toggle("lit", S.name);
+    document.getElementById("ct-d1").classList.toggle("lit", S.email);
+    document.getElementById("ct-d2").classList.toggle("lit", S.msg);
+
+    document.getElementById("ct-pfill").style.width = (count / 3) * 100 + "%";
+    const lbl = document.getElementById("ct-plbl");
+    lbl.textContent = LABELS[count];
+    lbl.classList.toggle("active", count > 0);
+
+    setGlow(count);
+
+    const all = S.name && S.email && S.msg;
+    const btn = document.getElementById("ct-btn");
+
+    if (all && !S.ready) {
+      S.ready = true;
+      btn.classList.add("ready");
+      btn.removeAttribute("disabled");
+      Object.values(orb).forEach((o) => {
+        if (o.tl) o.tl.timeScale(2.2);
+      });
+      G.to(["#ct-nd0", "#ct-nd1", "#ct-nd2", "#ct-nd3"], {
+        filter: "url(#ct-glow-p)",
+        duration: 0.5,
+      });
+    }
+    if (!all && S.ready) {
+      S.ready = false;
+      btn.classList.remove("ready");
+      btn.setAttribute("disabled", "");
+      Object.values(orb).forEach((o) => {
+        if (o.tl) o.tl.timeScale(1);
+      });
+      G.to(["#ct-nd0", "#ct-nd1", "#ct-nd2", "#ct-nd3"], {
+        filter: "url(#ct-glow-sm)",
+        duration: 0.5,
       });
     }
   }
 
-  function txDrawLoop() {
-    const ctx = txCanvas.getContext("2d");
-    ctx.clearRect(0, 0, txCanvas.width, txCanvas.height);
-
-    /* grid lines — slow scan */
-    const now = Date.now();
-    ctx.save();
-    for (let x = 0; x < txCanvas.width; x += 28) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, txCanvas.height);
-      ctx.strokeStyle = `rgba(48,205,207,${0.025 + 0.01 * Math.sin(x * 0.1 + now * 0.001)})`;
-      ctx.lineWidth = 1;
-      ctx.stroke();
+  /* ── Hint helpers ── */
+  const timers = {};
+  function showHint(id, msg) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.textContent = msg;
+      el.classList.add("show");
     }
-    for (let y = 0; y < txCanvas.height; y += 28) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(txCanvas.width, y);
-      ctx.strokeStyle = `rgba(48,205,207,${0.025 + 0.01 * Math.sin(y * 0.1 + now * 0.001)})`;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    }
-    ctx.restore();
-
-    /* particles */
-    for (let i = txParts.length - 1; i >= 0; i--) {
-      const p = txParts[i];
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vx *= 0.94;
-      p.vy *= 0.94;
-      p.life -= p.decay;
-      if (p.life <= 0) {
-        txParts.splice(i, 1);
-        continue;
-      }
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${p.color},${p.life})`;
-      ctx.fill();
-    }
-
-    txRaf = requestAnimationFrame(txDrawLoop);
+  }
+  function hideHint(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove("show");
+  }
+  function setFieldState(fid, state) {
+    const el = document.getElementById(fid);
+    if (!el) return;
+    el.classList.toggle("valid", state === "valid");
+    el.classList.toggle("error", state === "error");
   }
 
-  /* typewriter helper */
-  function typeText(el, text, speed, cb) {
-    let i = 0;
-    el.textContent = "";
-    const tick = () => {
-      if (i < text.length) {
-        el.textContent += text[i++];
-        setTimeout(tick, speed);
-      } else if (cb) cb();
-    };
-    tick();
-  }
-
-  function showTxOverlay() {
-    /* setup */
-    txResizeCanvas();
-    /* reset text spans */
-    ["tl1", "tl2", "tl3", "tl4"].forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) {
-        const t = el.querySelector(".tx-text");
-        if (t) t.textContent = "";
-      }
-    });
-
-    txOverlay.classList.add("show");
-    txSpawnParticles();
-    txDrawLoop();
-
-    /* sequence */
-    const delay = (ms) => new Promise((r) => setTimeout(r, ms));
-
-    (async () => {
-      await delay(700);
-      const t1 = document.querySelector("#tl1 .tx-text");
-      if (t1) await new Promise((r) => typeText(t1, "signal encrypted", 40, r));
-
-      await delay(200);
-      const t2 = document.querySelector("#tl2 .tx-text");
-      if (t2)
-        await new Promise((r) => typeText(t2, "channel open → ready", 40, r));
-
-      await delay(200);
-      const t3 = document.querySelector("#tl3 .tx-text");
-      if (t3)
-        await new Promise((r) => typeText(t3, "packet delivered  ✓", 40, r));
-
-      await delay(300);
-      const t4 = document.querySelector("#tl4 .tx-text");
-      if (t4)
-        await new Promise((r) => typeText(t4, "TRANSMISSION COMPLETE", 60, r));
-
-      /* after full sequence, reset everything after 2.8s */
-      await delay(2800);
-      teardown();
-    })();
-  }
-
-  function teardown() {
-    /* stop canvas loop */
-    if (txRaf) {
-      cancelAnimationFrame(txRaf);
-      txRaf = null;
+  /* ── Field: Name ── */
+  document.getElementById("ct-in").addEventListener("input", (e) => {
+    clearTimeout(timers.n);
+    hideHint("ct-hn");
+    const v = e.target.value.trim();
+    const ok = v.length >= 2;
+    if (ok !== S.name) {
+      S.name = ok;
+      setFieldState("ct-fn", ok ? "valid" : "none");
+      if (ok) {
+        placeParticle("a", 270);
+        G.to("#ct-pa", { opacity: 1, duration: 0.5 });
+        startOrbit("a", 270, 14);
+      } else stopOrbit("a");
+      syncUI();
     }
-    txParts = [];
+    if (!ok && v.length > 0) {
+      timers.n = setTimeout(() => {
+        setFieldState("ct-fn", "error");
+        showHint("ct-hn", "What should I call you?");
+      }, 800);
+    } else {
+      setFieldState("ct-fn", ok ? "valid" : "none");
+    }
+  });
 
-    /* hide overlay */
-    txOverlay.classList.remove("show");
+  /* ── Field: Email ── */
+  document.getElementById("ct-ie").addEventListener("input", (e) => {
+    clearTimeout(timers.e);
+    hideHint("ct-he");
+    const v = e.target.value.trim();
+    const ok = EMAIL_RE.test(v);
+    if (ok !== S.email) {
+      S.email = ok;
+      setFieldState("ct-fe", ok ? "valid" : "none");
+      if (ok) {
+        placeParticle("b", 0);
+        G.to("#ct-pb", { opacity: 1, duration: 0.5 });
+        startOrbit("b", 0, 9);
+      } else stopOrbit("b");
+      syncUI();
+    }
+    if (!ok && v.length > 4) {
+      timers.e = setTimeout(() => {
+        setFieldState("ct-fe", "error");
+        showHint("ct-he", "Try name@domain.com");
+      }, 800);
+    } else {
+      setFieldState("ct-fe", ok ? "valid" : "none");
+    }
+  });
 
-    /* reset all switches */
-    FIELDS.forEach((f) => {
-      state[f.input] = false;
-      const fg = document.getElementById(f.fg);
-      if (fg) fg.classList.remove("fg-on");
-      const ft = document.getElementById(f.ft);
-      if (ft) ft.style.width = "0%";
-      const el = document.getElementById(f.input);
-      if (el) el.value = "";
-    });
-    updateSubmitBtn();
-  }
+  /* ── Field: Message ── */
+  document.getElementById("ct-im").addEventListener("input", (e) => {
+    clearTimeout(timers.m);
+    hideHint("ct-hm");
+    const v = e.target.value.trim();
+    const ok = v.length >= 10;
+    if (ok !== S.msg) {
+      S.msg = ok;
+      setFieldState("ct-fm", ok ? "valid" : "none");
+      if (ok) {
+        placeParticle("c", 90);
+        G.to("#ct-pc", { opacity: 1, duration: 0.5 });
+        startOrbit("c", 90, 5.5);
+      } else stopOrbit("c");
+      syncUI();
+    }
+    if (!ok && v.length > 0) {
+      timers.m = setTimeout(() => {
+        setFieldState("ct-fm", "error");
+        showHint("ct-hm", "Tell me a little more");
+      }, 800);
+    } else {
+      setFieldState("ct-fm", ok ? "valid" : "none");
+    }
+  });
 
   /* ── Submit ── */
-  cForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (countOn() < FIELDS.length) return;
-    showTxOverlay();
+  document.getElementById("ct-btn").addEventListener("click", () => {
+    if (!S.ready || S.busy) return;
+    S.busy = true;
+
+    // ── BACKEND PLACEHOLDER ──────────────────
+    // Formspree — uncomment and replace YOUR_ID:
+    // fetch('https://formspree.io/f/YOUR_ID', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    //   body: JSON.stringify({
+    //     name:    document.getElementById('ct-in').value.trim(),
+    //     email:   document.getElementById('ct-ie').value.trim(),
+    //     message: document.getElementById('ct-im').value.trim()
+    //   })
+    // });
+    // ─────────────────────────────────────────
+
+    runCollision();
   });
+
+  /* ── Collision + success sequence ── */
+  function runCollision() {
+    const tl = G.timeline();
+
+    // Converge particles to center
+    tl.call(() => {
+      Object.keys(orb).forEach((k) => {
+        if (orb[k].tl) orb[k].tl.kill();
+      });
+      [
+        "ct-pa-c",
+        "ct-pb-c",
+        "ct-pc-c",
+        "ct-pa-h",
+        "ct-pb-h",
+        "ct-pc-h",
+      ].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el)
+          G.to(el, {
+            attr: { cx: CX, cy: CY },
+            duration: 0.6,
+            ease: "power3.in",
+          });
+      });
+    });
+
+    // Burst
+    tl.to(
+      "#ct-cburst",
+      { opacity: 1, attr: { r: 50 }, duration: 0.13, ease: "power4.out" },
+      0.62,
+    );
+    tl.to(
+      "#ct-cburst",
+      { opacity: 0, attr: { r: 100 }, duration: 0.5, ease: "expo.out" },
+      0.75,
+    );
+
+    // Rays
+    tl.call(
+      () => {
+        G.set("#ct-rays", { opacity: 1 });
+        for (let i = 0; i < 8; i++) {
+          const a = (i / 8) * 360,
+            rad = (a * Math.PI) / 180;
+          const ex = CX + Math.cos(rad) * 240,
+            ey = CY + Math.sin(rad) * 240;
+          const ray = document.getElementById(`ct-r${i}`);
+          if (ray)
+            G.fromTo(
+              ray,
+              { attr: { x1: CX, y1: CY, x2: CX, y2: CY }, opacity: 1 },
+              {
+                attr: { x2: ex, y2: ey },
+                opacity: 0,
+                duration: 0.7,
+                ease: "expo.out",
+                delay: i * 0.025,
+              },
+            );
+        }
+      },
+      [],
+      0.63,
+    );
+
+    // Shockwaves
+    tl.to("#ct-sw1", { attr: { r: 340 }, opacity: 0.75, duration: 0.09 }, 0.63);
+    tl.to("#ct-sw1", { opacity: 0, duration: 0.6, ease: "power2.out" }, 0.72);
+    tl.to("#ct-sw2", { attr: { r: 380 }, opacity: 0.45, duration: 0.09 }, 0.73);
+    tl.to("#ct-sw2", { opacity: 0, duration: 0.55 }, 0.82);
+    tl.to("#ct-sw3", { attr: { r: 420 }, opacity: 0.2, duration: 0.09 }, 0.83);
+    tl.to("#ct-sw3", { opacity: 0, duration: 0.5 }, 0.92);
+
+    // Ring dies
+    tl.to("#ct-rp", { opacity: 0.7, duration: 0.1 }, 0.63);
+    tl.to(
+      [
+        "#ct-rp",
+        "#ct-tr-mid",
+        "#ct-tr-out",
+        "#ct-tr-in",
+        "#ct-amb",
+        "#ct-ticks",
+        "#ct-core",
+      ],
+      { opacity: 0, duration: 0.8, ease: "power2.in", stagger: 0.05 },
+      0.73,
+    );
+    tl.to(
+      ["#ct-nd0", "#ct-nd1", "#ct-nd2", "#ct-nd3"],
+      { opacity: 0, duration: 0.4 },
+      0.75,
+    );
+    tl.to(["#ct-pa", "#ct-pb", "#ct-pc"], { opacity: 0, duration: 0.35 }, 0.65);
+
+    // Flash
+    if (flashEl) {
+      tl.to("#ct-flash", { opacity: 0.14, duration: 0.14 }, 0.63);
+      tl.to("#ct-flash", { opacity: 0, duration: 0.7 }, 0.77);
+    }
+
+    // Success
+    tl.to(
+      "#ct-success",
+      { opacity: 1, duration: 0.75, ease: "power2.out" },
+      1.15,
+    );
+    tl.call(() => successEl.classList.add("show"), [], 1.15);
+  }
+
+  /* ── Reset ── */
+  document.getElementById("ct-btn-reset").addEventListener("click", () => {
+    G.to("#ct-success", {
+      opacity: 0,
+      duration: 0.4,
+      onComplete: () => {
+        successEl.classList.remove("show");
+      },
+    });
+
+    Object.assign(S, {
+      name: false,
+      email: false,
+      msg: false,
+      ready: false,
+      busy: false,
+    });
+    Object.keys(orb).forEach((k) => {
+      if (orb[k].tl) {
+        orb[k].tl.kill();
+        orb[k].tl = null;
+      }
+    });
+
+    ["ct-in", "ct-ie", "ct-im"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.value = "";
+    });
+    ["ct-fn", "ct-fe", "ct-fm"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove("valid", "error");
+    });
+    ["ct-hn", "ct-he", "ct-hm"].forEach((id) => hideHint(id));
+
+    const btn = document.getElementById("ct-btn");
+    if (btn) {
+      btn.classList.remove("ready");
+      btn.setAttribute("disabled", "");
+    }
+
+    // Restore ring
+    G.set(["#ct-sw1", "#ct-sw2", "#ct-sw3"], { attr: { r: 8 }, opacity: 0 });
+    G.set("#ct-cburst", { opacity: 0, attr: { r: 18 } });
+    G.set("#ct-rays", { opacity: 0 });
+    G.to("#ct-tr-mid", { opacity: 0.2, duration: 0.9 });
+    G.to(["#ct-tr-out", "#ct-tr-in"], { opacity: 0.14, duration: 0.9 });
+    G.to("#ct-rp", { opacity: 0, duration: 0 });
+    G.to("#ct-core", { opacity: 0, duration: 0.5 });
+    G.to("#ct-amb", { opacity: 0.55, duration: 0.9 });
+    G.to("#ct-ticks", { opacity: 0.22, duration: 0.9 });
+    G.to(["#ct-nd0", "#ct-nd1", "#ct-nd2", "#ct-nd3"], {
+      opacity: 0.5,
+      duration: 0.7,
+    });
+
+    syncUI();
+  });
+
+  /* ── Underline animation on headline ── */
+  function animateUnderline() {
+    const em = document.getElementById("ct-em-word");
+    if (em) setTimeout(() => em.classList.add("line-in"), 800);
+  }
+
+  /* ── Init ── */
+  ambient();
+  syncUI();
+  animateUnderline();
 })();

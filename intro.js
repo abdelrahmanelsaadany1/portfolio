@@ -1,7 +1,7 @@
 "use strict";
 
 /* ══════════════════════════════════════════════════════
-   INTRO — Physics Drop + Particle Field + Scatter Exit
+   INTRO — Two Words Collide + Particle Explosion
    Abdelrahman Elsaadany
 ══════════════════════════════════════════════════════ */
 
@@ -20,59 +20,21 @@ const _wm = setInterval(() => {
    CONFIG
 ══════════════════════════════════════════════════════ */
 const CFG = {
-  name: [
-    ["A", true],
-    ["b", false],
-    ["d", false],
-    ["e", false],
-    ["l", false],
-    ["r", false],
-    ["a", false],
-    ["h", false],
-    ["m", false],
-    ["a", false],
-    ["n", false],
-    ["__SPACE__"],
-    ["E", true],
-    ["l", false],
-    ["s", false],
-    ["a", false],
-    ["a", false],
-    ["d", false],
-    ["a", false],
-    ["n", false],
-    ["y", false],
-  ],
-
-  /* Physics */
-  gravity: 2600,
-  bounceDamp: 0.36,
-  bounceMin: 55,
-  maxBounces: 3,
-  velMin: 300,
-  velMax: 650,
-
-  /* Stagger */
-  baseDelay: 0.04,
-  staggerMin: 0.03,
-  staggerMax: 0.11,
+  /* How long after both words land before explosion */
+  holdAfterLand: 120,
+  splineTimeout: 800,
 
   /* Particle field */
   particleCount: 110,
-
-  /* Exit */
-  holdAfterLand: 1100,
-  splineTimeout: 2500,
 };
 
 /* ══════════════════════════════════════════════════════
    STATE
 ══════════════════════════════════════════════════════ */
-let lettersLanded = false;
 let splineDone = false;
+let lettersLanded = false;
 let exitTriggered = false;
 let holdTimer = null;
-let landedCount = 0;
 let isExiting = false;
 
 /* ══════════════════════════════════════════════════════
@@ -101,31 +63,28 @@ function maybeStartHold() {
 ══════════════════════════════════════════════════════ */
 const scene = document.getElementById("introScene");
 
-/* Single particle canvas */
 const pCanvas = document.createElement("canvas");
 pCanvas.id = "introParticleCanvas";
 scene.appendChild(pCanvas);
 
-/* Name */
 const nameEl = document.createElement("div");
 nameEl.id = "introName";
 scene.appendChild(nameEl);
 
-const letterEls = [];
+/* Word 1 — slides from LEFT */
+const word1 = document.createElement("span");
+word1.className = "name-word from-left";
+word1.innerHTML = '<span class="accent">A</span>bdelrahman';
+nameEl.appendChild(word1);
 
-CFG.name.forEach(([ch, accent]) => {
-  if (ch === "__SPACE__") {
-    const sp = document.createElement("span");
-    sp.className = "drop-space";
-    nameEl.appendChild(sp);
-    return;
-  }
-  const el = document.createElement("span");
-  el.className = "drop-letter" + (accent ? " accent" : "");
-  el.textContent = ch;
-  nameEl.appendChild(el);
-  letterEls.push({ el, accent });
-});
+/* Word 2 — slides from RIGHT */
+const word2 = document.createElement("span");
+word2.className = "name-word from-right";
+word2.innerHTML = '<span class="accent">E</span>lsaadany';
+nameEl.appendChild(word2);
+
+/* Collect all letter spans for exit particles */
+const letterEls = [...word1.querySelectorAll("span, :not(span)")];
 
 /* ══════════════════════════════════════════════════════
    CANVAS SETUP
@@ -182,23 +141,24 @@ function drawField() {
 
 function spawnExitParticles() {
   exitParticles = [];
-  letterEls.forEach(({ el }) => {
-    const rect = el.getBoundingClientRect();
+  /* Burst from both word blocks */
+  [word1, word2].forEach((word) => {
+    const rect = word.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
-    const count = 25 + Math.floor(Math.random() * 18);
+    const count = 120 + Math.floor(Math.random() * 40);
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const speed = 70 + Math.random() * 300;
+      const speed = 80 + Math.random() * 380;
       exitParticles.push({
-        x: cx,
-        y: cy,
+        x: cx + (Math.random() - 0.5) * rect.width,
+        y: cy + (Math.random() - 0.5) * rect.height,
         r: Math.random() * 2.2 + 0.6,
         a: 0.85 + Math.random() * 0.15,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - Math.random() * 50,
+        vy: Math.sin(angle) * speed - Math.random() * 60,
         life: 1,
-        decay: 0.016 + Math.random() * 0.022,
+        decay: 0.014 + Math.random() * 0.02,
         teal: Math.random() < 0.35,
       });
     }
@@ -237,9 +197,7 @@ function loop(t) {
   rafId = requestAnimationFrame(loop);
   const dt = Math.min((t - lastT) / 1000, 0.05);
   lastT = t;
-
   pCtx.clearRect(0, 0, W, H);
-
   if (!isExiting) {
     tickField(dt);
     drawField();
@@ -254,74 +212,27 @@ requestAnimationFrame((t) => {
 });
 
 /* ══════════════════════════════════════════════════════
-   PHYSICS DROP
+   ENTRANCE — both words fire at the same time
 ══════════════════════════════════════════════════════ */
-function rand(min, max) {
-  return min + Math.random() * (max - min);
-}
+let wordsLanded = 0;
 
-const startY = window.innerHeight * -1.15;
-
-letterEls.forEach(({ el }) => {
-  el.style.transform = `translateY(${startY}px)`;
-  el.style.opacity = "0";
-});
-
-function dropLetter({ el, accent }, delay) {
-  const v0 = rand(CFG.velMin, CFG.velMax);
-
-  setTimeout(() => {
-    el.style.opacity = "1";
-
-    let y = startY;
-    let vy = v0;
-    let bounces = 0;
-    let last = performance.now();
-    let settled = false;
-
-    function step(now) {
-      if (settled) return;
-      const dt = Math.min((now - last) / 1000, 0.05);
-      last = now;
-
-      vy += CFG.gravity * dt;
-      y += vy * dt;
-
-      if (y >= 0) {
-        y = 0;
-        vy = -vy * CFG.bounceDamp;
-        bounces++;
-
-        if (Math.abs(vy) < CFG.bounceMin || bounces >= CFG.maxBounces) {
-          y = 0;
-          vy = 0;
-          settled = true;
-          el.style.transform = "translateY(0px)";
-          onLetterLand();
-          return;
-        }
-      }
-
-      el.style.transform = `translateY(${y}px)`;
-      requestAnimationFrame(step);
-    }
-
-    requestAnimationFrame(step);
-  }, delay * 1000);
-}
-
-function onLetterLand() {
-  landedCount++;
-  if (landedCount === letterEls.length) {
+function onWordLanded() {
+  wordsLanded++;
+  if (wordsLanded === 2) {
     lettersLanded = true;
     maybeStartHold();
   }
 }
 
-/* Fire drops */
-letterEls.forEach((item, i) => {
-  const extra = rand(CFG.staggerMin, CFG.staggerMax);
-  dropLetter(item, CFG.baseDelay + i * extra);
+/* Small rAF delay so browser has painted before transition */
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    word1.classList.add("landed");
+    word2.classList.add("landed");
+
+    word1.addEventListener("transitionend", onWordLanded, { once: true });
+    word2.addEventListener("transitionend", onWordLanded, { once: true });
+  });
 });
 
 /* ══════════════════════════════════════════════════════
@@ -334,10 +245,10 @@ function triggerExit() {
 
   spawnExitParticles();
 
-  letterEls.forEach(({ el }) => {
-    el.style.transition = "opacity 0.12s ease";
-    el.style.opacity = "0";
-  });
+  word1.style.transition = "opacity 0.1s ease";
+  word2.style.transition = "opacity 0.1s ease";
+  word1.style.opacity = "0";
+  word2.style.opacity = "0";
 
   scene.classList.add("exiting");
 

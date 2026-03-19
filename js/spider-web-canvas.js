@@ -10,13 +10,13 @@
   const SKILLS = [
     { name: "C#", teal: true, dim: false },
     { name: "SQL SERVER", teal: false, dim: false },
-    { name: "ASP.NET", teal: false, dim: true },
+    { name: "ASP.NET", teal: false, dim: false },
     { name: ".NET", teal: false, dim: false },
-    { name: "EF CORE", teal: false, dim: true },
+    { name: "EF CORE", teal: false, dim: false },
     { name: "ANGULAR", teal: false, dim: false },
-    { name: "JAVASCRIPT", teal: false, dim: true },
+    { name: "JAVASCRIPT", teal: false, dim: false },
     { name: "GIT", teal: false, dim: false },
-    { name: "LINQ", teal: false, dim: true },
+    { name: "LINQ", teal: false, dim: false },
     { name: "HTML · CSS", teal: false, dim: false },
   ];
 
