@@ -29,15 +29,102 @@
     <link rel="stylesheet" href="the road/about-timeline.css" />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="preconnect" href="https://prod.spline.design" crossorigin />
+
+    <style>
+      /*
+        FIX 1: hero.css sets `.hero-bio-line span { color: #30cdcf }` which
+                turns "I am a" teal. We override it back to white only for
+                .hero-bio-prefix using a more specific selector + !important.
+
+        FIX 2: spaces disappeared because inline-block + nowrap collapses them.
+                Solution: don't use white-space:nowrap on the wrapper.
+                Instead use a flex row that doesn't wrap.
+
+        FIX 3: centering — hero-bio already has text-align:center so we just
+                need the flex row to be centered too.
+      */
+
+      /* The h1 itself stays as hero.css defines it */
+      .hero-bio-line {
+        text-align: center;
+      }
+
+      /* One flex row: "I am a" + typing box, centered, never wraps */
+      .typing-row {
+        display: inline-flex; /* shrink-wraps to content, centers via text-align */
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: nowrap; /* never break to next line */
+        gap: 0;
+      }
+
+      /* "I am a " — force white and override the span{color:#30cdcf} from hero.css */
+      .hero-bio-prefix {
+        color: #ffffff !important;
+        white-space: pre; /* preserves the trailing space */
+        flex-shrink: 0;
+      }
+
+      /*
+        Fixed-width box just wide enough for longest role.
+        overflow:hidden clips chars animating out.
+        height matches the line so nothing shifts vertically.
+      */
+      .typing-wrap {
+        display: inline-block;
+        position: relative;
+        width: 22ch; /* ch units scale with the font size */
+        height: 1.4em;
+        flex-shrink: 0;
+        overflow: hidden;
+      }
+
+      /* Absolute so it takes zero layout space */
+      #typing-target {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+      }
+
+      /* Each animated character — override the span color from hero.css */
+      .cascade-char {
+        display: inline-block;
+        opacity: 0;
+        transform: translateY(12px);
+        transition:
+          opacity 0.26s ease,
+          transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+        /* teal for the animated role, override hero.css span rule */
+        color: #30cdcf !important;
+      }
+      .cascade-char.shown {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .cascade-char.hiding {
+        opacity: 0;
+        transform: translateY(-12px);
+        transition:
+          opacity 0.18s ease,
+          transform 0.18s ease;
+      }
+
+      @media (max-width: 600px) {
+        .typing-wrap {
+          width: 18ch;
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="cursor-dot"></div>
     <div id="cursor-ring"></div>
     <div id="scroll-progress"></div>
 
-    <!-- ═══════════════════════════════════════════
-         INTRO SCENE START
-    ═══════════════════════════════════════════ -->
     <div id="introScene">
       <div id="introCard">
         <div id="introFront"></div>
@@ -45,10 +132,6 @@
       </div>
     </div>
     <div id="trailContainer"></div>
-
-    <!-- ═══════════════════════════════════════════
-         MAIN CONTAINER
-    ═══════════════════════════════════════════ -->
 
     <!-- ── HEADER ── -->
     <header id="main-header">
@@ -91,7 +174,6 @@
             ><i class="bx bxl-github"></i
           ></a>
         </div>
-
         <button class="hamburger" id="hamburger" aria-label="Menu">
           <span></span><span></span><span></span>
         </button>
@@ -137,31 +219,32 @@
     </div>
 
     <!-- ═══════════════════════════════════════════
-           HERO — spider web + spline
-      ═══════════════════════════════════════════ -->
-    <!-- ═══════════════════════════════════════════
-       HERO — spider web + spline
-  ═══════════════════════════════════════════ -->
-    <!-- ═══════════════════════════════════════════
-       HERO — bio + spider web + spline
-  ═══════════════════════════════════════════ -->
-    <!-- ═══════════════════════════════════════════
-       HERO — bio + spider web + spline
-  ═══════════════════════════════════════════ -->
+         HERO
+    ═══════════════════════════════════════════ -->
     <section class="hero" id="about">
       <div class="hero-content">
-        <!-- ── Bio text (top 25vh) ── -->
         <div class="hero-bio">
           <h1 class="hero-bio-line">
-            Sharpened by 1 year of experience —
-            <span
-              >I build full stack .NET applications from database design and API
-              architecture to Angular UI.</span
-            >
+            <!--
+              .typing-row is inline-flex so it sits centered inside the
+              text-align:center h1. flex-wrap:nowrap keeps I am a + role on one line.
+              .hero-bio-prefix uses white-space:pre so the trailing space is real.
+              .cascade-char spaces are textContent=' ' (real space char) so they render.
+            -->
+            <span class="typing-row">
+              <span class="hero-bio-prefix">I'm a </span>
+              <span class="typing-wrap">
+                <span id="typing-target"></span>
+              </span>
+            </span>
           </h1>
+
+          <p class="hero-bio-sub">
+            Sharpened by 1 year of experience — from database design and API
+            architecture to Angular UI.
+          </p>
         </div>
 
-        <!-- ── Spider web (bottom 25vh) ── -->
         <div class="web-wrap">
           <canvas id="webCanvas"></canvas>
           <div class="web-center-node" id="webCenter">
@@ -175,7 +258,6 @@
         </div>
       </div>
 
-      <!-- ── Robot Spline (right 50%) ── -->
       <div class="hero-robot">
         <spline-viewer
           url="https://prod.spline.design/xasrifDpZA-6mgqp/scene.splinecode"
@@ -185,19 +267,17 @@
     <div class="section-divider"></div>
 
     <!-- ═══════════════════════════════════════════
-           ABOUT — constellation journey
-      ═══════════════════════════════════════════ -->
+         ABOUT
+    ═══════════════════════════════════════════ -->
     <section class="section-page" id="about-section">
       <div class="hs-outer" id="hsOuter">
         <div class="hs-sticky">
           <div class="hs-top">
             <h2 class="hs-h2">The <span>Journey</span></h2>
           </div>
-
           <div class="hs-progress">
             <div class="hs-progress-fill" id="hsProgFill"></div>
           </div>
-
           <div class="hs-viewport" id="hsViewport">
             <div class="hs-track" id="hsTrack">
               <div
@@ -227,7 +307,6 @@
               ></div>
             </div>
           </div>
-
           <div class="hs-bottom">
             <div class="hs-dots">
               <div class="hs-dot hs-dot-ac" id="hsDot0">
@@ -260,10 +339,9 @@
     <div class="section-divider"></div>
 
     <!-- ═══════════════════════════════════════════
-           PROJECTS — Cinematic filmstrip
-      ═══════════════════════════════════════════ -->
+         PROJECTS
+    ═══════════════════════════════════════════ -->
     <section class="section-page pw-section" id="projects-section">
-      <!-- heading row -->
       <div class="pw-top">
         <div class="pw-heading-block">
           <h2 class="pw-heading"><span>Projects</span></h2>
@@ -297,15 +375,9 @@
           <span class="pw-tot" id="pwTot">08</span>
         </div>
       </div>
-
-      <!-- filmstrip viewport -->
       <div class="pw-film-outer" id="pwOuter">
-        <div class="pw-film-track" id="pwTrack">
-          <!-- cards injected by JS -->
-        </div>
+        <div class="pw-film-track" id="pwTrack"></div>
       </div>
-
-      <!-- dot nav -->
       <div class="pw-dots" id="pwDots"></div>
     </section>
 
@@ -335,15 +407,13 @@
     <div class="section-divider"></div>
 
     <!-- ═══════════════════════════════════════════
-           CONTACT — new orbital ring form
-      ═══════════════════════════════════════════ -->
+         CONTACT
+    ═══════════════════════════════════════════ -->
     <section class="section-page contact-section-new" id="contact-section">
       <div class="section-heading reveal">
         <h2>Contact <span>Me</span></h2>
         <span class="sec-line"></span>
       </div>
-
-      <!-- Success overlay (scoped inside section) -->
       <div id="ct-flash"></div>
       <div id="ct-success">
         <div class="ct-s-emblem">
@@ -355,9 +425,7 @@
         </p>
         <button id="ct-btn-reset">Send another message</button>
       </div>
-
       <div class="ct-wrap reveal reveal-delay-1">
-        <!-- ── LEFT: info panel ── -->
         <div class="ct-left">
           <h3 class="ct-headline">
             Let's build<br />something<br /><em id="ct-em-word">great</em>.
@@ -366,12 +434,7 @@
             Whether you have a project in mind, want to collaborate, or just say
             hi — my inbox is always open.
           </p>
-
           <div class="ct-contact-links">
-            <!-- ── paste this inside .ct-contact-links, replacing the old 3 items ── -->
-
-            <!-- ── paste this inside .ct-contact-links, replacing the old items ── -->
-
             <div class="contact-item">
               <div class="contact-item-icon">
                 <i class="bx bx-envelope"></i>
@@ -381,12 +444,10 @@
                 <a
                   href="mailto:abdelrahmanelsaadany18@gmail.com"
                   class="contact-item-val"
+                  >abdelrahmanelsaadany18@gmail.com</a
                 >
-                  abdelrahmanelsaadany18@gmail.com
-                </a>
               </div>
             </div>
-
             <div class="contact-item">
               <div class="contact-item-icon">
                 <i class="bx bxl-linkedin"></i>
@@ -398,16 +459,12 @@
                   target="_blank"
                   rel="noopener"
                   class="contact-item-val"
+                  >LinkedIn Profile</a
                 >
-                  LinkedIn Profile
-                </a>
               </div>
             </div>
-
             <div class="contact-item">
-              <div class="contact-item-icon">
-                <i class="bx bxl-github"></i>
-              </div>
+              <div class="contact-item-icon"><i class="bx bxl-github"></i></div>
               <div class="contact-item-text">
                 <span class="contact-item-label">GitHub</span>
                 <a
@@ -415,16 +472,12 @@
                   target="_blank"
                   rel="noopener"
                   class="contact-item-val"
+                  >GitHub Profile</a
                 >
-                  GitHub Profile
-                </a>
               </div>
             </div>
-
             <div class="contact-item">
-              <div class="contact-item-icon">
-                <i class="bx bx-map"></i>
-              </div>
+              <div class="contact-item-icon"><i class="bx bx-map"></i></div>
               <div class="contact-item-text">
                 <span class="contact-item-label">Location</span>
                 <span class="contact-item-val"
@@ -434,10 +487,7 @@
             </div>
           </div>
         </div>
-
-        <!-- ── RIGHT: ring + form ── -->
         <div class="ct-right">
-          <!-- Ring SVG -->
           <svg
             id="ct-ring-svg"
             viewBox="0 0 800 800"
@@ -736,12 +786,9 @@
               stroke-width="0.5"
               opacity="0.04"
             />
-
-            <!-- Particles -->
             <g id="ct-pa" opacity="0" filter="url(#ct-glow-p)">
-              <circle id="ct-pa-c" cx="400" cy="92" r="6" fill="#30cdcf" />
+              <circle cx="400" cy="92" r="6" fill="#30cdcf" />
               <circle
-                id="ct-pa-h"
                 cx="400"
                 cy="92"
                 r="11"
@@ -752,9 +799,8 @@
               />
             </g>
             <g id="ct-pb" opacity="0" filter="url(#ct-glow-p)">
-              <circle id="ct-pb-c" cx="708" cy="400" r="6" fill="#30cdcf" />
+              <circle cx="708" cy="400" r="6" fill="#30cdcf" />
               <circle
-                id="ct-pb-h"
                 cx="708"
                 cy="400"
                 r="11"
@@ -765,9 +811,8 @@
               />
             </g>
             <g id="ct-pc" opacity="0" filter="url(#ct-glow-lg)">
-              <circle id="ct-pc-c" cx="400" cy="708" r="7.5" fill="#30cdcf" />
+              <circle cx="400" cy="708" r="7.5" fill="#30cdcf" />
               <circle
-                id="ct-pc-h"
                 cx="400"
                 cy="708"
                 r="14"
@@ -777,8 +822,6 @@
                 opacity="0.45"
               />
             </g>
-
-            <!-- Shockwaves -->
             <circle
               id="ct-sw1"
               cx="400"
@@ -884,10 +927,7 @@
               />
             </g>
           </svg>
-
-          <!-- Form -->
           <div id="ct-form-wrap">
-            <!-- progress -->
             <div class="ct-progress-row">
               <div class="ct-pdots">
                 <div class="ct-pdot" id="ct-d0"></div>
@@ -899,8 +939,6 @@
               </div>
               <span class="ct-prog-label" id="ct-plbl">0 / 3</span>
             </div>
-
-            <!-- name -->
             <div class="ct-field" id="ct-fn">
               <label for="ct-in">Name</label>
               <input
@@ -916,8 +954,6 @@
               ></span>
               <span class="ct-fhint" id="ct-hn"></span>
             </div>
-
-            <!-- email -->
             <div class="ct-field" id="ct-fe">
               <label for="ct-ie">Email</label>
               <input
@@ -933,8 +969,6 @@
               ></span>
               <span class="ct-fhint" id="ct-he"></span>
             </div>
-
-            <!-- message -->
             <div class="ct-field ct-textarea-f" id="ct-fm">
               <label for="ct-im">Message</label>
               <textarea
@@ -947,7 +981,6 @@
               ></span>
               <span class="ct-fhint" id="ct-hm"></span>
             </div>
-
             <button id="ct-btn" disabled>Transmit Message</button>
           </div>
         </div>
@@ -963,6 +996,72 @@
       src="https://cdn.jsdelivr.net/npm/@splinetool/viewer/build/spline-viewer.js"
     ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+    <script>
+      (function () {
+        const roles = ["Software Engineer", "Full Stack .NET Developer"];
+        const el = document.getElementById("typing-target");
+        let t;
+
+        function buildSpans(text) {
+          el.innerHTML = "";
+          // Split on every character — spaces become real space spans
+          return Array.from(text).map((ch) => {
+            const s = document.createElement("span");
+            s.className = "cascade-char";
+            // Use non-breaking space for space chars so they render in inline-block
+            s.textContent = ch === " " ? "\u00A0" : ch;
+            el.appendChild(s);
+            return s;
+          });
+        }
+
+        function fadeIn(spans, done) {
+          spans.forEach((s, i) => {
+            t = setTimeout(() => {
+              s.classList.add("shown");
+              if (i === spans.length - 1 && done) t = setTimeout(done, 150);
+            }, i * 36);
+          });
+        }
+
+        function fadeOut(done) {
+          const spans = el.querySelectorAll(".cascade-char");
+          if (!spans.length) {
+            done && done();
+            return;
+          }
+          spans.forEach((s, i) => {
+            t = setTimeout(() => {
+              s.classList.remove("shown");
+              s.classList.add("hiding");
+              if (i === spans.length - 1 && done) t = setTimeout(done, 200);
+            }, i * 18);
+          });
+        }
+
+        function run() {
+          fadeIn(buildSpans(roles[0]), () => {
+            t = setTimeout(() => {
+              fadeOut(() => {
+                fadeIn(buildSpans(roles[1]), () => {
+                  t = setTimeout(() => {
+                    fadeOut(() => {
+                      t = setTimeout(run, 200);
+                    });
+                  }, 2500);
+                });
+              });
+            }, 2200);
+          });
+        }
+
+        document.addEventListener("DOMContentLoaded", () =>
+          setTimeout(run, 900),
+        );
+      })();
+    </script>
+
     <script src="intro.js"></script>
     <script src="js/bg-particles.js"></script>
     <script src="js/text-scramble.js"></script>
