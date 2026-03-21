@@ -1,6 +1,8 @@
 /* ═══════════════════════════════════════════════════════════════
-   about-timeline.js — THE ROAD (matches standalone exactly)
-   Camera pans BOTH X and Y to center each node in viewport.
+   about-timeline.js — THE ROAD
+   Entrance/exit: original scroll-driven (300vh outer, onScroll).
+   Navigation display: snap engine identical to standalone.
+   HUD: counter (bottom-left) + arrows (bottom-right) added.
 ═══════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
@@ -11,7 +13,7 @@
     });
   });
 
-  /* ── card data — original, untouched ── */
+  /* ── card data ── */
   var CARDS = [
     {
       dotId: "hsDot0",
@@ -60,22 +62,22 @@
     },
   ];
 
-  /* ── world dimensions — FIXED like standalone ── */
-  var WW = 3600; /* world width  */
-  var WH = 960; /* world height */
-  var YN = 400; /* normal road Y in world coords */
-  var YD = 680; /* military dip Y in world coords */
+  /* ── world dimensions ── */
+  var WW = 3600;
+  var WH = 960;
+  var YN = 400;
+  var YD = 680;
 
-  /* node positions in world coords */
   var NODES = [
     { x: 380, y: YN },
     { x: 940, y: YN },
-    { x: 1500, y: YD } /* ← MILITARY DIP */,
+    { x: 1500, y: YD },
     { x: 2060, y: YN },
     { x: 2620, y: YN },
   ];
 
-  var outer, track, viewport, progFill, hintEl;
+  /* ── state ── */
+  var track, viewport, progFill, hintEl;
   var cardEls = [],
     svgNodeGroups = [],
     dotEls = [];
@@ -87,17 +89,22 @@
   var outerTop = 0;
   var outerH = 0;
 
-  /* ── SETUP ── */
+  /* ── HUD elements ── */
+  var btnPrev, btnNext, counterNum;
+
+  /* ════════════════════════════════════════════
+     SETUP
+  ════════════════════════════════════════════ */
   function setup() {
-    outer = document.getElementById("hsOuter");
     track = document.getElementById("hsTrack");
     viewport = document.getElementById("hsViewport");
     progFill = document.getElementById("hsProgFill");
     hintEl = document.getElementById("hsHint");
-    if (!outer || !track || !viewport) return;
+    if (!track || !viewport) return;
 
     isMobile = window.innerWidth <= 700;
     buildDots();
+
     if (isMobile) {
       setupMobile();
       return;
@@ -107,6 +114,7 @@
     buildBgCanvas();
     buildRoadSVG();
     buildCards();
+    injectHUD();
     snap(0, true);
 
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -114,12 +122,154 @@
   }
 
   function measureOuter() {
+    var outer = document.getElementById("hsOuter");
     var rect = outer.getBoundingClientRect();
     outerTop = rect.top + window.scrollY;
     outerH = outer.offsetHeight;
   }
 
-  /* ── ROAD PATH — exact same bezier as standalone ── */
+  /* ════════════════════════════════════════════
+     HUD — counter + arrows injected into .hs-sticky
+  ════════════════════════════════════════════ */
+  function injectHUD() {
+    var old = document.getElementById("rdHUD");
+    if (old) old.parentNode.removeChild(old);
+
+    var sticky = document.querySelector(".hs-sticky");
+    if (!sticky) return;
+
+    var hud = document.createElement("div");
+    hud.id = "rdHUD";
+    hud.innerHTML =
+      '<div class="rd-counter">' +
+      '<div class="rd-counter-num" id="rdCNum">01</div>' +
+      '<div class="rd-counter-of">of 0' +
+      CARDS.length +
+      "</div>" +
+      "</div>" +
+      '<div class="rd-arrows">' +
+      '<button class="rd-na" id="rdPrev" title="Previous">&#8592;</button>' +
+      '<button class="rd-na" id="rdNext" title="Next">&#8594;</button>' +
+      "</div>";
+
+    sticky.appendChild(hud);
+
+    btnPrev = document.getElementById("rdPrev");
+    btnNext = document.getElementById("rdNext");
+    counterNum = document.getElementById("rdCNum");
+
+    /* Arrows scroll the page to the right position — same as dots */
+    btnPrev.addEventListener("click", function () {
+      scrollToIdx(curIdx - 1);
+    });
+    btnNext.addEventListener("click", function () {
+      scrollToIdx(curIdx + 1);
+    });
+  }
+
+  /* Scroll page to position that will trigger snap(idx) via onScroll */
+  function scrollToIdx(idx) {
+    if (idx < 0 || idx >= CARDS.length) return;
+    var raw = (idx + 0.05) / CARDS.length;
+    window.scrollTo({
+      top: outerTop + raw * (outerH - window.innerHeight),
+      behavior: "smooth",
+    });
+  }
+
+  /* ════════════════════════════════════════════
+     SCROLL — original entrance/exit logic untouched
+  ════════════════════════════════════════════ */
+  function onScroll() {
+    if (isMobile || ticking) return;
+    ticking = true;
+    requestAnimationFrame(processScroll);
+  }
+
+  function processScroll() {
+    ticking = false;
+    var raw = Math.max(
+      0,
+      Math.min(
+        1,
+        (window.scrollY - outerTop) / Math.max(outerH - window.innerHeight, 1),
+      ),
+    );
+    var idx = Math.min(
+      CARDS.length - 1,
+      Math.max(0, Math.round(raw * (CARDS.length - 1))),
+    );
+    if (idx !== lastIdx) {
+      lastIdx = idx;
+      snap(idx, false);
+    }
+  }
+
+  /* ════════════════════════════════════════════
+     SNAP — translate X+Y to centre node (compositor only)
+  ════════════════════════════════════════════ */
+  function snap(idx, instant) {
+    curIdx = idx;
+    var n = NODES[idx];
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var tx = vw / 2 - n.x;
+    var ty = vh / 2 - n.y;
+
+    if (instant) {
+      track.style.transition = "none";
+      track.style.transform = "translate(" + tx + "px," + ty + "px)";
+      requestAnimationFrame(function () {
+        track.style.transition = "";
+      });
+    } else {
+      track.style.transform = "translate(" + tx + "px," + ty + "px)";
+    }
+
+    /* Cards */
+    cardEls.forEach(function (c, i) {
+      c.classList.toggle("rd-active", i === idx);
+      c.classList.toggle("rd-adj", Math.abs(i - idx) === 1);
+    });
+
+    /* SVG nodes */
+    svgNodeGroups.forEach(function (g, i) {
+      if (!g) return;
+      var cs = g.querySelectorAll("circle");
+      var mil = !!CARDS[i].isMil;
+      if (i === idx) {
+        cs[0].setAttribute("r", mil ? "26" : "20");
+        cs[0].setAttribute("opacity", mil ? ".18" : ".16");
+        cs[1].setAttribute("r", mil ? "11" : "9");
+      } else {
+        cs[0].setAttribute("r", mil ? "18" : "14");
+        cs[0].setAttribute("opacity", mil ? ".12" : ".10");
+        cs[1].setAttribute("r", mil ? "8" : "6");
+      }
+    });
+
+    /* Dots */
+    dotEls.forEach(function (d, i) {
+      if (d) d.classList.toggle("active", i === idx);
+    });
+
+    /* Progress bar */
+    if (progFill) progFill.style.width = (idx / (CARDS.length - 1)) * 100 + "%";
+
+    /* Counter */
+    if (counterNum) counterNum.textContent = String(idx + 1).padStart(2, "0");
+
+    /* Arrow disabled states */
+    if (btnPrev) btnPrev.disabled = idx === 0;
+    if (btnNext) btnNext.disabled = idx === CARDS.length - 1;
+
+    /* Hint */
+    if (hintEl && idx > 0) hintEl.classList.add("done");
+  }
+
+  /* ════════════════════════════════════════════
+     ROAD PATH
+  ════════════════════════════════════════════ */
   function roadPath() {
     var mx = NODES[2].x;
     return (
@@ -184,7 +334,9 @@
     );
   }
 
-  /* ── SVG ROAD — no background fills, just road strokes + nodes ── */
+  /* ════════════════════════════════════════════
+     SVG ROAD
+  ════════════════════════════════════════════ */
   function buildRoadSVG() {
     if (roadSVG && roadSVG.parentNode) roadSVG.parentNode.removeChild(roadSVG);
 
@@ -239,7 +391,6 @@
     E("feMergeNode", { in: "b" }, mm);
     E("feMergeNode", { in: "SourceGraphic" }, mm);
 
-    /* pit radial shadow */
     var mx = NODES[2].x;
     var pRG = E(
       "radialGradient",
@@ -257,7 +408,6 @@
       pRG,
     );
 
-    /* ── road layers ── */
     var RD = roadPath();
     function oy(s, d) {
       return s.replace(/([\d.]+),([\d.]+)/g, function (_, x, y) {
@@ -302,10 +452,8 @@
       filter: "url(#rdG)",
     });
 
-    /* pit shadow */
     E("rect", { x: 0, y: 0, width: WW, height: WH, fill: "url(#rdP)" });
 
-    /* crack marks */
     [-80, -36, 0, 38].forEach(function (dx) {
       E("line", {
         x1: mx + dx - 5,
@@ -318,7 +466,6 @@
       });
     });
 
-    /* ── node circles ── */
     svgNodeGroups = [];
     CARDS.forEach(function (m, i) {
       var n = NODES[i];
@@ -354,7 +501,9 @@
     roadSVG = svg;
   }
 
-  /* ── STARS — drawn only above the road line ── */
+  /* ════════════════════════════════════════════
+     STARS
+  ════════════════════════════════════════════ */
   function buildBgCanvas() {
     var old = document.getElementById("csBgCanvas");
     if (old) old.parentNode.removeChild(old);
@@ -400,11 +549,9 @@
     track.insertBefore(c, track.firstChild);
   }
 
-  /* ── CARDS + CONNECTORS ──
-     Normal cards: above their node
-     Military card: also above its node (even though node is in the dip)
-     The camera will pan DOWN to show the dip — card appears above it
-  ── */
+  /* ════════════════════════════════════════════
+     CARDS + CONNECTORS
+  ════════════════════════════════════════════ */
   function buildCards() {
     track.querySelectorAll(".rd-card,.rd-conn").forEach(function (el) {
       el.parentNode.removeChild(el);
@@ -416,7 +563,6 @@
       var CLEN = 160;
       var cTop = n.y - CLEN;
 
-      /* connector */
       var conn = document.createElement("div");
       conn.className = "rd-conn";
       conn.style.cssText =
@@ -436,7 +582,6 @@
             "70,transparent);");
       track.appendChild(conn);
 
-      /* card */
       var cardTop = cTop - 80;
       var card = document.createElement("div");
       card.className = "rd-card" + (m.isMil ? " rd-card-mil" : "");
@@ -474,80 +619,9 @@
     });
   }
 
-  /* ── SNAP — translate BOTH X and Y to centre node in viewport ──
-     This is the key: same as standalone roadmap.html
-  ── */
-  function snap(idx, instant) {
-    curIdx = idx;
-    var n = NODES[idx];
-    var vw = window.innerWidth;
-    var vh = window.innerHeight;
-    var tx = vw / 2 - n.x;
-    var ty = vh / 2 - n.y;
-
-    if (instant) {
-      track.style.transition = "none";
-      track.style.transform = "translate(" + tx + "px," + ty + "px)";
-      requestAnimationFrame(function () {
-        track.style.transition = "";
-      });
-    } else {
-      track.style.transform = "translate(" + tx + "px," + ty + "px)";
-    }
-
-    cardEls.forEach(function (c, i) {
-      c.classList.toggle("rd-active", i === idx);
-      c.classList.toggle("rd-adj", Math.abs(i - idx) === 1);
-    });
-
-    svgNodeGroups.forEach(function (g, i) {
-      if (!g) return;
-      var cs = g.querySelectorAll("circle"),
-        mil = !!CARDS[i].isMil;
-      if (i === idx) {
-        cs[0].setAttribute("r", mil ? "26" : "20");
-        cs[0].setAttribute("opacity", mil ? ".18" : ".16");
-        cs[1].setAttribute("r", mil ? "11" : "9");
-      } else {
-        cs[0].setAttribute("r", mil ? "18" : "14");
-        cs[0].setAttribute("opacity", mil ? ".12" : ".10");
-        cs[1].setAttribute("r", mil ? "8" : "6");
-      }
-    });
-
-    dotEls.forEach(function (d, i) {
-      if (d) d.classList.toggle("active", i === idx);
-    });
-    if (progFill) progFill.style.width = (idx / (CARDS.length - 1)) * 100 + "%";
-    if (hintEl && idx > 0) hintEl.classList.add("done");
-  }
-
-  /* ── SCROLL ── */
-  function onScroll() {
-    if (isMobile || ticking) return;
-    ticking = true;
-    requestAnimationFrame(processScroll);
-  }
-  function processScroll() {
-    ticking = false;
-    var raw = Math.max(
-      0,
-      Math.min(
-        1,
-        (window.scrollY - outerTop) / Math.max(outerH - window.innerHeight, 1),
-      ),
-    );
-    var idx = Math.min(
-      CARDS.length - 1,
-      Math.max(0, Math.round(raw * (CARDS.length - 1))),
-    );
-    if (idx !== lastIdx) {
-      lastIdx = idx;
-      snap(idx, false);
-    }
-  }
-
-  /* ── DOTS ── */
+  /* ════════════════════════════════════════════
+     DOTS — original scroll-to behavior
+  ════════════════════════════════════════════ */
   function buildDots() {
     dotEls = [];
     CARDS.forEach(function (m, i) {
@@ -564,7 +638,9 @@
     });
   }
 
-  /* ── MOBILE ── */
+  /* ════════════════════════════════════════════
+     MOBILE
+  ════════════════════════════════════════════ */
   function setupMobile() {
     track.innerHTML = "";
     track.style.transform = "none";
@@ -595,7 +671,9 @@
     });
   }
 
-  /* ── RESIZE ── */
+  /* ════════════════════════════════════════════
+     RESIZE
+  ════════════════════════════════════════════ */
   var resizeT;
   function onResize() {
     clearTimeout(resizeT);
@@ -610,6 +688,7 @@
       buildBgCanvas();
       buildRoadSVG();
       buildCards();
+      injectHUD();
       lastIdx = -1;
       snap(curIdx, true);
       processScroll();

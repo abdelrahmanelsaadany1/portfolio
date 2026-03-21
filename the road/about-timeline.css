@@ -12,7 +12,7 @@
   display: none !important;
 }
 
-/* ── outer scroll container: 500 vh = ~100 vh per milestone ── */
+/* ── outer scroll container: 500vh = ~100vh per milestone ── */
 .hs-outer {
   height: 300vh;
   position: relative;
@@ -415,6 +415,81 @@
 }
 
 /* ═══════════════════════════════════════════
+   HUD — counter (bottom-left) + arrows (bottom-right)
+═══════════════════════════════════════════ */
+#rdHUD {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0 clamp(18px, 4vw, 60px) 28px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 30;
+}
+
+.rd-counter {
+  pointer-events: none;
+  line-height: 1;
+}
+.rd-counter-num {
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  letter-spacing: 4px;
+  color: #00ddc8;
+  line-height: 1;
+}
+.rd-counter-of {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.44rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.18);
+  margin-top: 3px;
+}
+
+.rd-arrows {
+  display: flex;
+  gap: 8px;
+  pointer-events: auto;
+}
+.rd-na {
+  width: 42px;
+  height: 42px;
+  background: rgba(6, 8, 14, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.9rem;
+  user-select: none;
+  transition:
+    border-color 0.2s,
+    color 0.2s,
+    box-shadow 0.2s,
+    transform 0.1s;
+}
+.rd-na:hover {
+  border-color: #00ddc8;
+  color: #00ddc8;
+  box-shadow: 0 0 14px rgba(0, 221, 200, 0.18);
+}
+.rd-na:active {
+  transform: scale(0.9);
+}
+.rd-na:disabled {
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════
    MOBILE ≤ 700px
 ═══════════════════════════════════════════ */
 @media (max-width: 700px) {
@@ -432,7 +507,6 @@
   .hs-progress {
     display: none;
   }
-
   .hs-viewport {
     overflow: visible;
     height: auto;
@@ -455,8 +529,6 @@
   .rd-conn {
     display: none;
   }
-
-  /* vertical spine */
   .hs-track::before {
     content: "";
     position: absolute;
@@ -475,7 +547,6 @@
     opacity: 0.3;
     z-index: 0;
   }
-
   .rd-card {
     position: relative !important;
     left: auto !important;
@@ -489,7 +560,6 @@
   .rd-card.rd-adj {
     opacity: 1 !important;
   }
-
   .hs-bottom {
     padding: 12px 20px 20px;
     justify-content: center;
@@ -509,5 +579,8 @@
   }
   .hs-dot-label {
     font-size: 0.44rem;
+  }
+  #rdHUD {
+    display: none;
   }
 }
