@@ -1,12 +1,16 @@
 /* ══════════════════════════════════════════════════════
-   INTRO — Cold Boot  (optimised)
+   INTRO — Option A: CSS Compositor + Canvas Shockwave
+   
+   #introScene   dark background while JS hasn't painted yet
+   #introCanvas  invisible during boot, active during blast
+   #introSVG     injected by intro.js — no styles needed here
 ══════════════════════════════════════════════════════ */
 
 #introScene {
   position: fixed;
   inset: 0;
   z-index: 99999;
-  background: #03060e; /* covers site before first canvas frame */
+  background: #03060e; /* covers site before first frame */
   overflow: hidden;
   pointer-events: all;
 }
@@ -17,5 +21,5 @@
   display: block;
   width: 100%;
   height: 100%;
-  will-change: transform; /* promote to GPU compositing layer */
+  will-change: transform; /* GPU compositing layer */
 }
