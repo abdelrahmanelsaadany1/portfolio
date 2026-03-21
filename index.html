@@ -31,55 +31,29 @@
     <link rel="preconnect" href="https://prod.spline.design" crossorigin />
 
     <style>
-      /*
-        FIX 1: hero.css sets `.hero-bio-line span { color: #30cdcf }` which
-                turns "I am a" teal. We override it back to white only for
-                .hero-bio-prefix using a more specific selector + !important.
-
-        FIX 2: spaces disappeared because inline-block + nowrap collapses them.
-                Solution: don't use white-space:nowrap on the wrapper.
-                Instead use a flex row that doesn't wrap.
-
-        FIX 3: centering — hero-bio already has text-align:center so we just
-                need the flex row to be centered too.
-      */
-
-      /* The h1 itself stays as hero.css defines it */
       .hero-bio-line {
         text-align: center;
       }
-
-      /* One flex row: "I am a" + typing box, centered, never wraps */
       .typing-row {
-        display: inline-flex; /* shrink-wraps to content, centers via text-align */
+        display: inline-flex;
         flex-direction: row;
         align-items: center;
-        flex-wrap: nowrap; /* never break to next line */
+        flex-wrap: nowrap;
         gap: 0;
       }
-
-      /* "I am a " — force white and override the span{color:#30cdcf} from hero.css */
       .hero-bio-prefix {
         color: #ffffff !important;
-        white-space: pre; /* preserves the trailing space */
+        white-space: pre;
         flex-shrink: 0;
       }
-
-      /*
-        Fixed-width box just wide enough for longest role.
-        overflow:hidden clips chars animating out.
-        height matches the line so nothing shifts vertically.
-      */
       .typing-wrap {
         display: inline-block;
         position: relative;
-        width: 22ch; /* ch units scale with the font size */
+        width: 22ch;
         height: 1.4em;
         flex-shrink: 0;
         overflow: hidden;
       }
-
-      /* Absolute so it takes zero layout space */
       #typing-target {
         position: absolute;
         left: 0;
@@ -89,8 +63,6 @@
         align-items: center;
         white-space: nowrap;
       }
-
-      /* Each animated character — override the span color from hero.css */
       .cascade-char {
         display: inline-block;
         opacity: 0;
@@ -98,7 +70,6 @@
         transition:
           opacity 0.26s ease,
           transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
-        /* teal for the animated role, override hero.css span rule */
         color: #30cdcf !important;
       }
       .cascade-char.shown {
@@ -112,7 +83,6 @@
           opacity 0.18s ease,
           transform 0.18s ease;
       }
-
       @media (max-width: 600px) {
         .typing-wrap {
           width: 18ch;
@@ -220,12 +190,6 @@
       <div class="hero-content">
         <div class="hero-bio">
           <h1 class="hero-bio-line">
-            <!--
-              .typing-row is inline-flex so it sits centered inside the
-              text-align:center h1. flex-wrap:nowrap keeps I am a + role on one line.
-              .hero-bio-prefix uses white-space:pre so the trailing space is real.
-              .cascade-char spaces are textContent=' ' (real space char) so they render.
-            -->
             <span class="typing-row">
               <span class="hero-bio-prefix">I'm a </span>
               <span class="typing-wrap">
@@ -233,7 +197,6 @@
               </span>
             </span>
           </h1>
-
           <p class="hero-bio-sub">
             Sharpened by 1 year of experience — from database design and API
             architecture to Angular UI.
@@ -262,7 +225,7 @@
     <div class="section-divider"></div>
 
     <!-- ═══════════════════════════════════════════
-         ABOUT
+         ABOUT / THE ROAD
     ═══════════════════════════════════════════ -->
     <section class="section-page" id="about-section">
       <div class="hs-outer" id="hsOuter">
@@ -275,31 +238,7 @@
           </div>
           <div class="hs-viewport" id="hsViewport">
             <div class="hs-track" id="hsTrack">
-              <div
-                class="cs-star cs-ac"
-                id="rnAc"
-                style="position: absolute"
-              ></div>
-              <div
-                class="cs-star cs-iti"
-                id="rnIti"
-                style="position: absolute"
-              ></div>
-              <div
-                class="cs-star cs-mil"
-                id="rnMil"
-                style="position: absolute"
-              ></div>
-              <div
-                class="cs-star cs-iot"
-                id="rnIot"
-                style="position: absolute"
-              ></div>
-              <div
-                class="cs-star cs-asu"
-                id="rnAsu"
-                style="position: absolute"
-              ></div>
+              <!-- road content is built entirely by about-timeline.js -->
             </div>
           </div>
           <div class="hs-bottom">
@@ -476,7 +415,7 @@
               <div class="contact-item-text">
                 <span class="contact-item-label">Location</span>
                 <span class="contact-item-val"
-                  >Alexandria, Egypt · Open to Remote & Relocation</span
+                  >Alexandria, Egypt · Open to Remote &amp; Relocation</span
                 >
               </div>
             </div>
@@ -997,20 +936,16 @@
         const roles = ["Software Engineer", "Full Stack .NET Developer"];
         const el = document.getElementById("typing-target");
         let t;
-
         function buildSpans(text) {
           el.innerHTML = "";
-          // Split on every character — spaces become real space spans
           return Array.from(text).map((ch) => {
             const s = document.createElement("span");
             s.className = "cascade-char";
-            // Use non-breaking space for space chars so they render in inline-block
             s.textContent = ch === " " ? "\u00A0" : ch;
             el.appendChild(s);
             return s;
           });
         }
-
         function fadeIn(spans, done) {
           spans.forEach((s, i) => {
             t = setTimeout(() => {
@@ -1019,7 +954,6 @@
             }, i * 36);
           });
         }
-
         function fadeOut(done) {
           const spans = el.querySelectorAll(".cascade-char");
           if (!spans.length) {
@@ -1034,7 +968,6 @@
             }, i * 18);
           });
         }
-
         function run() {
           fadeIn(buildSpans(roles[0]), () => {
             t = setTimeout(() => {
@@ -1050,7 +983,6 @@
             }, 2200);
           });
         }
-
         document.addEventListener("DOMContentLoaded", () =>
           setTimeout(run, 900),
         );

@@ -1,512 +1,618 @@
 /* ═══════════════════════════════════════════════════════════════
-   about-timeline.js  —  CONSTELLATION · STRAIGHT LINE · NO LAG
-   • rAF-throttled scroll — never reads DOM in scroll handler
-   • All values cached on init/resize
-   • CSS transform only for track pan (GPU)
-   • SVG line drawn via pre-cached strokeDashoffset
-   • Stars on a straight horizontal line
-   • Military star drops far below the line
+   about-timeline.js — THE ROAD (matches standalone exactly)
+   Camera pans BOTH X and Y to center each node in viewport.
 ═══════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
 
-  var outer = document.getElementById("hsOuter");
-  var track = document.getElementById("hsTrack");
-  var progFill = document.getElementById("hsProgFill");
-  var hintEl = document.getElementById("hsHint");
+  window.addEventListener("load", function () {
+    requestAnimationFrame(function () {
+      requestAnimationFrame(setup);
+    });
+  });
 
-  if (!outer || !track) return;
-
-  var TRACK_W = 5000;
-  var isMobile = window.innerWidth <= 700;
-
-  /* ── Star definitions ─────────────────────────────────
-     yf = fraction of track height
-     Normal stars sit at 0.42 (middle-ish)
-     Military drops to 0.78 (the downfall)
-  ─────────────────────────────────────────────────────── */
-  var STARS = [
+  /* ── card data — original, untouched ── */
+  var CARDS = [
     {
-      id: "rnAc",
-      xf: 0.08,
-      yf: 0.42,
-      card: "above",
-      cls: "cs-ac",
-      showAt: 0.0,
-    },
-    {
-      id: "rnIti",
-      xf: 0.26,
-      yf: 0.42,
-      card: "above",
-      cls: "cs-iti",
-      showAt: 0.1,
-    },
-    {
-      id: "rnMil",
-      xf: 0.48,
-      yf: 0.62,
-      card: "below",
-      cls: "cs-mil",
-      showAt: 0.33,
-    },
-    {
-      id: "rnIot",
-      xf: 0.68,
-      yf: 0.42,
-      card: "above",
-      cls: "cs-iot",
-      showAt: 0.58,
-    },
-    {
-      id: "rnAsu",
-      xf: 0.88,
-      yf: 0.42,
-      card: "above",
-      cls: "cs-asu",
-      showAt: 0.82,
-    },
-  ];
-
-  var DOTS = [
-    { id: "hsDot0", at: 0.0, sf: 0 },
-    { id: "hsDot1", at: 0.12, sf: 1 },
-    { id: "hsDotMil", at: 0.36, sf: 2 },
-    { id: "hsDot2", at: 0.6, sf: 3 },
-    { id: "hsDot3", at: 0.84, sf: 4 },
-  ];
-
-  var CARD_DATA = {
-    rnAc: {
+      dotId: "hsDot0",
       tag: "Live Now",
       date: "Oct 2025 — Present",
       title: "Full Stack .NET Developer",
       org: "Arab Computers · Alexandria, Egypt",
       tags: ["ASP.NET Core", "Angular", "CQRS", "Docker", "Azure DevOps"],
+      color: "#50e898",
     },
-    rnIti: {
+    {
+      dotId: "hsDot1",
       tag: "Internship",
       date: "Mar 2025 — Aug 2025",
       title: "Full Stack .NET Intern",
       org: "ITI · Intensive Code Camp · Alexandria",
       tags: ["ASP.NET Core", "Angular", "EF Core", "SQL Server"],
+      color: "#00ddc8",
     },
-    rnMil: {
-      mil: true,
+    {
+      dotId: "hsDotMil",
       date: "Dec 2024",
       title: "Military Service",
-      org: "Completed · Discipline &amp; Teamwork",
+      org: "Completed · Discipline & Teamwork",
       tags: [],
+      color: "#ff3838",
+      isMil: true,
     },
-    rnIot: {
+    {
+      dotId: "hsDot2",
       tag: "Training",
       date: "2022",
       title: "IoT Development Program",
       org: "ITI · Smart Village, Egypt",
       tags: ["IoTik", "SigFox", "BLE Gateway", "Sensors"],
+      color: "#b068f0",
     },
-    rnAsu: {
+    {
+      dotId: "hsDot3",
       tag: "Education",
       date: "2019 — 2023",
       title: "B.Sc. Computer Science",
       org: "Alexandria University · CGPA 3.2",
       tags: ["OOP", "Algorithms", "C#", "Java", "Flutter"],
+      color: "#f0c060",
     },
-  };
+  ];
 
-  /* ══════════════════════════════════════════
-     BUILD STAR DOM  (runs once)
-  ══════════════════════════════════════════ */
-  STARS.forEach(function (s) {
-    var el = document.getElementById(s.id);
-    if (!el) return;
-    var d = CARD_DATA[s.id];
+  /* ── world dimensions — FIXED like standalone ── */
+  var WW = 3600; /* world width  */
+  var WH = 960; /* world height */
+  var YN = 400; /* normal road Y in world coords */
+  var YD = 680; /* military dip Y in world coords */
 
-    el.className = "cs-star " + s.cls;
-    el.style.cssText = "position:absolute;";
+  /* node positions in world coords */
+  var NODES = [
+    { x: 380, y: YN },
+    { x: 940, y: YN },
+    { x: 1500, y: YD } /* ← MILITARY DIP */,
+    { x: 2060, y: YN },
+    { x: 2620, y: YN },
+  ];
 
-    var tagsHTML = d.tags
-      .map(function (t) {
-        return "<span>" + t + "</span>";
-      })
-      .join("");
-    var tagLine = d.mil
-      ? '<div class="cs-mil-warning">⚠ Service Interrupted</div>'
-      : d.tag
-        ? '<div class="cs-card-tag">' + d.tag + "</div>"
-        : "";
+  var outer, track, viewport, progFill, hintEl;
+  var cardEls = [],
+    svgNodeGroups = [],
+    dotEls = [];
+  var roadSVG = null;
+  var isMobile = false;
+  var curIdx = 0;
+  var ticking = false;
+  var lastIdx = -1;
+  var outerTop = 0;
+  var outerH = 0;
 
-    var cardCls =
-      "cs-card " +
-      (s.card === "above" ? "card-above" : "card-below") +
-      (d.mil ? " cs-mil-card" : "");
-    var armCls = "cs-arm " + (s.card === "above" ? "arm-up" : "arm-down");
+  /* ── SETUP ── */
+  function setup() {
+    outer = document.getElementById("hsOuter");
+    track = document.getElementById("hsTrack");
+    viewport = document.getElementById("hsViewport");
+    progFill = document.getElementById("hsProgFill");
+    hintEl = document.getElementById("hsHint");
+    if (!outer || !track || !viewport) return;
 
-    el.innerHTML =
-      '<div class="cs-star-dot">' +
-      '<div class="cs-star-ring"></div>' +
-      '<div class="cs-star-ring2"></div>' +
-      '<div class="cs-star-cross"></div>' +
-      "</div>" +
-      '<div class="' +
-      armCls +
-      '"></div>' +
-      '<div class="' +
-      cardCls +
-      '">' +
-      tagLine +
-      '<div class="cs-card-date">' +
-      d.date +
-      "</div>" +
-      '<div class="cs-card-title">' +
-      d.title +
-      "</div>" +
-      '<div class="cs-card-org">' +
-      d.org +
-      "</div>" +
-      (tagsHTML ? '<div class="cs-card-tags">' + tagsHTML + "</div>" : "") +
-      "</div>";
-  });
+    isMobile = window.innerWidth <= 700;
+    buildDots();
+    if (isMobile) {
+      setupMobile();
+      return;
+    }
 
-  /* rebuild dot star spans */
-  DOTS.forEach(function (d) {
-    var el = document.getElementById(d.id);
-    if (!el || el.querySelector(".hs-dot-star")) return;
-    var span = document.createElement("div");
-    span.className = "hs-dot-star";
-    el.insertBefore(span, el.firstChild);
-  });
+    measureOuter();
+    buildBgCanvas();
+    buildRoadSVG();
+    buildCards();
+    snap(0, true);
 
-  /* cache element refs — avoid getElementById in hot scroll loop */
-  var starEls = STARS.map(function (s) {
-    return document.getElementById(s.id);
-  });
-  var dotEls = DOTS.map(function (d) {
-    return document.getElementById(d.id);
-  });
-  var bgCanvas = document.createElement("canvas");
-  bgCanvas.id = "csBgCanvas";
-  track.insertBefore(bgCanvas, track.firstChild);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+  }
 
-  var lastBgH = 0;
-  function paintBgStars(H) {
-    if (H === lastBgH) return;
-    lastBgH = H;
-    bgCanvas.width = TRACK_W;
-    bgCanvas.height = H;
-    var ctx = bgCanvas.getContext("2d");
-    var sizes = [0.4, 0.8, 1.2];
-    sizes.forEach(function (r) {
-      for (var i = 0; i < 65; i++) {
-        var x = Math.random() * TRACK_W;
-        var y = Math.random() * H;
-        var a = (Math.random() * 0.38 + 0.07).toFixed(2);
-        ctx.beginPath();
-        ctx.arc(x, y, r, 0, 6.2832);
-        ctx.fillStyle = "rgba(200,240,255," + a + ")";
-        ctx.fill();
+  function measureOuter() {
+    var rect = outer.getBoundingClientRect();
+    outerTop = rect.top + window.scrollY;
+    outerH = outer.offsetHeight;
+  }
+
+  /* ── ROAD PATH — exact same bezier as standalone ── */
+  function roadPath() {
+    var mx = NODES[2].x;
+    return (
+      "M -1000," +
+      YN +
+      " L " +
+      (mx - 220 * 3) +
+      "," +
+      YN +
+      " C " +
+      (mx - 220 * 2) +
+      "," +
+      YN +
+      " " +
+      (mx - 220 * 1.5) +
+      "," +
+      YN +
+      " " +
+      (mx - 220) +
+      "," +
+      (YN + (YD - YN) * 0.55) +
+      " C " +
+      (mx - 220 * 0.35) +
+      "," +
+      YD +
+      " " +
+      (mx - 220 * 0.15) +
+      "," +
+      YD +
+      " " +
+      mx +
+      "," +
+      YD +
+      " C " +
+      (mx + 220 * 0.15) +
+      "," +
+      YD +
+      " " +
+      (mx + 220 * 0.35) +
+      "," +
+      YD +
+      " " +
+      (mx + 220) +
+      "," +
+      (YN + (YD - YN) * 0.55) +
+      " C " +
+      (mx + 220 * 1.5) +
+      "," +
+      YN +
+      " " +
+      (mx + 220 * 2) +
+      "," +
+      YN +
+      " " +
+      (mx + 220 * 3) +
+      "," +
+      YN +
+      " L " +
+      WW +
+      "," +
+      YN
+    );
+  }
+
+  /* ── SVG ROAD — no background fills, just road strokes + nodes ── */
+  function buildRoadSVG() {
+    if (roadSVG && roadSVG.parentNode) roadSVG.parentNode.removeChild(roadSVG);
+
+    var NS = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("class", "hs-svg");
+    svg.style.cssText =
+      "position:absolute;top:0;left:0;" +
+      "width:" +
+      WW +
+      "px;height:" +
+      WH +
+      "px;" +
+      "pointer-events:none;z-index:1;overflow:visible;";
+
+    function E(tag, a, p) {
+      var el = document.createElementNS(NS, tag);
+      for (var k in a) el.setAttribute(k, String(a[k]));
+      (p || svg).appendChild(el);
+      return el;
+    }
+
+    var defs = E("defs", {});
+
+    var gf = E(
+      "filter",
+      { id: "rdG", x: "-20%", y: "-200%", width: "140%", height: "500%" },
+      defs,
+    );
+    E("feGaussianBlur", { stdDeviation: "2.5", result: "b" }, gf);
+    var gm = E("feMerge", {}, gf);
+    E("feMergeNode", { in: "b" }, gm);
+    E("feMergeNode", { in: "SourceGraphic" }, gm);
+
+    var nf = E(
+      "filter",
+      { id: "rdNG", x: "-120%", y: "-120%", width: "340%", height: "340%" },
+      defs,
+    );
+    E("feGaussianBlur", { stdDeviation: "7", result: "b" }, nf);
+    var nm = E("feMerge", {}, nf);
+    E("feMergeNode", { in: "b" }, nm);
+    E("feMergeNode", { in: "SourceGraphic" }, nm);
+
+    var mf = E(
+      "filter",
+      { id: "rdMG", x: "-120%", y: "-120%", width: "340%", height: "340%" },
+      defs,
+    );
+    E("feGaussianBlur", { stdDeviation: "9", result: "b" }, mf);
+    var mm = E("feMerge", {}, mf);
+    E("feMergeNode", { in: "b" }, mm);
+    E("feMergeNode", { in: "SourceGraphic" }, mm);
+
+    /* pit radial shadow */
+    var mx = NODES[2].x;
+    var pRG = E(
+      "radialGradient",
+      { id: "rdP", cx: mx, cy: YD, r: 400, gradientUnits: "userSpaceOnUse" },
+      defs,
+    );
+    E(
+      "stop",
+      { offset: "0%", "stop-color": "#000", "stop-opacity": ".6" },
+      pRG,
+    );
+    E(
+      "stop",
+      { offset: "100%", "stop-color": "#000", "stop-opacity": "0" },
+      pRG,
+    );
+
+    /* ── road layers ── */
+    var RD = roadPath();
+    function oy(s, d) {
+      return s.replace(/([\d.]+),([\d.]+)/g, function (_, x, y) {
+        return x + "," + (+y + d);
+      });
+    }
+
+    E("path", { d: RD, fill: "none", stroke: "#030507", "stroke-width": 112 });
+    E("path", { d: RD, fill: "none", stroke: "#070a0f", "stroke-width": 96 });
+    E("path", { d: RD, fill: "none", stroke: "#0b1018", "stroke-width": 88 });
+    E("path", { d: RD, fill: "none", stroke: "#0e1420", "stroke-width": 78 });
+    E("path", { d: RD, fill: "none", stroke: "#141924", "stroke-width": 64 });
+    E("path", {
+      d: RD,
+      fill: "none",
+      stroke: "rgba(0,0,0,.25)",
+      "stroke-width": 52,
+      "stroke-dasharray": "3 22",
+      "stroke-linecap": "round",
+    });
+    E("path", {
+      d: oy(RD, -46),
+      fill: "none",
+      stroke: "rgba(0,221,200,.30)",
+      "stroke-width": 1.6,
+      "stroke-linecap": "round",
+    });
+    E("path", {
+      d: oy(RD, +46),
+      fill: "none",
+      stroke: "rgba(0,221,200,.10)",
+      "stroke-width": 1.6,
+      "stroke-linecap": "round",
+    });
+    E("path", {
+      d: RD,
+      fill: "none",
+      stroke: "rgba(0,221,200,.55)",
+      "stroke-width": 1.8,
+      "stroke-dasharray": "28 18",
+      "stroke-linecap": "round",
+      filter: "url(#rdG)",
+    });
+
+    /* pit shadow */
+    E("rect", { x: 0, y: 0, width: WW, height: WH, fill: "url(#rdP)" });
+
+    /* crack marks */
+    [-80, -36, 0, 38].forEach(function (dx) {
+      E("line", {
+        x1: mx + dx - 5,
+        y1: YD - 26,
+        x2: mx + dx + 5,
+        y2: YD + 22,
+        stroke: "rgba(255,56,56,.2)",
+        "stroke-width": 1.8,
+        "stroke-linecap": "round",
+      });
+    });
+
+    /* ── node circles ── */
+    svgNodeGroups = [];
+    CARDS.forEach(function (m, i) {
+      var n = NODES[i];
+      var flt = m.isMil ? "url(#rdMG)" : "url(#rdNG)";
+      var g = E("g", { filter: flt, id: "rdSN" + i });
+      E(
+        "circle",
+        {
+          cx: n.x,
+          cy: n.y,
+          r: m.isMil ? 18 : 14,
+          fill: m.color,
+          opacity: m.isMil ? ".12" : ".10",
+        },
+        g,
+      );
+      E("circle", { cx: n.x, cy: n.y, r: m.isMil ? 8 : 6, fill: m.color }, g);
+      E(
+        "circle",
+        {
+          cx: n.x,
+          cy: n.y,
+          r: m.isMil ? 3.5 : 3,
+          fill: "#fff",
+          opacity: ".88",
+        },
+        g,
+      );
+      svgNodeGroups.push(g);
+    });
+
+    track.appendChild(svg);
+    roadSVG = svg;
+  }
+
+  /* ── STARS — drawn only above the road line ── */
+  function buildBgCanvas() {
+    var old = document.getElementById("csBgCanvas");
+    if (old) old.parentNode.removeChild(old);
+    var c = document.createElement("canvas");
+    c.id = "csBgCanvas";
+    c.width = WW;
+    c.height = WH;
+    c.style.cssText =
+      "position:absolute;top:0;left:0;" +
+      "width:" +
+      WW +
+      "px;height:" +
+      WH +
+      "px;" +
+      "pointer-events:none;z-index:0;";
+    var ctx = c.getContext("2d");
+    for (var i = 0; i < 230; i++) {
+      ctx.beginPath();
+      ctx.arc(
+        Math.random() * WW,
+        Math.random() * (YN - 80),
+        Math.random() * 1.2 + 0.2,
+        0,
+        Math.PI * 2,
+      );
+      ctx.fillStyle =
+        "rgba(255,255,255," + (Math.random() * 0.55 + 0.1).toFixed(2) + ")";
+      ctx.fill();
+    }
+    for (var j = 0; j < 20; j++) {
+      ctx.beginPath();
+      ctx.arc(
+        Math.random() * WW,
+        YN - 10 - Math.random() * 65,
+        0.8,
+        0,
+        Math.PI * 2,
+      );
+      ctx.fillStyle =
+        "rgba(0,221,200," + (Math.random() * 0.3 + 0.08).toFixed(2) + ")";
+      ctx.fill();
+    }
+    track.insertBefore(c, track.firstChild);
+  }
+
+  /* ── CARDS + CONNECTORS ──
+     Normal cards: above their node
+     Military card: also above its node (even though node is in the dip)
+     The camera will pan DOWN to show the dip — card appears above it
+  ── */
+  function buildCards() {
+    track.querySelectorAll(".rd-card,.rd-conn").forEach(function (el) {
+      el.parentNode.removeChild(el);
+    });
+    cardEls = [];
+
+    CARDS.forEach(function (m, i) {
+      var n = NODES[i];
+      var CLEN = 160;
+      var cTop = n.y - CLEN;
+
+      /* connector */
+      var conn = document.createElement("div");
+      conn.className = "rd-conn";
+      conn.style.cssText =
+        "position:absolute;" +
+        "left:" +
+        (n.x - 1) +
+        "px;top:" +
+        cTop +
+        "px;" +
+        "height:" +
+        CLEN +
+        "px;z-index:12;pointer-events:none;" +
+        (m.isMil
+          ? "width:0;border-left:1px dashed " + m.color + "66;"
+          : "width:2px;background:linear-gradient(to top," +
+            m.color +
+            "70,transparent);");
+      track.appendChild(conn);
+
+      /* card */
+      var cardTop = cTop - 80;
+      var card = document.createElement("div");
+      card.className = "rd-card" + (m.isMil ? " rd-card-mil" : "");
+      card.style.cssText =
+        "position:absolute;" +
+        "left:" +
+        n.x +
+        "px;top:" +
+        cardTop +
+        "px;" +
+        "--ac:" +
+        m.color +
+        ";";
+
+      var html = "";
+      if (m.isMil)
+        html += '<div class="rd-warning">⚠ service interrupted</div>';
+      if (m.tag) html += '<div class="rd-tag">' + m.tag + "</div>";
+      html += '<div class="rd-date">' + m.date + "</div>";
+      html += '<div class="rd-title">' + m.title + "</div>";
+      html += '<div class="rd-org">' + m.org + "</div>";
+      if (m.tags.length) {
+        html +=
+          '<div class="rd-chips">' +
+          m.tags
+            .map(function (t) {
+              return "<span>" + t + "</span>";
+            })
+            .join("") +
+          "</div>";
       }
+      card.innerHTML = html;
+      track.appendChild(card);
+      cardEls.push(card);
     });
   }
 
-  /* ══════════════════════════════════════════
-     SVG LINE  —  straight across + drop for military
-     Built once; length cached; never re-read in scroll
-  ══════════════════════════════════════════ */
-  var svgEl, lineMain, lineGlow, lineFill;
-  var pathLen = 0; /* cached — never call getTotalLength in scroll */
+  /* ── SNAP — translate BOTH X and Y to centre node in viewport ──
+     This is the key: same as standalone roadmap.html
+  ── */
+  function snap(idx, instant) {
+    curIdx = idx;
+    var n = NODES[idx];
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var tx = vw / 2 - n.x;
+    var ty = vh / 2 - n.y;
 
-  function buildSVG(H) {
-    if (svgEl && svgEl.parentNode) svgEl.parentNode.removeChild(svgEl);
-
-    /* Y of the main horizontal line */
-    var lineY = STARS[0].yf * H; /* 0.42 * H */
-
-    /* The path:
-       - straight from x=0 to just before military x
-       - drop down to military y
-       - go back up to line y
-       - straight to end
-    */
-    var milX = STARS[2].xf * TRACK_W;
-    var milY = STARS[2].yf * H;
-    var dropW = 50; /* horizontal spread of the drop curve */
-
-    var d =
-      "M 0," +
-      lineY +
-      " L " +
-      (milX - dropW) +
-      "," +
-      lineY +
-      " C " +
-      (milX - dropW / 2) +
-      "," +
-      lineY +
-      " " +
-      (milX - dropW / 2) +
-      "," +
-      milY +
-      " " +
-      milX +
-      "," +
-      milY +
-      " C " +
-      (milX + dropW / 2) +
-      "," +
-      milY +
-      " " +
-      (milX + dropW / 2) +
-      "," +
-      lineY +
-      " " +
-      (milX + dropW) +
-      "," +
-      lineY +
-      " L " +
-      TRACK_W +
-      "," +
-      lineY;
-
-    var ns = "http://www.w3.org/2000/svg";
-    svgEl = document.createElementNS(ns, "svg");
-    svgEl.setAttribute("class", "hs-svg");
-    svgEl.setAttribute("xmlns", ns);
-    svgEl.style.cssText =
-      "position:absolute;inset:0;width:" +
-      TRACK_W +
-      "px;height:" +
-      H +
-      "px;pointer-events:none;z-index:1;overflow:visible;";
-
-    var defs = document.createElementNS(ns, "defs");
-    defs.innerHTML =
-      '<filter id="csGF" x="-2%" y="-300%" width="104%" height="700%">' +
-      '<feGaussianBlur stdDeviation="6" result="b"/>' +
-      '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>' +
-      "</filter>";
-    svgEl.appendChild(defs);
-
-    /* ambient dashed base line */
-    var base = document.createElementNS(ns, "path");
-    base.setAttribute("d", d);
-    base.setAttribute("fill", "none");
-    base.setAttribute("stroke", "rgba(0,221,200,0.08)");
-    base.setAttribute("stroke-width", "1.5");
-    base.setAttribute("stroke-dasharray", "8 14");
-    svgEl.appendChild(base);
-
-    /* glow layer */
-    lineGlow = document.createElementNS(ns, "path");
-    lineGlow.setAttribute("d", d);
-    lineGlow.setAttribute("fill", "none");
-    lineGlow.setAttribute("stroke", "rgba(0,221,200,0.12)");
-    lineGlow.setAttribute("stroke-width", "18");
-    lineGlow.setAttribute("stroke-linecap", "round");
-    lineGlow.setAttribute("filter", "url(#csGF)");
-    svgEl.appendChild(lineGlow);
-
-    /* main teal line */
-    lineFill = document.createElementNS(ns, "path");
-    lineFill.setAttribute("d", d);
-    lineFill.setAttribute("fill", "none");
-    lineFill.setAttribute("stroke", "#00ddc8");
-    lineFill.setAttribute("stroke-width", "2");
-    lineFill.setAttribute("stroke-linecap", "round");
-    svgEl.appendChild(lineFill);
-
-    /* insert SVG before stars */
-    var firstStar = document.getElementById("rnAc");
-    track.insertBefore(svgEl, firstStar || null);
-
-    /* cache total length HERE — only once */
-    pathLen = lineFill.getTotalLength();
-    lineFill.style.strokeDasharray = pathLen;
-    lineFill.style.strokeDashoffset = pathLen;
-    lineGlow.style.strokeDasharray = pathLen;
-    lineGlow.style.strokeDashoffset = pathLen;
-  }
-
-  /* ══════════════════════════════════════════
-     POSITION STARS  (runs on init + resize)
-  ══════════════════════════════════════════ */
-  function positionStars(H) {
-    for (var i = 0; i < STARS.length; i++) {
-      var el = starEls[i];
-      if (!el) continue;
-      el.style.left = STARS[i].xf * TRACK_W + "px";
-      el.style.top = STARS[i].yf * H + "px";
+    if (instant) {
+      track.style.transition = "none";
+      track.style.transform = "translate(" + tx + "px," + ty + "px)";
+      requestAnimationFrame(function () {
+        track.style.transition = "";
+      });
+    } else {
+      track.style.transform = "translate(" + tx + "px," + ty + "px)";
     }
+
+    cardEls.forEach(function (c, i) {
+      c.classList.toggle("rd-active", i === idx);
+      c.classList.toggle("rd-adj", Math.abs(i - idx) === 1);
+    });
+
+    svgNodeGroups.forEach(function (g, i) {
+      if (!g) return;
+      var cs = g.querySelectorAll("circle"),
+        mil = !!CARDS[i].isMil;
+      if (i === idx) {
+        cs[0].setAttribute("r", mil ? "26" : "20");
+        cs[0].setAttribute("opacity", mil ? ".18" : ".16");
+        cs[1].setAttribute("r", mil ? "11" : "9");
+      } else {
+        cs[0].setAttribute("r", mil ? "18" : "14");
+        cs[0].setAttribute("opacity", mil ? ".12" : ".10");
+        cs[1].setAttribute("r", mil ? "8" : "6");
+      }
+    });
+
+    dotEls.forEach(function (d, i) {
+      if (d) d.classList.toggle("active", i === idx);
+    });
+    if (progFill) progFill.style.width = (idx / (CARDS.length - 1)) * 100 + "%";
+    if (hintEl && idx > 0) hintEl.classList.add("done");
   }
 
-  /* ══════════════════════════════════════════
-     CACHED SCROLL VALUES
-     Re-computed only on resize, never in scroll handler
-  ══════════════════════════════════════════ */
-  var cache = {
-    maxPan: 0,
-    total: 0,
-    outerTop: 0 /* outer.getBoundingClientRect().top + scrollY */,
-  };
-
-  function refreshCache() {
-    cache.maxPan = TRACK_W - window.innerWidth;
-    cache.total = outer.offsetHeight - window.innerHeight;
-    cache.outerTop = outer.getBoundingClientRect().top + window.scrollY;
-  }
-
-  /* ══════════════════════════════════════════
-     rAF-THROTTLED SCROLL
-  ══════════════════════════════════════════ */
-  var ticking = false;
-  var lastRaw = -1;
-
+  /* ── SCROLL ── */
   function onScroll() {
-    if (!ticking) {
-      ticking = true;
-      requestAnimationFrame(processScroll);
-    }
+    if (isMobile || ticking) return;
+    ticking = true;
+    requestAnimationFrame(processScroll);
   }
-
   function processScroll() {
     ticking = false;
-    if (isMobile) return;
-
-    var scrollY = window.scrollY;
-    var raw = (scrollY - cache.outerTop) / Math.max(cache.total, 1);
-    raw = raw < 0 ? 0 : raw > 1 ? 1 : raw;
-
-    if (Math.abs(raw - lastRaw) < 0.0006) return;
-    lastRaw = raw;
-
-    /* pan track — GPU transform */
-    var pan = raw * cache.maxPan;
-    track.style.transform = "translateX(" + -pan + "px)";
-
-    /* progress bar */
-    if (progFill) progFill.style.width = raw * 100 + "%";
-
-    /* draw line — no DOM read, just set cached value */
-    if (lineFill && pathLen) {
-      var off = pathLen * (1 - raw);
-      lineFill.style.strokeDashoffset = off;
-      lineGlow.style.strokeDashoffset = off;
-    }
-
-    /* reveal stars — cached refs, no getElementById */
-    for (var i = 0; i < starEls.length; i++) {
-      var el = starEls[i];
-      if (!el) continue;
-      if (raw >= STARS[i].showAt) {
-        if (!el.classList.contains("revealed")) el.classList.add("revealed");
-      } else if (raw < STARS[i].showAt - 0.02) {
-        if (el.classList.contains("revealed")) el.classList.remove("revealed");
-      }
-    }
-
-    /* hint */
-    if (hintEl && raw > 0.02 && !hintEl.classList.contains("done")) {
-      hintEl.classList.add("done");
-    }
-
-    /* active dots — cached refs */
-    for (var j = 0; j < dotEls.length; j++) {
-      var dotEl = dotEls[j];
-      if (!dotEl) continue;
-      var nextAt = DOTS[j + 1] ? DOTS[j + 1].at : 1.1;
-      var isActive =
-        j === dotEls.length - 1
-          ? raw >= DOTS[j].at
-          : raw >= DOTS[j].at && raw < nextAt;
-      dotEl.classList.toggle("active", isActive);
+    var raw = Math.max(
+      0,
+      Math.min(
+        1,
+        (window.scrollY - outerTop) / Math.max(outerH - window.innerHeight, 1),
+      ),
+    );
+    var idx = Math.min(
+      CARDS.length - 1,
+      Math.max(0, Math.round(raw * (CARDS.length - 1))),
+    );
+    if (idx !== lastIdx) {
+      lastIdx = idx;
+      snap(idx, false);
     }
   }
 
-  /* ══════════════════════════════════════════
-     DOT CLICK — smooth scroll to star
-  ══════════════════════════════════════════ */
-  function snapToStar(starIndex) {
-    var s = STARS[starIndex];
-    var starX = s.xf * TRACK_W;
-    var raw = (starX - window.innerWidth / 2) / cache.maxPan;
-    raw = raw < 0 ? 0 : raw > 1 ? 1 : raw;
-    var targetY = cache.outerTop + raw * cache.total;
-    window.scrollTo({ top: targetY, behavior: "smooth" });
-  }
-
-  DOTS.forEach(function (d) {
-    var el = document.getElementById(d.id);
-    if (!el) return;
-    el.addEventListener("click", function () {
-      snapToStar(d.sf);
+  /* ── DOTS ── */
+  function buildDots() {
+    dotEls = [];
+    CARDS.forEach(function (m, i) {
+      var el = document.getElementById(m.dotId);
+      if (!el) return;
+      el.addEventListener("click", function () {
+        var raw = (i + 0.05) / CARDS.length;
+        window.scrollTo({
+          top: outerTop + raw * (outerH - window.innerHeight),
+          behavior: "smooth",
+        });
+      });
+      dotEls.push(el);
     });
-  });
+  }
 
-  /* ══════════════════════════════════════════
-     MOBILE SETUP
-  ══════════════════════════════════════════ */
+  /* ── MOBILE ── */
   function setupMobile() {
-    STARS.forEach(function (s) {
-      var el = document.getElementById(s.id);
-      if (el) el.classList.add("revealed");
+    track.innerHTML = "";
+    track.style.transform = "none";
+    track.style.transition = "none";
+    CARDS.forEach(function (m) {
+      var card = document.createElement("div");
+      card.className = "rd-card rd-active" + (m.isMil ? " rd-card-mil" : "");
+      card.style.setProperty("--ac", m.color);
+      var html = "";
+      if (m.isMil)
+        html += '<div class="rd-warning">⚠ service interrupted</div>';
+      if (m.tag) html += '<div class="rd-tag">' + m.tag + "</div>";
+      html += '<div class="rd-date">' + m.date + "</div>";
+      html += '<div class="rd-title">' + m.title + "</div>";
+      html += '<div class="rd-org">' + m.org + "</div>";
+      if (m.tags.length) {
+        html +=
+          '<div class="rd-chips">' +
+          m.tags
+            .map(function (t) {
+              return "<span>" + t + "</span>";
+            })
+            .join("") +
+          "</div>";
+      }
+      card.innerHTML = html;
+      track.appendChild(card);
     });
   }
 
-  /* ══════════════════════════════════════════
-     INIT
-  ══════════════════════════════════════════ */
-  function init() {
-    var H = track.offsetHeight || window.innerHeight * 0.72;
-
-    /* hint compositor to promote track to its own layer */
-    track.style.willChange = "transform";
-
-    paintBgStars(H);
-    positionStars(H);
-
-    if (!isMobile) {
-      buildSVG(H);
-      refreshCache();
-
-      /* show first star + dot immediately */
-      var first = document.getElementById("rnAc");
-      var dot0 = document.getElementById("hsDot0");
-      if (first) first.classList.add("revealed");
-      if (dot0) dot0.classList.add("active");
-
-      window.addEventListener("scroll", onScroll, { passive: true });
+  /* ── RESIZE ── */
+  var resizeT;
+  function onResize() {
+    clearTimeout(resizeT);
+    resizeT = setTimeout(function () {
+      isMobile = window.innerWidth <= 700;
+      if (isMobile) {
+        setupMobile();
+        buildDots();
+        return;
+      }
+      measureOuter();
+      buildBgCanvas();
+      buildRoadSVG();
+      buildCards();
+      lastIdx = -1;
+      snap(curIdx, true);
       processScroll();
-    } else {
-      setupMobile();
-    }
+    }, 150);
   }
-
-  /* ── Resize: debounced ── */
-  var resizeTimer;
-  window.addEventListener(
-    "resize",
-    function () {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function () {
-        isMobile = window.innerWidth <= 700;
-        var H = track.offsetHeight || window.innerHeight * 0.72;
-        paintBgStars(H);
-        positionStars(H);
-        if (!isMobile) {
-          buildSVG(H);
-          refreshCache();
-          lastRaw = -1;
-          processScroll();
-        } else {
-          setupMobile();
-        }
-      }, 120);
-    },
-    { passive: true },
-  );
-
-  /* Run after layout is ready */
-  requestAnimationFrame(function () {
-    requestAnimationFrame(init);
-  });
 })();
