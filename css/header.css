@@ -38,7 +38,7 @@
 }
 
 /* ═══════════════════════════════════════════════════
-   HEADER — PREMIUM REDESIGN
+   HEADER
 ═══════════════════════════════════════════════════ */
 header {
   position: fixed;
@@ -73,6 +73,8 @@ header {
   }
 }
 
+/* ── Removed borderFlow flash animation entirely ──
+   Replaced with a static, elegant teal hairline     */
 header::after {
   content: "";
   position: absolute;
@@ -84,29 +86,18 @@ header::after {
     90deg,
     transparent 0%,
     rgba(0, 221, 200, 0) 10%,
-    rgba(0, 221, 200, 0.35) 40%,
-    rgba(0, 221, 200, 0.6) 50%,
-    rgba(0, 221, 200, 0.35) 60%,
+    rgba(0, 221, 200, 0.28) 40%,
+    rgba(0, 221, 200, 0.45) 50%,
+    rgba(0, 221, 200, 0.28) 60%,
     rgba(0, 221, 200, 0) 90%,
     transparent 100%
   );
   opacity: 0;
-  transition: opacity 0.5s ease;
-  background-size: 200% 100%;
-  animation: borderFlow 4s linear infinite;
-  animation-play-state: paused;
+  transition: opacity 0.6s ease;
+  /* NO animation, NO borderFlow — just fades in on scroll */
 }
 header.scrolled::after {
   opacity: 1;
-  animation-play-state: running;
-}
-@keyframes borderFlow {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
 }
 
 header.nav-hidden {
@@ -303,11 +294,10 @@ canvas#constellation-canvas {
   gap: 7px;
   text-decoration: none;
   cursor: pointer;
-  transition: transform 0.35s var(--ease-back);
+  /* transition is intentionally short for magnetic feel —
+     JS overrides transform directly for magnetic movement  */
+  transition: transform 0.08s ease;
   padding: 8px 4px;
-}
-.c-link:hover {
-  transform: translate(-50%, -50%) translateY(-3px);
 }
 
 .c-link .star {
@@ -337,8 +327,8 @@ canvas#constellation-canvas {
 
 .c-link .c-label {
   font-family: var(--font-mono);
-  font-size: 0.55rem;
-  letter-spacing: 3px;
+  font-size: 0.68rem;
+  letter-spacing: 2.5px;
   color: rgba(224, 232, 228, 0.38);
   text-transform: uppercase;
   white-space: nowrap;
@@ -387,7 +377,7 @@ canvas#constellation-canvas {
 .c-link:hover .c-label,
 .c-link.active .c-label {
   color: rgba(224, 232, 228, 0.9);
-  letter-spacing: 3.5px;
+  letter-spacing: 3px;
   text-shadow: 0 0 14px rgba(0, 221, 200, 0.5);
 }
 
@@ -473,7 +463,7 @@ canvas#constellation-canvas {
   transform: scale(1.1);
 }
 
-/* ── HAMBURGER — PREMIUM ─────────────────────────── */
+/* ── HAMBURGER ─────────────────────────────────── */
 .hamburger {
   display: none;
   flex-direction: column;
@@ -520,12 +510,8 @@ canvas#constellation-canvas {
 .hamburger:hover span {
   background: rgba(0, 221, 200, 0.8);
 }
-.hamburger:hover span:nth-child(1) {
-  width: 24px;
-}
-.hamburger:hover span:nth-child(2) {
-  width: 24px;
-}
+.hamburger:hover span:nth-child(1),
+.hamburger:hover span:nth-child(2),
 .hamburger:hover span:nth-child(3) {
   width: 24px;
 }
@@ -675,4 +661,187 @@ canvas#constellation-canvas {
 }
 .mobile-back-btn:hover i {
   transform: translateX(-5px);
+}
+
+/* ═══════════════════════════════════════════════════
+   SPIDER ANCHOR NODE — in navbar
+═══════════════════════════════════════════════════ */
+.spider-anchor-node {
+  position: absolute;
+  right: clamp(16px, 4vw, 52px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--teal);
+  z-index: 9001;
+  pointer-events: none;
+  box-shadow:
+    0 0 0 2px rgba(0, 221, 200, 0.1),
+    0 0 8px rgba(0, 221, 200, 0.55),
+    0 0 18px rgba(0, 221, 200, 0.15);
+}
+
+/* One slow breathing ring — steady presence, not flashy */
+.spider-anchor-node::before {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 221, 200, 0.18);
+  animation: anchorBreathe 4s ease-in-out infinite;
+}
+
+@keyframes anchorBreathe {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.1;
+    transform: scale(1.6);
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE — exact original preserved
+═══════════════════════════════════════════════════ */
+@media (min-width: 1021px) and (max-width: 1260px) {
+  .c-label {
+    font-size: 0.48rem;
+    letter-spacing: 2px;
+  }
+  .nav-socials {
+    gap: 8px;
+  }
+  .nav-socials a {
+    width: 30px;
+    height: 30px;
+    font-size: 15px;
+  }
+  header {
+    padding: 0 clamp(12px, 2vw, 28px);
+  }
+}
+
+@media (max-width: 1020px) {
+  header {
+    grid-template-columns: 1fr 1fr;
+  }
+  .constellation-nav {
+    display: none;
+  }
+  .hamburger {
+    display: flex;
+  }
+}
+
+@media (min-width: 1021px) {
+  .mobile-overlay {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    padding-top: var(--nav-h);
+  }
+  .hero-content {
+    flex: unset;
+    width: 100%;
+    height: auto;
+    padding: 40px 4vw 10px;
+  }
+  .web-wrap {
+    width: min(400px, 90vw);
+  }
+  .hero-robot {
+    flex: unset;
+    width: 100%;
+    height: 62vw;
+    min-height: 280px;
+  }
+  .hero::before {
+    width: 100%;
+    font-size: 38vw;
+    top: 28%;
+    transform: translateY(0);
+  }
+  .hero::after {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  header {
+    padding: 0 12px;
+  }
+  .nav-brand {
+    gap: 10px;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .nav-brand-img-wrap {
+    width: 32px;
+    height: 32px;
+  }
+  .nav-brand img {
+    width: 32px;
+    height: 32px;
+  }
+  .nav-brand-name .brand-first {
+    font-size: 0.82rem;
+  }
+  .nav-brand-name .brand-last {
+    font-size: 0.56rem;
+    letter-spacing: 3px;
+  }
+  .nav-right-group {
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .nav-socials {
+    gap: 8px;
+  }
+  .nav-socials a {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 380px) {
+  .nav-socials {
+    display: none;
+  }
+}
+
+@media (max-width: 1020px) {
+  .spider-pos {
+    left: auto;
+    right: 16px;
+    transform: none;
+  }
+  .spider-canvas {
+    height: 36px !important;
+  }
+  .spider-btn {
+    padding: 7px 14px;
+    font-size: 0.6rem;
+    letter-spacing: 1.5px;
+  }
+  .spider-btn i {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .spider-pos {
+    right: 10px;
+  }
 }
