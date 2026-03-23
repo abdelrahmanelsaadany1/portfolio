@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════
-   SPIDER HANG — CV Download
+   SPIDER HANG — CV Download
 ══════════════════════════════════════════════════ */
 (function () {
   const sPos = document.getElementById("spiderPos");
@@ -9,9 +9,10 @@
   if (!sPos || !hang || !canvas || !btn) return;
 
   const ctx = canvas.getContext("2d");
-  const dpr = window.devicePixelRatio || 1;
+  const dpr =
+    window.devicePixelRatio ||
+    1; /* ── Size: smaller on mobile so spider looks proportional ── */
 
-  /* ── Size: smaller on mobile so spider looks proportional ── */
   const isMobile = window.innerWidth <= 768;
   const CW = isMobile ? 32 : 40;
   const CH = isMobile ? 70 : 86;
@@ -29,6 +30,10 @@
 
   let swayT = Math.random() * Math.PI * 2,
     bobT = Math.random() * Math.PI * 2;
+
+  /* -- Particle Logic -- */
+  let pulseT = 0;
+
   let angle = 0,
     angleVel = 0;
   let hovered = false,
@@ -140,6 +145,29 @@
     ctx.shadowColor = TC(0.3);
     ctx.shadowBlur = 5;
     ctx.stroke();
+
+    /* -- New Particle Logic (Up and Down) -- */
+    if (tf > 0.1) {
+      const pAmt = (Math.sin(pulseT) + 1) / 2; // Oscillate 0 to 1
+      const p = bez(
+        pAmt * tf,
+        AX,
+        AY,
+        AX + (cxb - AX) * tf,
+        AY + (cyb - AY) * tf,
+        AX + (ex - AX) * tf,
+        AY + (endY - AY) * tf,
+      );
+      ctx.save();
+      ctx.shadowColor = TC(1);
+      ctx.shadowBlur = 8;
+      ctx.fillStyle = TC(0.9);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 1.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
     ctx.shadowBlur = 0;
     ctx.fillStyle = TC(0.55);
     ctx.beginPath();
@@ -196,6 +224,8 @@
   function animate() {
     swayT += 0.016;
     bobT += 0.008;
+    pulseT += 0.035; // Increments for particle movement
+
     angleVel += (Math.sin(swayT * 0.82) * 5 - angle) * 0.04;
     angleVel *= 0.88;
     angle += angleVel;
