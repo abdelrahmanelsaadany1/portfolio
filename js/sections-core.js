@@ -78,7 +78,7 @@
      PROJECTS — Cinematic filmstrip
      Active card = full height + full opacity
      Neighbors = scaled down, dimmed, blurred
-     Drag · swipe · keyboard · dots · auto-scroll
+     Drag · swipe · keyboard · dots
   ══════════════════════════════════════════════════ */
 
   /* SVG art generators */
@@ -414,11 +414,7 @@
     dot.dataset.dot = i;
     dot.setAttribute("aria-label", `Project ${i + 1}`);
     dot.addEventListener("click", () => {
-      _paused = true;
       goTo(i);
-      setTimeout(() => {
-        _paused = false;
-      }, 5000);
     });
     dotsEl.appendChild(dot);
   });
@@ -429,9 +425,7 @@
   /* ── Carousel state ── */
   let _current = 0;
   let _busy = false;
-  let _paused = false;
   let _dragged = false;
-  let _autoTimer = null;
 
   /* card width + gap */
   function cardW() {
@@ -479,37 +473,14 @@
     }, 720);
   }
 
-  /* ── Auto-scroll ── */
-  function startAuto() {
-    if (_autoTimer) clearInterval(_autoTimer);
-    _autoTimer = setInterval(() => {
-      if (!_paused) goTo(_current + 1);
-    }, 4000);
-  }
-
-  const section = document.getElementById("projects-section");
-  if (section) {
-    section.addEventListener("mouseenter", () => {
-      _paused = true;
-    });
-    section.addEventListener("mouseleave", () => {
-      _paused = false;
-    });
-  }
-
   /* ── Keyboard ── */
+  const section = document.getElementById("projects-section");
   document.addEventListener("keydown", (e) => {
     if (!section) return;
     const r = section.getBoundingClientRect();
     if (r.top >= window.innerHeight || r.bottom <= 0) return;
-    if (e.key === "ArrowLeft") {
-      _paused = true;
-      goTo(_current - 1);
-    }
-    if (e.key === "ArrowRight") {
-      _paused = true;
-      goTo(_current + 1);
-    }
+    if (e.key === "ArrowLeft") goTo(_current - 1);
+    if (e.key === "ArrowRight") goTo(_current + 1);
   });
 
   /* ── Drag (mouse) ── */
@@ -628,7 +599,6 @@
                 delay: 0.1,
                 onComplete() {
                   syncUI();
-                  startAuto();
                 },
               },
             );
@@ -641,7 +611,6 @@
               );
           } else {
             syncUI();
-            startAuto();
           }
         }
       });
@@ -692,13 +661,11 @@
 
     document.getElementById("modal-overlay").classList.add("open");
     document.body.style.overflow = "hidden";
-    _paused = true;
   };
 
   window.closeModal = function () {
     document.getElementById("modal-overlay").classList.remove("open");
     document.body.style.overflow = "";
-    _paused = false;
   };
 
   const mClose = document.getElementById("m-close");
