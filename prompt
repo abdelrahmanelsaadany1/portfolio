@@ -132,6 +132,226 @@ Generate the complete HTML file with all SVG, CSS, and JavaScript. Make it produ
 
 
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural-A Logo Preview</title>
+    <style>
+        /* ═══════════════════════════════════════════════════
+           CSS FOR YOUR HEADER (Add to your CSS file)
+           ═══════════════════════════════════════════════════ */
+        :root {
+            --teal: #30cdcf;
+            --void: #03060e;
+        }
+
+        /* Container to center the preview (not needed for your header) */
+        body {
+            background: var(--void);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* ── LOGO WRAPPER ────────────────────────────────── */
+        .nav-brand-img-wrap {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            perspective: 500px;
+        }
+
+        /* ── NEURAL SVG LOGO ─────────────────────────────── */
+        .neural-logo {
+            width: 40px;
+            height: 40px;
+            display: block;
+            overflow: visible;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: drop-shadow(0 0 4px rgba(48, 205, 207, 0.2));
+        }
+
+        /* Connecting Lines */
+        .neural-line {
+            fill: none;
+            stroke: var(--teal);
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            opacity: 0.25;
+            transition: all 0.4s ease;
+        }
+
+        /* Nodes (Dots) */
+        .neural-node {
+            fill: var(--void);
+            stroke: var(--teal);
+            stroke-width: 2.5;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: drop-shadow(0 0 2px var(--teal));
+        }
+
+        /* ── HOVER EFFECTS ───────────────────────────────── */
+        .nav-brand-img-wrap:hover .neural-logo {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 10px rgba(48, 205, 207, 0.5));
+        }
+
+        .nav-brand-img-wrap:hover .neural-line {
+            opacity: 0.9;
+            stroke-width: 3;
+            filter: drop-shadow(0 0 5px var(--teal));
+        }
+
+        .nav-brand-img-wrap:hover .neural-node {
+            fill: var(--teal);
+            r: 5;
+            stroke-width: 1.5;
+            filter: drop-shadow(0 0 8px var(--teal));
+        }
+
+        /* Special Animation for the Crossbar */
+        .line-3 {
+            stroke-dasharray: 50;
+            stroke-dashoffset: 0;
+        }
+
+        .nav-brand-img-wrap:hover .line-3 {
+            animation: neuralPulse 1.8s infinite linear;
+        }
+
+        @keyframes neuralPulse {
+            0% { stroke-dashoffset: 100; opacity: 0.3; }
+            50% { opacity: 1; stroke-width: 3.5; }
+            100% { stroke-dashoffset: 0; opacity: 0.3; }
+        }
+
+        /* Background Ring (Matches your current theme) */
+        .nav-brand-img-wrap::before {
+            content: "";
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 221, 200, 0.2);
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.5s ease;
+        }
+
+        .nav-brand-img-wrap:hover::before {
+            opacity: 1;
+            transform: scale(1.1);
+            border-color: rgba(0, 221, 200, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ═══════════════════════════════════════════════════
+         HTML STRUCTURE (Replace your <img> tag with this)
+         ═══════════════════════════════════════════════════ -->
+    <div class="nav-brand-img-wrap" id="logoWrap">
+        <svg class="neural-logo" id="neuralLogo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Connecting Lines (forming 'A') -->
+            <path class="neural-line line-1" d="M50 20 L20 85" />
+            <path class="neural-line line-2" d="M50 20 L80 85" />
+            <path class="neural-line line-3" d="M32 62 L68 62" />
+            
+            <!-- Nodes (Dots) -->
+            <circle class="neural-node node-top" cx="50" cy="20" r="4.5" />
+            <circle class="neural-node node-left" cx="20" cy="85" r="4.5" />
+            <circle class="neural-node node-right" cx="80" cy="85" r="4.5" />
+            <circle class="neural-node node-mid-left" cx="32" cy="62" r="3.5" />
+            <circle class="neural-node node-mid-right" cx="68" cy="62" r="3.5" />
+        </svg>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         JAVASCRIPT (Add to your JS file for 3D Tilt Effect)
+         ═══════════════════════════════════════════════════ -->
+    <script>
+        const wrap = document.getElementById('logoWrap');
+        const logo = document.getElementById('neuralLogo');
+
+        wrap.addEventListener('mousemove', (e) => {
+            const rect = wrap.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            
+            // Calculate tilt (Max 15 degrees)
+            const tiltX = (y / (rect.height / 2)) * -15;
+            const tiltY = (x / (rect.width / 2)) * 15;
+            
+            logo.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.15)`;
+        });
+
+        wrap.addEventListener('mouseleave', () => {
+            logo.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
