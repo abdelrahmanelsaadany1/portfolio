@@ -381,7 +381,7 @@
       })
       .catch((err) => {
         console.error("EmailJS error:", err);
-        btn.textContent = "Transmit Message";
+        btn.textContent = "Send Message";
         btn.removeAttribute("disabled");
         btn.classList.add("ready");
         S.busy = false;

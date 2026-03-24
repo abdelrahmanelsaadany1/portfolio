@@ -30,7 +30,6 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="preconnect" href="https://prod.spline.design" crossorigin />
 
-    <!-- REPLACE your existing <style>...</style> block in the <head> with this -->
     <style>
       .hero-bio-line {
         text-align: left;
@@ -721,9 +720,12 @@
               stroke-width="0.5"
               opacity="0.04"
             />
+
+            <!-- Particles — IDs are required by contact-form.js to animate the balls -->
             <g id="ct-pa" opacity="0" filter="url(#ct-glow-p)">
-              <circle cx="400" cy="92" r="6" fill="#30cdcf" />
+              <circle id="ct-pa-c" cx="400" cy="92" r="6" fill="#30cdcf" />
               <circle
+                id="ct-pa-h"
                 cx="400"
                 cy="92"
                 r="11"
@@ -734,8 +736,9 @@
               />
             </g>
             <g id="ct-pb" opacity="0" filter="url(#ct-glow-p)">
-              <circle cx="708" cy="400" r="6" fill="#30cdcf" />
+              <circle id="ct-pb-c" cx="708" cy="400" r="6" fill="#30cdcf" />
               <circle
+                id="ct-pb-h"
                 cx="708"
                 cy="400"
                 r="11"
@@ -746,8 +749,9 @@
               />
             </g>
             <g id="ct-pc" opacity="0" filter="url(#ct-glow-lg)">
-              <circle cx="400" cy="708" r="7.5" fill="#30cdcf" />
+              <circle id="ct-pc-c" cx="400" cy="708" r="7.5" fill="#30cdcf" />
               <circle
+                id="ct-pc-h"
                 cx="400"
                 cy="708"
                 r="14"
@@ -757,6 +761,8 @@
                 opacity="0.45"
               />
             </g>
+
+            <!-- Shockwaves -->
             <circle
               id="ct-sw1"
               cx="400"
