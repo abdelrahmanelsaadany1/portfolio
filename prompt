@@ -137,7 +137,7 @@ Generate the complete HTML file with all SVG, CSS, and JavaScript. Make it produ
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neural-A Logo Preview</title>
+    <title>Mobile-Optimized Neural-A Logo</title>
     <style>
         /* ═══════════════════════════════════════════════════
            CSS FOR YOUR HEADER (Add to your CSS file)
@@ -155,6 +155,8 @@ Generate the complete HTML file with all SVG, CSS, and JavaScript. Make it produ
             align-items: center;
             height: 100vh;
             margin: 0;
+            overflow: hidden;
+            touch-action: none; /* Prevents default touch behaviors for better control */
         }
 
         /* ── LOGO WRAPPER ────────────────────────────────── */
@@ -166,7 +168,9 @@ Generate the complete HTML file with all SVG, CSS, and JavaScript. Make it produ
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            perspective: 500px;
+            perspective: 800px;
+            -webkit-tap-highlight-color: transparent; /* Removes blue tap highlight on mobile */
+            user-select: none;
         }
 
         /* ── NEURAL SVG LOGO ─────────────────────────────── */
@@ -177,6 +181,7 @@ Generate the complete HTML file with all SVG, CSS, and JavaScript. Make it produ
             overflow: visible;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             filter: drop-shadow(0 0 4px rgba(48, 205, 207, 0.2));
+            will-change: transform, filter; /* Optimizes for mobile GPU */
         }
 
         /* Connecting Lines */
@@ -198,23 +203,27 @@ Generate the complete HTML file with all SVG, CSS, and JavaScript. Make it produ
             filter: drop-shadow(0 0 2px var(--teal));
         }
 
-        /* ── HOVER EFFECTS ───────────────────────────────── */
-        .nav-brand-img-wrap:hover .neural-logo {
-            transform: scale(1.1);
-            filter: drop-shadow(0 0 10px rgba(48, 205, 207, 0.5));
+        /* ── INTERACTIVE STATES (Hover & Active/Touch) ───── */
+        /* Using .active class for mobile touch triggers */
+        .nav-brand-img-wrap:hover .neural-logo,
+        .nav-brand-img-wrap.active .neural-logo {
+            transform: scale(1.15);
+            filter: drop-shadow(0 0 12px rgba(48, 205, 207, 0.6));
         }
 
-        .nav-brand-img-wrap:hover .neural-line {
-            opacity: 0.9;
+        .nav-brand-img-wrap:hover .neural-line,
+        .nav-brand-img-wrap.active .neural-line {
+            opacity: 0.95;
             stroke-width: 3;
-            filter: drop-shadow(0 0 5px var(--teal));
+            filter: drop-shadow(0 0 6px var(--teal));
         }
 
-        .nav-brand-img-wrap:hover .neural-node {
+        .nav-brand-img-wrap:hover .neural-node,
+        .nav-brand-img-wrap.active .neural-node {
             fill: var(--teal);
-            r: 5;
+            r: 5.5;
             stroke-width: 1.5;
-            filter: drop-shadow(0 0 8px var(--teal));
+            filter: drop-shadow(0 0 10px var(--teal));
         }
 
         /* Special Animation for the Crossbar */
@@ -223,13 +232,14 @@ Generate the complete HTML file with all SVG, CSS, and JavaScript. Make it produ
             stroke-dashoffset: 0;
         }
 
-        .nav-brand-img-wrap:hover .line-3 {
-            animation: neuralPulse 1.8s infinite linear;
+        .nav-brand-img-wrap:hover .line-3,
+        .nav-brand-img-wrap.active .line-3 {
+            animation: neuralPulse 1.6s infinite linear;
         }
 
         @keyframes neuralPulse {
             0% { stroke-dashoffset: 100; opacity: 0.3; }
-            50% { opacity: 1; stroke-width: 3.5; }
+            50% { opacity: 1; stroke-width: 4; }
             100% { stroke-dashoffset: 0; opacity: 0.3; }
         }
 
@@ -237,18 +247,20 @@ Generate the complete HTML file with all SVG, CSS, and JavaScript. Make it produ
         .nav-brand-img-wrap::before {
             content: "";
             position: absolute;
-            inset: -4px;
+            inset: -6px;
             border-radius: 50%;
             border: 1px solid rgba(0, 221, 200, 0.2);
             opacity: 0;
-            transform: scale(0.8);
-            transition: all 0.5s ease;
+            transform: scale(0.7);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .nav-brand-img-wrap:hover::before {
+        .nav-brand-img-wrap:hover::before,
+        .nav-brand-img-wrap.active::before {
             opacity: 1;
-            transform: scale(1.1);
-            border-color: rgba(0, 221, 200, 0.5);
+            transform: scale(1.15);
+            border-color: rgba(0, 221, 200, 0.6);
+            box-shadow: 0 0 20px rgba(0, 221, 200, 0.2);
         }
     </style>
 </head>
@@ -274,26 +286,61 @@ Generate the complete HTML file with all SVG, CSS, and JavaScript. Make it produ
     </div>
 
     <!-- ═══════════════════════════════════════════════════
-         JAVASCRIPT (Add to your JS file for 3D Tilt Effect)
+         JAVASCRIPT (Mobile & Desktop Friendly Interaction)
          ═══════════════════════════════════════════════════ -->
     <script>
         const wrap = document.getElementById('logoWrap');
         const logo = document.getElementById('neuralLogo');
+        let resetTimeout;
 
-        wrap.addEventListener('mousemove', (e) => {
+        function handleInteraction(e) {
             const rect = wrap.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
+            let clientX, clientY;
+
+            // Handle both touch and mouse
+            if (e.type.startsWith('touch')) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+                wrap.classList.add('active'); // Keep active state on touch
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+
+            const x = clientX - rect.left - rect.width / 2;
+            const y = clientY - rect.top - rect.height / 2;
             
-            // Calculate tilt (Max 15 degrees)
-            const tiltX = (y / (rect.height / 2)) * -15;
-            const tiltY = (x / (rect.width / 2)) * 15;
+            // Calculate tilt (Max 20 degrees for more dynamic feel)
+            const tiltX = (y / (rect.height / 2)) * -20;
+            const tiltY = (x / (rect.width / 2)) * 20;
             
             logo.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.15)`;
-        });
 
-        wrap.addEventListener('mouseleave', () => {
+            // Auto-reset after inactivity (helpful for mobile taps)
+            clearTimeout(resetTimeout);
+            resetTimeout = setTimeout(resetLogo, 2000);
+        }
+
+        function resetLogo() {
             logo.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
+            wrap.classList.remove('active');
+        }
+
+        // Mouse Events
+        wrap.addEventListener('mousemove', handleInteraction);
+        wrap.addEventListener('mouseleave', resetLogo);
+
+        // Touch Events
+        wrap.addEventListener('touchstart', (e) => {
+            handleInteraction(e);
+            // Optional: Haptic feedback if supported
+            if (window.navigator.vibrate) window.navigator.vibrate(10);
+        }, { passive: true });
+
+        wrap.addEventListener('touchmove', handleInteraction, { passive: true });
+        wrap.addEventListener('touchend', () => {
+            // Keep the state for a brief moment after touch ends
+            setTimeout(resetLogo, 500);
         });
     </script>
 </body>
