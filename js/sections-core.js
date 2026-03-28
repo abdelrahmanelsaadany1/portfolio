@@ -81,96 +81,6 @@
      Drag · swipe · keyboard · dots
   ══════════════════════════════════════════════════ */
 
-  /* SVG art generators */
-  const SVG = {
-    akelny: (w, h, hue = 28) =>
-      `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="a1" cx="55%" cy="45%" r="60%"><stop offset="0%" stop-color="hsl(${hue},60%,9%)"/><stop offset="100%" stop-color="#03060e"/></radialGradient><filter id="a2"><feGaussianBlur stdDeviation="4"/></filter></defs><rect width="${w}" height="${h}" fill="url(#a1)"/><circle cx="${w * 0.58}" cy="${h * 0.45}" r="70" fill="hsl(${hue},80%,45%)" opacity=".07" filter="url(#a2)"/><circle cx="${w * 0.58}" cy="${h * 0.46}" r="52" fill="none" stroke="hsl(${hue},75%,55%)" stroke-width="1.2" opacity=".4"/><circle cx="${w * 0.58}" cy="${h * 0.46}" r="40" fill="none" stroke="hsl(${hue},75%,55%)" stroke-width=".6" opacity=".22"/><circle cx="${w * 0.58}" cy="${h * 0.46}" r="22" fill="hsl(${hue},70%,48%)" opacity=".14"/><g stroke="hsl(${hue},75%,60%)" stroke-width="1.4" stroke-linecap="round" opacity=".75"><line x1="${w * 0.36}" y1="${h * 0.16}" x2="${w * 0.36}" y2="${h * 0.76}"/><line x1="${w * 0.33}" y1="${h * 0.16}" x2="${w * 0.33}" y2="${h * 0.38}"/><line x1="${w * 0.39}" y1="${h * 0.16}" x2="${w * 0.39}" y2="${h * 0.38}"/><path d="M${w * 0.33},${h * 0.38} Q${w * 0.36},${h * 0.47} ${w * 0.39},${h * 0.38}" fill="none"/></g><g stroke="hsl(${hue},75%,60%)" stroke-width="1.4" stroke-linecap="round" opacity=".75"><line x1="${w * 0.44}" y1="${h * 0.16}" x2="${w * 0.44}" y2="${h * 0.76}"/><path d="M${w * 0.44},${h * 0.16} Q${w * 0.48},${h * 0.28} ${w * 0.44},${h * 0.43}" fill="hsl(${hue},50%,30%)" stroke="hsl(${hue},75%,60%)"/></g><g stroke="hsl(${hue},60%,65%)" stroke-width="1" stroke-linecap="round" opacity=".3" fill="none"><path d="M${w * 0.54},${h * 0.1} Q${w * 0.57},${h * 0.07} ${w * 0.54},${h * 0.04}"/><path d="M${w * 0.6},${h * 0.12} Q${w * 0.63},${h * 0.09} ${w * 0.6},${h * 0.06}"/></g></svg>`,
-    inventory: (w, h, hue = 155) =>
-      `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="i1" cx="50%" cy="40%" r="65%"><stop offset="0%" stop-color="hsl(${hue},55%,8%)"/><stop offset="100%" stop-color="#03060e"/></radialGradient><filter id="i2"><feGaussianBlur stdDeviation="5"/></filter></defs><rect width="${w}" height="${h}" fill="url(#i1)"/><circle cx="${w * 0.5}" cy="${h * 0.4}" r="80" fill="hsl(${hue},70%,40%)" opacity=".06" filter="url(#i2)"/>${[
-        0, 1, 2,
-      ]
-        .map((r) =>
-          [0, 1, 2]
-            .map((c) => {
-              const bx = w * 0.28 + c * 52,
-                by = h * 0.16 + r * 40;
-              return `<rect x="${bx}" y="${by}" width="38" height="28" rx="3" fill="hsl(${hue},60%,35%)" stroke="hsl(${hue},70%,50%)" stroke-width=".8" opacity="${(r * 3 + c) % 3 === 0 ? 0.4 : 0.18}"/><line x1="${bx + 6}" y1="${by + 8}" x2="${bx + 20}" y2="${by + 8}" stroke="hsl(${hue},70%,60%)" stroke-width=".6" opacity=".35"/><line x1="${bx + 6}" y1="${by + 14}" x2="${bx + 16}" y2="${by + 14}" stroke="hsl(${hue},70%,60%)" stroke-width=".6" opacity=".25"/>`;
-            })
-            .join(""),
-        )
-        .join("")}</svg>`,
-    exam: (w, h, hue = 245) =>
-      `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="e1" cx="55%" cy="45%" r="60%"><stop offset="0%" stop-color="hsl(${hue},55%,10%)"/><stop offset="100%" stop-color="#03060e"/></radialGradient><filter id="e2"><feGaussianBlur stdDeviation="5"/></filter></defs><rect width="${w}" height="${h}" fill="url(#e1)"/><circle cx="${w * 0.55}" cy="${h * 0.45}" r="75" fill="hsl(${hue},60%,45%)" opacity=".07" filter="url(#e2)"/><circle cx="${w * 0.58}" cy="${h * 0.45}" r="44" fill="none" stroke="hsl(${hue},65%,55%)" stroke-width="1.2" opacity=".38"/><line x1="${w * 0.58}" y1="${h * 0.45}" x2="${w * 0.58}" y2="${h * 0.24}" stroke="hsl(${hue},70%,65%)" stroke-width="2.2" stroke-linecap="round" opacity=".75"/><line x1="${w * 0.58}" y1="${h * 0.45}" x2="${w * 0.73}" y2="${h * 0.53}" stroke="hsl(${hue},70%,65%)" stroke-width="1.6" stroke-linecap="round" opacity=".6"/><circle cx="${w * 0.58}" cy="${h * 0.45}" r="4" fill="hsl(${hue},70%,60%)" opacity=".85"/>${[
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-      ]
-        .map((i) => {
-          const a = (i / 12) * Math.PI * 2 - Math.PI / 2,
-            r1 = 38,
-            r2 = i % 3 === 0 ? 30 : 35;
-          return `<line x1="${(w * 0.58 + Math.cos(a) * r1).toFixed(1)}" y1="${(h * 0.45 + Math.sin(a) * r1).toFixed(1)}" x2="${(w * 0.58 + Math.cos(a) * r2).toFixed(1)}" y2="${(h * 0.45 + Math.sin(a) * r2).toFixed(1)}" stroke="hsl(${hue},60%,55%)" stroke-width="${i % 3 === 0 ? 1.3 : 0.6}" opacity="${i % 3 === 0 ? 0.55 : 0.25}"/>`;
-        })
-        .join("")}</svg>`,
-    simplify: (w, h, hue = 195) =>
-      `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="s1" cx="50%" cy="45%" r="62%"><stop offset="0%" stop-color="hsl(${hue},55%,9%)"/><stop offset="100%" stop-color="#03060e"/></radialGradient><filter id="s2"><feGaussianBlur stdDeviation="5"/></filter></defs><rect width="${w}" height="${h}" fill="url(#s1)"/><circle cx="${w * 0.55}" cy="${h * 0.45}" r="70" fill="hsl(${hue},65%,45%)" opacity=".07" filter="url(#s2)"/><rect x="${w * 0.52}" y="${h * 0.09}" width="${w * 0.26}" height="${h * 0.82}" rx="10" fill="rgba(7,16,31,.65)" stroke="hsl(${hue},65%,55%)" stroke-width="1.3" opacity=".55"/><rect x="${w * 0.6}" y="${h * 0.09}" width="${w * 0.1}" height="${h * 0.04}" rx="2" fill="hsl(${hue},50%,12%)" opacity=".85"/>${[0, 1, 2, 3].map((i) => `<rect x="${w * 0.56}" y="${h * 0.18 + i * h * 0.14}" width="${w * 0.18}" height="${h * 0.07}" rx="3" fill="hsl(${hue},55%,40%)" opacity="${0.08 + i * 0.04}"/><rect x="${w * 0.56}" y="${h * 0.19 + i * h * 0.14}" width="${w * 0.1 + i * 0.01}" height="${h * 0.015}" rx="1" fill="hsl(${hue},70%,55%)" opacity="${0.16 + i * 0.05}"/>`).join("")}<polyline points="${w * 0.08},${h * 0.72} ${w * 0.15},${h * 0.58} ${w * 0.22},${h * 0.62} ${w * 0.3},${h * 0.44} ${w * 0.37},${h * 0.38} ${w * 0.44},${h * 0.3}" fill="none" stroke="hsl(${hue},75%,55%)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" opacity=".65"/>${[
-        [0.08, 0.72],
-        [0.15, 0.58],
-        [0.22, 0.62],
-        [0.3, 0.44],
-        [0.37, 0.38],
-        [0.44, 0.3],
-      ]
-        .map(
-          ([x, y]) =>
-            `<circle cx="${w * x}" cy="${h * y}" r="2.5" fill="hsl(${hue},80%,60%)" opacity=".7"/>`,
-        )
-        .join("")}</svg>`,
-    orders: (w, h, hue = 320) =>
-      `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="o1" cx="50%" cy="45%" r="65%"><stop offset="0%" stop-color="hsl(${hue},55%,9%)"/><stop offset="100%" stop-color="#03060e"/></radialGradient><filter id="o2"><feGaussianBlur stdDeviation="5"/></filter></defs><rect width="${w}" height="${h}" fill="url(#o1)"/><circle cx="${w * 0.5}" cy="${h * 0.45}" r="80" fill="hsl(${hue},60%,40%)" opacity=".06" filter="url(#o2)"/>${[
-        [0.5, 0.16, "API"],
-        [0.22, 0.38, "Customer"],
-        [0.78, 0.38, "Product"],
-        [0.22, 0.68, "Order"],
-        [0.78, 0.68, "Invoice"],
-        [0.5, 0.86, "Auth"],
-      ]
-        .map(([x, y, lbl], i) => {
-          const cx = w * x,
-            cy = h * y,
-            ic = i === 0;
-          return `<circle cx="${cx}" cy="${cy}" r="${ic ? 14 : 10}" fill="hsl(${hue},50%,12%)" stroke="hsl(${hue},70%,55%)" stroke-width="${ic ? 1.5 : 1}" opacity="${ic ? 0.85 : 0.58}"/><text x="${cx}" y="${cy + 3.5}" text-anchor="middle" font-family="monospace" font-size="${ic ? 6.5 : 5.5}" fill="hsl(${hue},80%,72%)" opacity="${ic ? 0.95 : 0.7}">${lbl}</text>`;
-        })
-        .join("")}${[
-        [0.5, 0.16, 0.22, 0.38],
-        [0.5, 0.16, 0.78, 0.38],
-        [0.22, 0.38, 0.22, 0.68],
-        [0.78, 0.38, 0.78, 0.68],
-        [0.22, 0.68, 0.5, 0.86],
-        [0.78, 0.68, 0.5, 0.86],
-      ]
-        .map(
-          ([x1, y1, x2, y2]) =>
-            `<line x1="${w * x1}" y1="${h * y1}" x2="${w * x2}" y2="${h * y2}" stroke="hsl(${hue},60%,50%)" stroke-width=".85" opacity=".25" stroke-dasharray="3 4"/>`,
-        )
-        .join("")}</svg>`,
-    ikea: (w, h, hue = 40) =>
-      `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="k1" cx="50%" cy="50%" r="65%"><stop offset="0%" stop-color="hsl(${hue},55%,9%)"/><stop offset="100%" stop-color="#03060e"/></radialGradient><filter id="k2"><feGaussianBlur stdDeviation="5"/></filter></defs><rect width="${w}" height="${h}" fill="url(#k1)"/><ellipse cx="${w * 0.55}" cy="${h * 0.5}" rx="90" ry="55" fill="hsl(${hue},70%,40%)" opacity=".06" filter="url(#k2)"/>${[
-        { y: 0.22, lbl: "PL — Presentation", op: 0.72, hl: 1 },
-        { y: 0.45, lbl: "BLL — Business Logic", op: 0.55, hl: 0 },
-        { y: 0.68, lbl: "DAL — Data Access", op: 0.45, hl: 0 },
-      ]
-        .map(
-          ({ y, lbl, op, hl }) =>
-            `<rect x="${w * 0.18}" y="${h * y}" width="${w * 0.64}" height="${h * 0.18}" rx="6" fill="hsl(${hue},45%,${hl ? 13 : 8}%)" stroke="hsl(${hue},70%,${hl ? 62 : 52}%)" stroke-width="${hl ? 1.5 : 0.9}" opacity="${op}"/><text x="${w * 0.5}" y="${h * y + h * 0.09 + 4}" text-anchor="middle" font-family="monospace" font-size="8" fill="hsl(${hue},80%,72%)" opacity="${op}" letter-spacing="1">${lbl}</text>`,
-        )
-        .join(
-          "",
-        )}<g stroke="hsl(${hue},70%,55%)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" opacity=".5"><line x1="${w * 0.5}" y1="${h * 0.4}" x2="${w * 0.5}" y2="${h * 0.45}"/><polyline points="${w * 0.47},${h * 0.43} ${w * 0.5},${h * 0.45} ${w * 0.53},${h * 0.43}"/><line x1="${w * 0.5}" y1="${h * 0.63}" x2="${w * 0.5}" y2="${h * 0.68}"/><polyline points="${w * 0.47},${h * 0.66} ${w * 0.5},${h * 0.68} ${w * 0.53},${h * 0.66}"/></g></svg>`,
-    voya: (w, h, hue = 38) =>
-      `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="v1" cx="55%" cy="45%" r="65%"><stop offset="0%" stop-color="hsl(${hue},55%,9%)"/><stop offset="100%" stop-color="#03060e"/></radialGradient><filter id="v2"><feGaussianBlur stdDeviation="5"/></filter><clipPath id="vc"><circle cx="${w * 0.56}" cy="${h * 0.46}" r="48"/></clipPath></defs><rect width="${w}" height="${h}" fill="url(#v1)"/><circle cx="${w * 0.56}" cy="${h * 0.46}" r="75" fill="hsl(${hue},65%,40%)" opacity=".06" filter="url(#v2)"/><circle cx="${w * 0.56}" cy="${h * 0.46}" r="48" fill="hsl(${hue},40%,7%)" stroke="hsl(${hue},70%,55%)" stroke-width="1.3" opacity=".55"/>${[-24, -12, 0, 12, 24].map((off) => `<ellipse cx="${w * 0.56}" cy="${h * 0.46 + off * 0.8}" rx="48" ry="${Math.abs(4 + off * 0.3) + 2}" fill="none" stroke="hsl(${hue},60%,50%)" stroke-width=".5" opacity=".2" clip-path="url(#vc)"/>`).join("")}<ellipse cx="${w * 0.56}" cy="${h * 0.46}" rx="24" ry="48" fill="none" stroke="hsl(${hue},60%,50%)" stroke-width=".5" opacity=".22" clip-path="url(#vc)"/><path d="M${w * 0.2},${h * 0.72} Q${w * 0.38},${h * 0.12} ${w * 0.78},${h * 0.3}" fill="none" stroke="hsl(${hue},85%,60%)" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="4 3" opacity=".75"/><circle cx="${w * 0.2}" cy="${h * 0.72}" r="4" fill="hsl(${hue},80%,55%)" opacity=".75"/><g transform="translate(${w * 0.76},${h * 0.22})"><path d="M0,-13 Q7,-13 7,-6 Q7,0 0,11 Q-7,0 -7,-6 Q-7,-13 0,-13 Z" fill="hsl(${hue},85%,55%)" opacity=".85"/><circle cx="0" cy="-6" r="3.5" fill="#03060e" opacity=".75"/></g><rect x="${w * 0.06}" y="${h * 0.28}" width="58" height="32" rx="5" fill="rgba(7,16,31,.75)" stroke="hsl(${hue},60%,50%)" stroke-width=".6" opacity=".5"/><text x="${w * 0.06 + 8}" y="${h * 0.28 + 12}" font-family="monospace" font-size="6" fill="hsl(${hue},80%,70%)" opacity=".65">PARIS</text><text x="${w * 0.06 + 8}" y="${h * 0.28 + 22}" font-family="monospace" font-size="8" fill="hsl(${hue},90%,78%)" opacity=".85">22°C ☀</text></svg>`,
-    atmosphera: (w, h, hue = 210) =>
-      `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="at1" cx="50%" cy="30%" r="70%"><stop offset="0%" stop-color="hsl(${hue},60%,10%)"/><stop offset="100%" stop-color="#03060e"/></radialGradient><filter id="at2"><feGaussianBlur stdDeviation="6"/></filter><linearGradient id="at3" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="hsl(25,90%,55%)"/><stop offset="100%" stop-color="hsl(45,95%,60%)"/></linearGradient></defs><rect width="${w}" height="${h}" fill="url(#at1)"/><ellipse cx="${w * 0.5}" cy="${h * 0.2}" rx="110" ry="60" fill="hsl(${hue},65%,40%)" opacity=".08" filter="url(#at2)"/><path d="M${w * 0.12},${h * 0.68} A${w * 0.38},${h * 0.58} 0 0 1 ${w * 0.88},${h * 0.68}" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="2.5"/><path d="M${w * 0.12},${h * 0.68} A${w * 0.38},${h * 0.58} 0 0 1 ${w * 0.62},${h * 0.22}" fill="none" stroke="url(#at3)" stroke-width="2.5" stroke-linecap="round" opacity=".7"/><circle cx="${w * 0.62}" cy="${h * 0.22}" r="10" fill="hsl(45,95%,65%)" opacity=".88"/><circle cx="${w * 0.62}" cy="${h * 0.22}" r="16" fill="hsl(45,95%,65%)" opacity=".13" filter="url(#at2)"/><g opacity=".48"><ellipse cx="${w * 0.32}" cy="${h * 0.44}" rx="28" ry="15" fill="hsl(${hue},40%,40%)"/><ellipse cx="${w * 0.22}" cy="${h * 0.48}" rx="17" ry="13" fill="hsl(${hue},35%,42%)"/><ellipse cx="${w * 0.42}" cy="${h * 0.47}" rx="15" ry="12" fill="hsl(${hue},35%,42%)"/></g>${[0, 1, 2, 3, 4, 5, 6].map((i) => `<line x1="${w * 0.18 + i * w * 0.04}" y1="${h * 0.6 + (i % 3) * h * 0.06}" x2="${w * 0.18 + i * w * 0.04 - 2}" y2="${h * 0.6 + (i % 3) * h * 0.06 + 9}" stroke="hsl(${hue},70%,65%)" stroke-width="1.3" stroke-linecap="round" opacity="${0.32 + (i % 3) * 0.1}"/>`).join("")}<path d="M${w * 0.66},${h * 0.72} A${w * 0.14},${w * 0.14} 0 0 1 ${w * 0.88},${h * 0.72}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="8" stroke-linecap="round"/><path d="M${w * 0.66},${h * 0.72} A${w * 0.14},${w * 0.14} 0 0 1 ${w * 0.8},${h * 0.6}" fill="none" stroke="hsl(${hue},80%,60%)" stroke-width="8" stroke-linecap="round" opacity=".52"/></svg>`,
-  };
-
   const GH = `<svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>`;
   const EXT = `<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
   const MORE = `<svg viewBox="0 0 10 10"><line x1="2" y1="5" x2="8" y2="5"/><polyline points="5,2 8,5 5,8"/></svg>`;
@@ -202,6 +112,10 @@
           url: "https://github.com/Abdelrahman-2222/AKELNY-Front",
         },
       ],
+      color: "#FF6B6B",
+      color2: "#4ECDC4",
+      icon: "🍽️",
+      category: "Food Platform",
     },
     {
       id: "inventory",
@@ -225,6 +139,10 @@
           url: "https://github.com/abdelrahmanelsaadany1/Inventory_Management_System",
         },
       ],
+      color: "#667EEA",
+      color2: "#764BA2",
+      icon: "📦",
+      category: "Management System",
     },
     {
       id: "exam",
@@ -242,6 +160,10 @@
           url: "https://github.com/abdelrahmanelsaadany1/Examination-System",
         },
       ],
+      color: "#F093FB",
+      color2: "#F5576C",
+      icon: "📝",
+      category: "Education Platform",
     },
     {
       id: "simplify",
@@ -367,11 +289,6 @@
 
   /* ── Build cards ── */
   PROJECTS.forEach((p, i) => {
-    const artFn = SVG[p.id];
-    const artHTML = artFn
-      ? artFn(520, 300, p.hue)
-      : `<svg viewBox="0 0 520 300"><rect width="520" height="300" fill="#07101f"/></svg>`;
-
     const ghLinks = p.githubLinks
       .map(
         (g) =>
@@ -382,15 +299,21 @@
     const card = document.createElement("div");
     card.className = "pw-card";
     card.dataset.index = i;
+    card.style.setProperty("--card-color1", "#0d2f51");
+    card.style.setProperty("--card-color2", "#08203b");
     card.innerHTML = `
-      <div class="pw-card-art">${artHTML}</div>
       <span class="pw-card-idx">${String(i + 1).padStart(2, "0")}</span>
       ${p.hasDemo ? `<span class="pw-card-live">LIVE</span>` : ""}
+      <div class="pw-card-shapes">
+        <span class="pw-shape shape-1"></span>
+        <span class="pw-shape shape-2"></span>
+        <span class="pw-shape shape-3"></span>
+      </div>
       <div class="pw-card-body">
         <div class="pw-card-title">${p.title}</div>
         <div class="pw-card-desc">${p.desc}</div>
         <div class="pw-card-tags">${p.tags
-          .slice(0, 4)
+          .slice(0, 6)
           .map((t) => `<span class="pw-tag">${t}</span>`)
           .join("")}</div>
         <div class="pw-card-links">
@@ -639,11 +562,6 @@
     const badge = document.getElementById("m-badge");
     if (badge) badge.style.display = p.hasDemo ? "inline-block" : "none";
 
-    const artFn = SVG[p.id];
-    document.getElementById("m-art").innerHTML = artFn
-      ? artFn(720, 260, p.hue)
-      : "";
-
     document.getElementById("m-tags").innerHTML = p.tags
       .map((t) => `<span class="m-tag">${t}</span>`)
       .join("");
@@ -671,10 +589,11 @@
   const mClose = document.getElementById("m-close");
   const mOverlay = document.getElementById("modal-overlay");
   if (mClose) mClose.addEventListener("click", closeModal);
-  if (mOverlay)
+  if (mOverlay) {
     mOverlay.addEventListener("click", (e) => {
       if (e.target === mOverlay) closeModal();
     });
+  }
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && mOverlay?.classList.contains("open"))
       closeModal();
