@@ -141,87 +141,105 @@ header.scrolled {
 
 .nav-brand-img-wrap {
   position: relative;
-  width: 38px;
-  height: 38px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  perspective: 800px;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
   flex-shrink: 0;
 }
 
-.nav-brand img {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(0, 221, 200, 0.25);
+/* ── NEURAL SVG LOGO ─────────────────────────────── */
+.neural-logo {
+  width: 40px;
+  height: 40px;
   display: block;
-  position: relative;
-  z-index: 2;
-  transition:
-    border-color 0.4s ease,
-    box-shadow 0.4s ease,
-    transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: visible;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  filter: drop-shadow(0 0 4px rgba(48, 205, 207, 0.2));
+  will-change: transform, filter;
 }
 
+/* Connecting Lines */
+.neural-line {
+  fill: none;
+  stroke: var(--teal);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  opacity: 0.25;
+  transition: all 0.4s ease;
+}
+
+/* Nodes (Dots) */
+.neural-node {
+  fill: var(--void);
+  stroke: var(--teal);
+  stroke-width: 2.5;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  filter: drop-shadow(0 0 2px var(--teal));
+}
+
+/* ── INTERACTIVE STATES (Hover & Active/Touch) ───── */
+/* Using .active class for mobile touch triggers */
+.nav-brand:hover .neural-logo,
+.nav-brand-img-wrap.active .neural-logo {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 8px rgba(48, 205, 207, 0.4));
+}
+
+.nav-brand:hover .neural-line,
+.nav-brand-img-wrap.active .neural-line {
+  opacity: 0.9;
+  stroke-width: 2.8;
+  filter: drop-shadow(0 0 4px var(--teal));
+}
+
+.nav-brand:hover .neural-node,
+.nav-brand-img-wrap.active .neural-node {
+  fill: var(--teal);
+  r: 5;
+  stroke-width: 1.8;
+  filter: drop-shadow(0 0 6px var(--teal));
+}
+
+/* Special Animation for the Crossbar */
+.line-3 {
+  stroke-dasharray: 50;
+  stroke-dashoffset: 0;
+}
+
+.nav-brand:hover .line-3,
+.nav-brand-img-wrap.active .line-3 {
+  animation: neuralPulse 1.6s infinite linear;
+}
+
+@keyframes neuralPulse {
+  0% { stroke-dashoffset: 100; opacity: 0.5; }
+  50% { opacity: 0.95; stroke-width: 3.2; }
+  100% { stroke-dashoffset: 0; opacity: 0.5; }
+}
+
+/* Background Ring (Matches your current theme) */
 .nav-brand-img-wrap::before {
   content: "";
   position: absolute;
-  inset: -4px;
+  inset: -2px;
   border-radius: 50%;
-  border: 1px solid rgba(0, 221, 200, 0.3);
-  z-index: 1;
+  border: 1px solid rgba(0, 221, 200, 0.1);
   opacity: 0;
-  transform: scale(0.85);
-  transition:
-    opacity 0.4s ease,
-    transform 0.5s var(--ease-back);
-  animation: logoRingPulse 2.8s ease-out 0.6s both;
+  transform: scale(0.8);
+  transition: all 0.4s ease;
 }
 
-.nav-brand-img-wrap::after {
-  content: "";
-  position: absolute;
-  inset: -8px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(0, 221, 200, 0.18) 0%,
-    transparent 70%
-  );
-  z-index: 0;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-@keyframes logoRingPulse {
-  0% {
-    opacity: 0;
-    transform: scale(0.7);
-  }
-  40% {
-    opacity: 0.9;
-    transform: scale(1.15);
-  }
-  70% {
-    opacity: 0.5;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0.35;
-    transform: scale(1);
-  }
-}
-
-.nav-brand:hover .nav-brand-img-wrap::before {
-  opacity: 1;
-  transform: scale(1.15);
-}
-.nav-brand:hover .nav-brand-img-wrap::after {
-  opacity: 1;
-}
-.nav-brand:hover img {
-  border-color: rgba(0, 221, 200, 0.6);
-  box-shadow:
-    0 0 16px rgba(0, 221, 200, 0.35),
-    0 0 32px rgba(0, 221, 200, 0.12);
-  transform: scale(1.06);
+.nav-brand:hover .nav-brand-img-wrap::before,
+.nav-brand-img-wrap.active::before {
+  opacity: 0.3;
+  transform: scale(1.05);
+  border-color: rgba(0, 221, 200, 0.3);
 }
 
 .nav-brand-name {

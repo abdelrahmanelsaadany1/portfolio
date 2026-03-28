@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Abdelrahman Elsaadany</title>
-    <link rel="icon" type="image/png" href="images/A.gif" />
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
     <link
       href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap"
       rel="stylesheet"
@@ -101,8 +101,20 @@
     <!-- ── HEADER ── -->
     <header id="main-header">
       <a href="#" class="nav-brand">
-        <div class="nav-brand-img-wrap">
-          <img src="images/A.gif" alt="MyLogo" />
+        <div class="nav-brand-img-wrap" id="logoWrap">
+          <svg class="neural-logo" id="neuralLogo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Connecting Lines (forming 'A') -->
+            <path class="neural-line line-1" d="M50 20 L20 85" />
+            <path class="neural-line line-2" d="M50 20 L80 85" />
+            <path class="neural-line line-3" d="M32 62 L68 62" />
+            
+            <!-- Nodes (Dots) -->
+            <circle class="neural-node node-top" cx="50" cy="20" r="4.5" />
+            <circle class="neural-node node-left" cx="20" cy="85" r="4.5" />
+            <circle class="neural-node node-right" cx="80" cy="85" r="4.5" />
+            <circle class="neural-node node-mid-left" cx="32" cy="62" r="3.5" />
+            <circle class="neural-node node-mid-right" cx="68" cy="62" r="3.5" />
+          </svg>
         </div>
         <span class="nav-brand-name">
           <span class="brand-first">Abdelrahman</span>
@@ -1013,5 +1025,62 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="js/contact-form.js"></script>
     <script src="the road/about-timeline.js"></script>
+
+    <!-- Neural Logo Interaction Script -->
+    <script>
+        const wrap = document.getElementById('logoWrap');
+        const logo = document.getElementById('neuralLogo');
+        let resetTimeout;
+
+        function handleInteraction(e) {
+            const rect = wrap.getBoundingClientRect();
+            let clientX, clientY;
+
+            // Handle both touch and mouse
+            if (e.type.startsWith('touch')) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+                wrap.classList.add('active'); // Keep active state on touch
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+
+            const x = clientX - rect.left - rect.width / 2;
+            const y = clientY - rect.top - rect.height / 2;
+            
+            // Calculate tilt (Max 12 degrees for elegant feel)
+            const tiltX = (y / (rect.height / 2)) * -12;
+            const tiltY = (x / (rect.width / 2)) * 12;
+            
+            logo.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.08)`;
+
+            // Auto-reset after inactivity (helpful for mobile taps)
+            clearTimeout(resetTimeout);
+            resetTimeout = setTimeout(resetLogo, 2000);
+        }
+
+        function resetLogo() {
+            logo.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
+            wrap.classList.remove('active');
+        }
+
+        // Mouse Events
+        wrap.addEventListener('mousemove', handleInteraction);
+        wrap.addEventListener('mouseleave', resetLogo);
+
+        // Touch Events
+        wrap.addEventListener('touchstart', (e) => {
+            handleInteraction(e);
+            // Optional: Haptic feedback if supported
+            if (window.navigator.vibrate) window.navigator.vibrate(10);
+        }, { passive: true });
+
+        wrap.addEventListener('touchmove', handleInteraction, { passive: true });
+        wrap.addEventListener('touchend', () => {
+            // Keep the state for a brief moment after touch ends
+            setTimeout(resetLogo, 500);
+        });
+    </script>
   </body>
 </html>

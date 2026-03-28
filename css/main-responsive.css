@@ -80,10 +80,10 @@
     overflow: hidden;
   }
   .nav-brand-img-wrap {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
   }
-  .nav-brand img {
+  .neural-logo {
     width: 32px;
     height: 32px;
   }
