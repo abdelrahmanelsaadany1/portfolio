@@ -138,21 +138,33 @@
     var sticky = document.querySelector(".hs-sticky");
     if (!sticky) return;
 
+    var hsBottom = document.querySelector(".hs-bottom");
+    var hsDots = hsBottom ? hsBottom.querySelector(".hs-dots") : null;
+
     var hud = document.createElement("div");
     hud.id = "rdHUD";
     hud.innerHTML =
       '<div class="rd-counter">' +
       '<div class="rd-counter-num" id="rdCNum">01</div>' +
-      '<div class="rd-counter-of">of 0' +
-      CARDS.length +
       "</div>" +
-      "</div>" +
+      '<div class="rd-dots-placeholder"></div>' +
       '<div class="rd-arrows">' +
-      '<button class="rd-na" id="rdPrev" title="Previous">&#8592;</button>' +
-      '<button class="rd-na" id="rdNext" title="Next">&#8594;</button>' +
+      '<button class="rd-na" id="rdPrev">&#8592;</button>' +
+      '<button class="rd-na" id="rdNext">&#8594;</button>' +
       "</div>";
 
     sticky.appendChild(hud);
+
+    if (hsDots) {
+      var placeholder = hud.querySelector(".rd-dots-placeholder");
+      if (placeholder) {
+        var clonedDots = hsDots.cloneNode(true);
+        placeholder.replaceWith(clonedDots);
+      }
+      if (hsBottom) {
+        hsBottom.style.display = "none";
+      }
+    }
 
     btnPrev = document.getElementById("rdPrev");
     btnNext = document.getElementById("rdNext");
@@ -679,11 +691,14 @@
     clearTimeout(resizeT);
     resizeT = setTimeout(function () {
       isMobile = window.innerWidth <= 700;
+      var hsBottom = document.querySelector(".hs-bottom");
       if (isMobile) {
+        if (hsBottom) hsBottom.style.display = "flex";
         setupMobile();
         buildDots();
         return;
       }
+      if (hsBottom) hsBottom.style.display = "none";
       measureOuter();
       buildBgCanvas();
       buildRoadSVG();

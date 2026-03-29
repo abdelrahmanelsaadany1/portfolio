@@ -1,6 +1,45 @@
 /* ═══════════════════════════════════════════════════
+   SCROLL PROGRESS
+═══════════════════════════════════════════════════ */
+#scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--teal),
+    rgba(0, 221, 200, 0.5)
+  );
+  z-index: 99999;
+  box-shadow:
+    0 0 10px var(--teal),
+    0 0 24px var(--teal-30),
+    0 0 48px var(--teal-18);
+  transition: width 0.12s linear;
+  pointer-events: none;
+}
+#scroll-progress::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 0 6px #fff,
+    0 0 14px var(--teal),
+    0 0 28px var(--teal-60);
+}
+
+/* ═══════════════════════════════════════════════════
    HEADER
-═════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════ */
 header {
   position: fixed;
   inset: 0 0 auto 0;

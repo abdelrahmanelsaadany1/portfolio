@@ -423,11 +423,17 @@
   left: 0;
   right: 0;
   padding: 0 clamp(18px, 4vw, 60px) 28px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  justify-items: center;
+  gap: 16px;
   pointer-events: none;
   z-index: 30;
+}
+
+.hs-hint {
+  display: none !important;
 }
 
 .rd-counter {
@@ -443,12 +449,7 @@
   line-height: 1;
 }
 .rd-counter-of {
-  font-family: "Share Tech Mono", monospace;
-  font-size: 0.44rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.18);
-  margin-top: 3px;
+  display: none;
 }
 
 .rd-arrows {

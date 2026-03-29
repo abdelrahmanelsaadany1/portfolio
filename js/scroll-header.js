@@ -2,6 +2,7 @@
 (function () {
   const bar = document.getElementById("scroll-progress");
   const header = document.getElementById("main-header");
+  if (!bar) return;
 
   let lastY = 0;
   let ticking = false;
