@@ -85,6 +85,15 @@
   var isTransitioning = false;
   var transitionTimer = null;
 
+  /* boundary hold — after reaching the first/last card we block scroll
+     for a short window so trackpad momentum can't bleed into the next section.
+     After the hold expires, the very next same-direction scroll exits cleanly. */
+  var BOUNDARY_HOLD_MS = 700;
+  var boundaryHeld = false; // true  = actively blocking
+  var boundaryReleased = false; // true  = hold expired, next event exits
+  var boundaryDir = 0;
+  var boundaryTimer = null;
+
   /* ════════════════════════════════════════════ SETUP */
   function setup() {
     track = document.getElementById("hsTrack");
@@ -121,13 +130,18 @@
   }
 
   /* ════════════════════════════════════════════ WHEEL SNAP
-     Strategy:
-     - If the section is not in sticky mode → let the page scroll normally.
-     - If we're at card 0 and scrolling UP  → let the page scroll up (enter from above works).
-     - If we're at card N-1 and scrolling DOWN → let the page scroll down (exit to next section works).
-     - In all other cases: preventDefault + step exactly ONE card.
-       A transition lock prevents any further steps until the animation ends,
-       so no matter how fast or hard the user scrolls they can't skip.
+     Flow:
+     1. Not in sticky mode → don't touch the event.
+     2. Boundary hold active (same direction) → eat the event so momentum
+        can't bleed into the next section / previous section.
+     3. Boundary hold active (opposite direction = new gesture) → clear hold,
+        treat as a normal inner step (they changed their mind).
+     4. Would leave the section (nextIdx out of range):
+        a. Pin scrollY to the exact edge.
+        b. Start a boundary hold so the *next* few wheel ticks are absorbed.
+        c. Let THIS event through (don't preventDefault) so the page starts
+           moving immediately — no lag on exit.
+     5. Normal inner step → preventDefault + snap one card.
   ════════════════════════════════════════════ */
   function onWheel(e) {
     if (isMobile) return;
@@ -136,35 +150,84 @@
     if (!outer) return;
     var rect = outer.getBoundingClientRect();
 
-    /* Is the section currently "stuck" (sticky mode active)? */
+    /* Only active while the section is sticky */
     var inSection = rect.top <= 1 && rect.bottom >= window.innerHeight - 1;
-    if (!inSection) return; /* not stuck — don't interfere */
+    if (!inSection) {
+      /* Leaving sticky zone — clear any stale hold */
+      boundaryHeld = false;
+      boundaryReleased = false;
+      clearTimeout(boundaryTimer);
+      return;
+    }
 
     var dir = e.deltaY > 0 ? 1 : -1;
     var nextIdx = curIdx + dir;
 
-    /* Allow natural exit at the boundaries */
-    if (nextIdx < 0 || nextIdx >= CARDS.length) return;
+    /* ── Case 2 / 3: boundary hold or released state ── */
+    if (boundaryHeld || boundaryReleased) {
+      if (dir !== boundaryDir) {
+        /* Opposite direction: user reversed — clear everything, step inward */
+        boundaryHeld = false;
+        boundaryReleased = false;
+        clearTimeout(boundaryTimer);
+        /* Fall through to Case 5 as a normal inner step */
+      } else if (boundaryHeld) {
+        /* Same dir, still holding: absorb momentum */
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      } else {
+        /* boundaryReleased + same dir: intentional exit gesture — let it go */
+        boundaryReleased = false;
+        /* Don't preventDefault — page exits naturally from the pinned edge */
+        return;
+      }
+    }
 
-    /* We own this event — stop the page from scrolling */
+    /* ── Case 4: would leave the section ── */
+    if (nextIdx < 0 || nextIdx >= CARDS.length) {
+      /* Block this event too — we need to hold the page in place first */
+      e.preventDefault();
+      e.stopPropagation();
+
+      /* Pin scrollY to the exact boundary edge */
+      var scrollable = Math.max(outerH - window.innerHeight, 1);
+      if (dir < 0) {
+        window.scrollTo({ top: outerTop, behavior: "instant" });
+      } else {
+        window.scrollTo({ top: outerTop + scrollable, behavior: "instant" });
+      }
+      lastScrollIdx = curIdx;
+
+      /* If hold already active in same direction, just keep absorbing */
+      if (boundaryHeld && dir === boundaryDir) return;
+
+      /* Start/restart boundary hold */
+      boundaryHeld = true;
+      boundaryReleased = false;
+      boundaryDir = dir;
+      clearTimeout(boundaryTimer);
+      boundaryTimer = setTimeout(function () {
+        boundaryHeld = false;
+        boundaryReleased = true; // next same-dir event exits freely
+      }, BOUNDARY_HOLD_MS);
+
+      return;
+    }
+
+    /* ── Case 5: normal inner step ── */
     e.preventDefault();
     e.stopPropagation();
 
-    /* If a transition is already running, swallow the event but do nothing */
     if (isTransitioning) return;
 
-    /* Start transition lock */
     isTransitioning = true;
     clearTimeout(transitionTimer);
     transitionTimer = setTimeout(function () {
       isTransitioning = false;
-    }, TRANSITION_MS + 60); /* small buffer beyond the CSS transition */
+    }, TRANSITION_MS + 60);
 
-    /* Move exactly one step */
     snap(nextIdx, false);
-
-    /* Silently realign the page scroll so the passive scroll listener
-       and progress bar stay consistent */
     syncScrollPosition(nextIdx);
   }
 
