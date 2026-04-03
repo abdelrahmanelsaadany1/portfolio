@@ -283,7 +283,7 @@
 
   const G = window.gsap;
   const TOTAL = PROJECTS.length;
-  const CIRC = 125.66; // 2π×20
+  const CIRC = 125.66;
 
   document.getElementById("pwTot").textContent = String(TOTAL).padStart(2, "0");
 
@@ -324,7 +324,6 @@
       </div>
     `;
 
-    /* clicking inactive card → navigate to it */
     card.addEventListener("click", () => {
       if (!card.classList.contains("active") && !_dragged) goTo(i);
     });
@@ -337,6 +336,7 @@
     dot.dataset.dot = i;
     dot.setAttribute("aria-label", `Project ${i + 1}`);
     dot.addEventListener("click", () => {
+      dismissHint();
       goTo(i);
     });
     dotsEl.appendChild(dot);
@@ -345,18 +345,100 @@
   const cards = Array.from(track.querySelectorAll(".pw-card"));
   const dots = Array.from(dotsEl.querySelectorAll(".pw-dot"));
 
+  /* ══════════════════════════════════════════════════
+     INJECT EXPLORE HINT PANEL (left dead zone)
+  ══════════════════════════════════════════════════ */
+  const section = document.getElementById("projects-section");
+
+  const hintEl = document.createElement("div");
+  hintEl.className = "pw-explore-hint";
+  hintEl.innerHTML = `
+    <div class="pw-hint-chevrons">
+      <div class="pw-hint-chevron"></div>
+      <div class="pw-hint-chevron"></div>
+      <div class="pw-hint-chevron"></div>
+    </div>
+    <div class="pw-hint-line">
+      <span class="pw-hint-particle"></span>
+      <span class="pw-hint-particle"></span>
+      <span class="pw-hint-particle"></span>
+    </div>
+    <div class="pw-hint-label">Explore</div>
+  `;
+  if (section) section.appendChild(hintEl);
+
+  /* ── Arrow nav buttons ── */
+  const arrowLeft = document.createElement("button");
+  arrowLeft.className = "pw-nav-arrow pw-arrow-left";
+  arrowLeft.setAttribute("aria-label", "Previous project");
+  arrowLeft.innerHTML = `<svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>`;
+
+  const arrowRight = document.createElement("button");
+  arrowRight.className = "pw-nav-arrow pw-arrow-right";
+  arrowRight.setAttribute("aria-label", "Next project");
+  arrowRight.innerHTML = `<svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>`;
+
+  if (section) {
+    section.appendChild(arrowLeft);
+    section.appendChild(arrowRight);
+  }
+
+  arrowLeft.addEventListener("click", () => {
+    dismissHint();
+    goTo(_current - 1);
+  });
+  arrowRight.addEventListener("click", () => {
+    dismissHint();
+    goTo(_current + 1);
+  });
+
+  /* ── Mobile swipe hint ── */
+  const swipeHint = document.createElement("div");
+  swipeHint.className = "pw-swipe-hint";
+  swipeHint.innerHTML = `
+    <div class="pw-swipe-arrows">
+      <div class="pw-swipe-arr"></div>
+    </div>
+    <div class="pw-swipe-icon">
+      <svg class="pw-swipe-hand" viewBox="0 0 24 24" fill="none" stroke="rgba(48,205,207,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 11V9a2 2 0 0 0-4 0v-1a2 2 0 0 0-4 0v-1a2 2 0 0 0-4 0v10l-1.5-1.5a2 2 0 0 0-2.83 2.83L6 22h12v-2a4 4 0 0 0-1.17-2.83L15 16"/>
+      </svg>
+      <span class="pw-swipe-label">Swipe</span>
+    </div>
+    <div class="pw-swipe-arrows">
+      <div class="pw-swipe-arr" style="transform:rotate(-45deg)"></div>
+    </div>
+  `;
+
+  /* Insert swipe hint after dots */
+  if (dotsEl && dotsEl.parentNode) {
+    dotsEl.parentNode.insertBefore(swipeHint, dotsEl.nextSibling);
+  }
+
+  /* Auto-dismiss swipe hint after 4s */
+  setTimeout(() => {
+    swipeHint.classList.add("dismissed");
+  }, 4000);
+
+  /* ── Dismiss hint on first interaction ── */
+  let _hintDismissed = false;
+  function dismissHint() {
+    if (_hintDismissed) return;
+    _hintDismissed = true;
+    hintEl.classList.add("dismissed");
+    swipeHint.classList.add("dismissed");
+  }
+
   /* ── Carousel state ── */
   let _current = 0;
   let _busy = false;
   let _dragged = false;
 
-  /* card width + gap */
   function cardW() {
     const c = cards[0];
     return c ? c.offsetWidth + 24 : 380;
   }
 
-  /* offset so active card is centered in viewport */
   function getOffset(idx) {
     const cw = cardW();
     const cardPx = cards[0] ? cards[0].offsetWidth : 400;
@@ -378,11 +460,15 @@
     dots.forEach((d, i) => d.classList.toggle("active", i === _current));
     if (curEl) curEl.textContent = String(_current + 1).padStart(2, "0");
     if (arcEl) arcEl.style.strokeDashoffset = String(dashOff);
+
+    /* Arrow visibility: dim at edges */
+    arrowLeft.style.opacity = _current === 0 ? "0.25" : "";
+    arrowRight.style.opacity = _current === TOTAL - 1 ? "0.25" : "";
   }
 
   function goTo(idx) {
     if (_busy) return;
-    idx = ((idx % TOTAL) + TOTAL) % TOTAL; // wrap
+    idx = ((idx % TOTAL) + TOTAL) % TOTAL;
     if (idx === _current) {
       applyOffset(true);
       return;
@@ -397,13 +483,18 @@
   }
 
   /* ── Keyboard ── */
-  const section = document.getElementById("projects-section");
   document.addEventListener("keydown", (e) => {
     if (!section) return;
     const r = section.getBoundingClientRect();
     if (r.top >= window.innerHeight || r.bottom <= 0) return;
-    if (e.key === "ArrowLeft") goTo(_current - 1);
-    if (e.key === "ArrowRight") goTo(_current + 1);
+    if (e.key === "ArrowLeft") {
+      dismissHint();
+      goTo(_current - 1);
+    }
+    if (e.key === "ArrowRight") {
+      dismissHint();
+      goTo(_current + 1);
+    }
   });
 
   /* ── Drag (mouse) ── */
@@ -422,8 +513,7 @@
   });
   window.addEventListener("mousemove", (e) => {
     if (!_mdown) return;
-    const dx = e.clientX - _mx,
-      dy = e.clientY - _mx * 0;
+    const dx = e.clientX - _mx;
     if (!_mhorizDecided && Math.abs(dx) > 5) {
       _mhoriz = true;
       _mhorizDecided = true;
@@ -438,6 +528,7 @@
     _mdown = false;
     const dx = e.clientX - _mx;
     if (_dragged && _mhoriz) {
+      dismissHint();
       if (dx < -70) goTo(_current + 1);
       else if (dx > 70) goTo(_current - 1);
       else {
@@ -485,6 +576,7 @@
     (e) => {
       const dx = e.changedTouches[0].clientX - _tx;
       if (_dragged && _thoriz) {
+        dismissHint();
         if (dx < -60) goTo(_current + 1);
         else if (dx > 60) goTo(_current - 1);
         else {
@@ -524,6 +616,18 @@
                   syncUI();
                 },
               },
+            );
+            /* Animate hint panel entrance */
+            G.fromTo(
+              hintEl,
+              { opacity: 0, x: -16 },
+              { opacity: 1, x: 0, duration: 1, ease: "power3.out", delay: 0.6 },
+            );
+            /* Animate arrow buttons entrance */
+            G.fromTo(
+              [arrowLeft, arrowRight],
+              { opacity: 0 },
+              { opacity: 1, duration: 0.6, ease: "power2.out", delay: 0.9 },
             );
             const top = document.querySelector(".pw-top");
             if (top)

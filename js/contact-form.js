@@ -528,7 +528,7 @@
 
     const btn = document.getElementById("ct-btn");
     if (btn) {
-      btn.textContent = "Transmit Message";
+      btn.textContent = "Send Message";
       btn.classList.remove("ready");
       btn.setAttribute("disabled", "");
     }

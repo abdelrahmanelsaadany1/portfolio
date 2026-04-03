@@ -563,6 +563,274 @@
     0 0 22px rgba(48, 205, 207, 0.2);
 }
 
+/* ════════════════════════════════════════════════════
+   EXPLORE HINT PANEL — left dead zone
+   Fades out on first user interaction
+════════════════════════════════════════════════════ */
+.pw-explore-hint {
+  position: absolute;
+  left: clamp(12px, 3vw, 48px);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  z-index: 10;
+  pointer-events: none;
+  transition:
+    opacity 0.8s ease,
+    filter 0.8s ease;
+}
+.pw-explore-hint.dismissed {
+  opacity: 0 !important;
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+/* Vertical animated line */
+.pw-hint-line {
+  position: relative;
+  width: 1px;
+  height: 120px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(48, 205, 207, 0.5),
+    transparent
+  );
+  overflow: visible;
+}
+.pw-hint-particle {
+  position: absolute;
+  left: -2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #30cdcf;
+  box-shadow: 0 0 8px rgba(48, 205, 207, 0.9);
+  animation: particleTravel 2s ease-in-out infinite;
+}
+.pw-hint-particle:nth-child(2) {
+  animation-delay: 0.66s;
+  opacity: 0.6;
+  width: 3px;
+  height: 3px;
+  left: -1px;
+}
+.pw-hint-particle:nth-child(3) {
+  animation-delay: 1.33s;
+  opacity: 0.35;
+  width: 2px;
+  height: 2px;
+  left: -0.5px;
+}
+@keyframes particleTravel {
+  0% {
+    top: 100%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: -10px;
+    opacity: 0;
+  }
+}
+
+/* Rotated EXPLORE label */
+.pw-hint-label {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.48rem;
+  letter-spacing: 4px;
+  color: rgba(48, 205, 207, 0.55);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  text-transform: uppercase;
+  transform: rotate(180deg);
+  user-select: none;
+}
+
+/* Chevrons */
+.pw-hint-chevrons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.pw-hint-chevron {
+  width: 10px;
+  height: 10px;
+  border-right: 1.5px solid rgba(48, 205, 207, 0.5);
+  border-bottom: 1.5px solid rgba(48, 205, 207, 0.5);
+  transform: rotate(-45deg);
+  animation: chevronPulse 1.4s ease-in-out infinite;
+}
+.pw-hint-chevron:nth-child(2) {
+  animation-delay: 0.18s;
+  opacity: 0.6;
+}
+.pw-hint-chevron:nth-child(3) {
+  animation-delay: 0.36s;
+  opacity: 0.3;
+}
+@keyframes chevronPulse {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: rotate(-45deg) translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: rotate(-45deg) translateX(4px);
+  }
+}
+
+/* ════════════════════════════════════════════════════
+   ARROW NAV BUTTONS — appear on section hover
+════════════════════════════════════════════════════ */
+.pw-nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(48, 205, 207, 0.2);
+  background: rgba(3, 6, 14, 0.6);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 20;
+  opacity: 0;
+  transition:
+    opacity 0.4s ease,
+    border-color 0.3s ease,
+    background 0.3s ease,
+    transform 0.3s ease;
+  pointer-events: none;
+}
+.pw-nav-arrow svg {
+  width: 16px;
+  height: 16px;
+  stroke: rgba(48, 205, 207, 0.7);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.pw-nav-arrow.pw-arrow-left {
+  left: clamp(8px, 2vw, 28px);
+}
+.pw-nav-arrow.pw-arrow-right {
+  right: clamp(8px, 2vw, 28px);
+}
+.pw-section:hover .pw-nav-arrow {
+  opacity: 1;
+  pointer-events: all;
+}
+.pw-nav-arrow:hover {
+  border-color: rgba(48, 205, 207, 0.6);
+  background: rgba(48, 205, 207, 0.1);
+  box-shadow: 0 0 18px rgba(48, 205, 207, 0.2);
+}
+.pw-nav-arrow.pw-arrow-left:hover {
+  transform: translateY(-50%) translateX(-2px);
+}
+.pw-nav-arrow.pw-arrow-right:hover {
+  transform: translateY(-50%) translateX(2px);
+}
+.pw-nav-arrow:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+/* ════════════════════════════════════════════════════
+   MOBILE SWIPE HINT — below cards on touch devices
+════════════════════════════════════════════════════ */
+.pw-swipe-hint {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+  opacity: 1;
+  transition: opacity 1s ease;
+  pointer-events: none;
+}
+.pw-swipe-hint.dismissed {
+  opacity: 0;
+}
+@media (max-width: 768px) {
+  .pw-swipe-hint {
+    display: flex;
+  }
+}
+.pw-swipe-icon {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pw-swipe-hand {
+  width: 18px;
+  height: 18px;
+  animation: swipeHand 1.8s ease-in-out infinite;
+}
+@keyframes swipeHand {
+  0%,
+  100% {
+    transform: translateX(0);
+    opacity: 0.5;
+  }
+  30% {
+    transform: translateX(-8px);
+    opacity: 1;
+  }
+  70% {
+    transform: translateX(8px);
+    opacity: 1;
+  }
+}
+.pw-swipe-label {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.44rem;
+  letter-spacing: 3px;
+  color: rgba(48, 205, 207, 0.45);
+  text-transform: uppercase;
+}
+.pw-swipe-arrows {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+.pw-swipe-arr {
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid rgba(48, 205, 207, 0.4);
+  border-bottom: 1.5px solid rgba(48, 205, 207, 0.4);
+  transform: rotate(-45deg);
+  animation: swipeArrPulse 1.8s ease-in-out infinite;
+}
+.pw-swipe-arr:first-child {
+  transform: rotate(135deg);
+  animation-delay: 0.2s;
+}
+@keyframes swipeArrPulse {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
 /* ════ MODAL ════ */
 #modal-overlay {
   position: fixed;
@@ -792,11 +1060,17 @@
   }
   .pw-top {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 16px;
   }
   .m-body {
     padding: 22px 22px 32px;
+  }
+  .pw-explore-hint {
+    display: none;
+  }
+  .pw-nav-arrow {
+    display: none;
   }
 }
 @media (max-width: 480px) {
