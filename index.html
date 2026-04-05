@@ -44,21 +44,92 @@
       />
     </noscript>
 
-    <!-- Local CSS -->
+    <!-- =====================================================
+         FIX 1: Only critical above-fold CSS is blocking.
+         Everything else loads async behind the intro.
+    ====================================================== -->
+
+    <!-- BLOCKING: needed before first paint -->
     <link rel="stylesheet" href="intro.css" />
     <link rel="stylesheet" href="css/base.css" />
-    <link rel="stylesheet" href="css/background.css" />
-    <link rel="stylesheet" href="css/header.css" />
     <link rel="stylesheet" href="css/hero.css" />
     <link rel="stylesheet" href="css/cursor.css" />
-    <link rel="stylesheet" href="css/spider.css" />
-    <link rel="stylesheet" href="css/main-responsive.css" />
-    <link rel="stylesheet" href="css/sections-base.css" />
-    <link rel="stylesheet" href="css/about-skills.css" />
-    <link rel="stylesheet" href="css/projects.css" />
-    <link rel="stylesheet" href="css/contact.css" />
-    <link rel="stylesheet" href="css/glass-cards.css" />
-    <link rel="stylesheet" href="the road/about-timeline.css" />
+
+    <!-- NON-BLOCKING: loads in background during intro animation -->
+    <link
+      rel="stylesheet"
+      href="css/background.css"
+      media="print"
+      onload="this.media = 'all'"
+    />
+    <link
+      rel="stylesheet"
+      href="css/header.css"
+      media="print"
+      onload="this.media = 'all'"
+    />
+    <link
+      rel="stylesheet"
+      href="css/spider.css"
+      media="print"
+      onload="this.media = 'all'"
+    />
+    <link
+      rel="stylesheet"
+      href="css/main-responsive.css"
+      media="print"
+      onload="this.media = 'all'"
+    />
+    <link
+      rel="stylesheet"
+      href="css/sections-base.css"
+      media="print"
+      onload="this.media = 'all'"
+    />
+    <link
+      rel="stylesheet"
+      href="css/about-skills.css"
+      media="print"
+      onload="this.media = 'all'"
+    />
+    <link
+      rel="stylesheet"
+      href="css/projects.css"
+      media="print"
+      onload="this.media = 'all'"
+    />
+    <link
+      rel="stylesheet"
+      href="css/contact.css"
+      media="print"
+      onload="this.media = 'all'"
+    />
+    <link
+      rel="stylesheet"
+      href="css/glass-cards.css"
+      media="print"
+      onload="this.media = 'all'"
+    />
+    <link
+      rel="stylesheet"
+      href="the road/about-timeline.css"
+      media="print"
+      onload="this.media = 'all'"
+    />
+
+    <!-- noscript fallbacks for non-blocking CSS -->
+    <noscript>
+      <link rel="stylesheet" href="css/background.css" />
+      <link rel="stylesheet" href="css/header.css" />
+      <link rel="stylesheet" href="css/spider.css" />
+      <link rel="stylesheet" href="css/main-responsive.css" />
+      <link rel="stylesheet" href="css/sections-base.css" />
+      <link rel="stylesheet" href="css/about-skills.css" />
+      <link rel="stylesheet" href="css/projects.css" />
+      <link rel="stylesheet" href="css/contact.css" />
+      <link rel="stylesheet" href="css/glass-cards.css" />
+      <link rel="stylesheet" href="the road/about-timeline.css" />
+    </noscript>
 
     <style>
       .hero-bio-line {
@@ -1023,16 +1094,18 @@
       src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"
     ></script>
 
-    <!-- Spline 3D viewer — loaded after page is interactive -->
-    <script>
-      window.addEventListener("load", function () {
-        var s = document.createElement("script");
-        s.type = "module";
-        s.src =
-          "https://cdn.jsdelivr.net/npm/@splinetool/viewer/build/spline-viewer.js";
-        document.body.appendChild(s);
-      });
-    </script>
+    <!-- =====================================================
+         FIX 2: Spline loads immediately as a module script.
+         type="module" is deferred by spec — won't block render,
+         but starts downloading RIGHT NOW in parallel with the
+         intro animation, so it's ready when intro exits.
+         (Previously: window.addEventListener("load", ...) which
+         waited for everything else to finish before even starting.)
+    ====================================================== -->
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@splinetool/viewer/build/spline-viewer.js"
+    ></script>
 
     <!-- GSAP — deferred -->
     <script
@@ -1122,9 +1195,13 @@
     <script src="js/contact-form.js" defer></script>
     <script src="the road/about-timeline.js" defer></script>
 
-    <!-- Neural Logo Interaction -->
+    <!-- =====================================================
+         FIX 3: Neural Logo uses window load instead of
+         DOMContentLoaded — runs after everything is ready,
+         not during the critical parsing phase.
+    ====================================================== -->
     <script defer>
-      document.addEventListener("DOMContentLoaded", function () {
+      window.addEventListener("load", function () {
         const wrap = document.getElementById("logoWrap");
         const logo = document.getElementById("neuralLogo");
         let resetTimeout;
