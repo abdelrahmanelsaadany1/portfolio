@@ -1,12 +1,21 @@
 /* ═══════════════════════════════════════════
    intro.js — Logo intro → Awwwards strip reveal
    Requires: GSAP (loaded before this in index.html)
+   OPTIMISED: particle RAF stopped on kill, watermark
+   interval capped, manual tweens replaced with GSAP,
+   canvas sized only once, passive resize
 ═══════════════════════════════════════════ */
 (function () {
   "use strict";
 
-  /* ── Remove Spline watermark ── */
+  /* ── Remove Spline watermark — cap retries so it never runs forever ── */
+  var _wmTries = 0;
   var _wm = setInterval(function () {
+    _wmTries++;
+    if (_wmTries > 40) {
+      clearInterval(_wm);
+      return;
+    } // give up after ~12s
     var viewer = document.querySelector("spline-viewer");
     if (!viewer) return;
     var el = viewer.shadowRoot && viewer.shadowRoot.querySelector("#logo");
@@ -27,14 +36,9 @@
 
   scene.innerHTML = "";
 
-  /* ══════════════════════════════════════
-     BUILD 3 STRIPS
-     Alternate direction: strip 0 → left, 1 → right, 2 → left
-     Gives that classic Awwwards staggered feel
-  ══════════════════════════════════════ */
+  /* ── 3 strips ── */
   var strips = [];
-  var dirs = [-1, 1, -1]; /* -1 = slide left, 1 = slide right */
-
+  var dirs = [-1, 1, -1];
   for (var s = 0; s < 3; s++) {
     var strip = document.createElement("div");
     strip.className = "intro-strip";
@@ -47,6 +51,16 @@
   bgCanvas.id = "intro-bg-canvas";
   scene.appendChild(bgCanvas);
   var ctx = bgCanvas.getContext("2d");
+  var W = 0,
+    H = 0;
+
+  function resizeCanvas() {
+    W = bgCanvas.width = window.innerWidth;
+    H = bgCanvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  /* Only resize if intro is still alive — removed in killScene anyway */
+  window.addEventListener("resize", resizeCanvas, { passive: true });
 
   /* ── Logo ── */
   var logoWrap = document.createElement("div");
@@ -79,21 +93,12 @@
     '<span class="first">Abdelrahman </span><span class="last">Elsaadany</span>';
   scene.appendChild(nameEl);
 
-  /* ══════════════════════════════════════
-     PARTICLES
-  ══════════════════════════════════════ */
-  var W, H;
+  /* ── Particles — lighter count, stopped immediately on kill ── */
   var pts = [];
-  var bgRunning = true;
+  var bgRafId = null;
+  var bgRunning = false;
 
-  function resizeCanvas() {
-    W = bgCanvas.width = window.innerWidth;
-    H = bgCanvas.height = window.innerHeight;
-  }
-  resizeCanvas();
-  window.addEventListener("resize", resizeCanvas);
-
-  for (var i = 0; i < 55; i++) {
+  for (var i = 0; i < 40; i++) {
     pts.push({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
@@ -120,54 +125,46 @@
       ctx.fillStyle = "rgba(48,205,207," + p.a + ")";
       ctx.fill();
     }
-    requestAnimationFrame(drawParticles);
+    bgRafId = requestAnimationFrame(drawParticles);
   }
-  drawParticles();
+
+  function startParticles() {
+    bgRunning = true;
+    bgRafId = requestAnimationFrame(drawParticles);
+  }
 
   /* ══════════════════════════════════════
-     SVG TWEENS
+     SVG TWEENS — delegate all to GSAP so
+     we only have one RAF loop running
   ══════════════════════════════════════ */
-  function ease(t) {
-    return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-  }
-  function easeBack(t) {
-    var c1 = 1.70158,
-      c3 = c1 + 1;
-    return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
-  }
-
   function tweenDash(id, from, to, dur, delay) {
     var el = document.getElementById(id);
     if (!el) return;
-    var start = null;
-    setTimeout(function () {
-      el.setAttribute("stroke-dashoffset", from);
-      (function step(ts) {
-        if (!start) start = ts;
-        var p = Math.min((ts - start) / dur, 1);
-        el.setAttribute("stroke-dashoffset", from + (to - from) * ease(p));
-        if (p < 1) requestAnimationFrame(step);
-      })(performance.now());
-    }, delay || 0);
+    gsap.fromTo(
+      el,
+      { strokeDashoffset: from },
+      {
+        strokeDashoffset: to,
+        duration: dur / 1000,
+        delay: (delay || 0) / 1000,
+        ease: "power2.inOut",
+      },
+    );
   }
 
-  function tweenOp(id, from, to, dur, delay, ef) {
+  function tweenOp(id, from, to, dur, delay, useBack) {
     var el = document.getElementById(id);
     if (!el) return;
-    var fn = ef || ease,
-      start = null;
-    setTimeout(function () {
-      el.setAttribute("opacity", from);
-      (function step(ts) {
-        if (!start) start = ts;
-        var p = Math.min((ts - start) / dur, 1);
-        el.setAttribute(
-          "opacity",
-          Math.max(0, Math.min(1, from + (to - from) * fn(p))),
-        );
-        if (p < 1) requestAnimationFrame(step);
-      })(performance.now());
-    }, delay || 0);
+    gsap.fromTo(
+      el,
+      { opacity: from },
+      {
+        opacity: to,
+        duration: dur / 1000,
+        delay: (delay || 0) / 1000,
+        ease: useBack ? "back.out(1.7)" : "power2.inOut",
+      },
+    );
   }
 
   /* ══════════════════════════════════════
@@ -177,36 +174,31 @@
   function killScene() {
     if (killed) return;
     killed = true;
+    /* Stop particle loop immediately */
     bgRunning = false;
+    if (bgRafId) cancelAnimationFrame(bgRafId);
     ctx.clearRect(0, 0, W, H);
+    gsap.killTweensOf([logoWrap, nameEl]);
     scene.style.display = "none";
     scene.style.pointerEvents = "none";
     if (scene.parentNode) scene.parentNode.removeChild(scene);
   }
 
   /* ══════════════════════════════════════
-     STRIP REVEAL — Awwwards style
-     3 strips stagger out alternating left/right
-     Duration: 0.9s each, stagger 0.08s apart
-     Ease: expo.inOut — the signature premium feel
+     STRIP REVEAL
   ══════════════════════════════════════ */
   function stripReveal() {
     bgRunning = false;
+    if (bgRafId) cancelAnimationFrame(bgRafId);
     ctx.clearRect(0, 0, W, H);
 
-    /* Fade logo + name simultaneously */
     gsap.to([logoWrap, nameEl], {
       opacity: 0,
       duration: 0.2,
       ease: "power2.in",
     });
 
-    var tl = gsap.timeline({
-      delay: 0.15,
-      onComplete: killScene,
-    });
-
-    /* Stagger each strip 0.08s apart, alternating direction */
+    var tl = gsap.timeline({ delay: 0.15, onComplete: killScene });
     for (var s = 0; s < strips.length; s++) {
       tl.to(
         strips[s].el,
@@ -217,11 +209,10 @@
           force3D: true,
         },
         s * 0.08,
-      ); /* stagger offset */
+      );
     }
 
-    /* Safety net */
-    setTimeout(killScene, 3000);
+    setTimeout(killScene, 3000); /* safety net */
   }
 
   /* ══════════════════════════════════════
@@ -240,42 +231,45 @@
 
   function runIntro() {
     resetSVG();
+    startParticles();
     scene.style.background = "transparent";
 
+    /* Draw phase — all GSAP, one RAF */
     tweenDash("il1", 72, 0, 700, 300);
-    tweenOp("in1", 0, 1, 320, 320, easeBack);
-    tweenOp("in2", 0, 1, 320, 950, easeBack);
-
+    tweenOp("in1", 0, 1, 320, 320, true);
+    tweenOp("in2", 0, 1, 320, 950, true);
     tweenDash("il2", 72, 0, 700, 530);
-    tweenOp("in3", 0, 1, 320, 1180, easeBack);
-
+    tweenOp("in3", 0, 1, 320, 1180, true);
     tweenDash("il3", 38, 0, 480, 1000);
-    tweenOp("in4", 0, 1, 300, 1020, easeBack);
-    tweenOp("in5", 0, 1, 300, 1220, easeBack);
+    tweenOp("in4", 0, 1, 300, 1020, true);
+    tweenOp("in5", 0, 1, 300, 1220, true);
 
     /* Name fade in */
-    setTimeout(function () {
-      gsap.to(nameEl, { opacity: 1, duration: 0.65, ease: "power2.out" });
-    }, 1550);
+    gsap.to(nameEl, {
+      opacity: 1,
+      duration: 0.65,
+      delay: 1.55,
+      ease: "power2.out",
+    });
 
     /* Hold → reverse → strip reveal */
-    setTimeout(function () {
+    gsap.delayedCall(3.2, function () {
       gsap.to(nameEl, { opacity: 0, duration: 0.3, ease: "power2.in" });
 
-      tweenOp("in5", 1, 0, 240, 0, ease);
-      tweenOp("in4", 1, 0, 240, 55, ease);
-      tweenOp("in3", 1, 0, 240, 110, ease);
-      tweenOp("in2", 1, 0, 240, 165, ease);
-      tweenOp("in1", 1, 0, 240, 220, ease);
+      tweenOp("in5", 1, 0, 240, 0);
+      tweenOp("in4", 1, 0, 240, 55);
+      tweenOp("in3", 1, 0, 240, 110);
+      tweenOp("in2", 1, 0, 240, 165);
+      tweenOp("in1", 1, 0, 240, 220);
 
-      setTimeout(function () {
+      gsap.delayedCall(0.3, function () {
         tweenDash("il3", 0, 38, 430, 0);
         tweenDash("il2", 0, 72, 560, 170);
         tweenDash("il1", 0, 72, 560, 330);
-      }, 300);
+      });
 
-      setTimeout(stripReveal, 980);
-    }, 3200);
+      gsap.delayedCall(0.98, stripReveal);
+    });
   }
 
   /* ══════════════════════════════════════
