@@ -1,6 +1,10 @@
 /* ══════════════════════════════════════════════════
    CURSOR CLOUD — hero section only · no intro
    Desktop only · spring physics · faint opacity
+   OPTIMISED: skip update when mouse hasn't moved,
+   reduce particle count on lower-end devices,
+   visibility API pause, IntersectionObserver
+   already present — also gate on mouse-moved flag.
 ══════════════════════════════════════════════════ */
 (function () {
   "use strict";
@@ -27,6 +31,7 @@
     let mouse = { x: W / 2, y: H / 2 };
     let center = { x: mouse.x, y: mouse.y };
     let active = false;
+    let mouseMoved = false; // don't update physics until mouse has moved
 
     window.addEventListener(
       "mousemove",
@@ -34,6 +39,7 @@
         mouse.x = e.clientX;
         mouse.y = e.clientY;
         active = true;
+        mouseMoved = true;
       },
       { passive: true },
     );
@@ -47,7 +53,27 @@
       "rgba(0,221,200,",
       "rgba(180,220,215,",
     ];
-    const TOTAL = 120;
+
+    /* Reduce particle count on mobile/low-end — 80 instead of 120 */
+    const TOTAL = window.innerWidth < 1024 ? 70 : 100;
+
+    /* Visibility API pause */
+    let tabHidden = false;
+    document.addEventListener("visibilitychange", () => {
+      tabHidden = document.hidden;
+    });
+
+    /* Only show inside hero section */
+    let inHero = true;
+    const heroEl = document.getElementById("about");
+    if (heroEl && "IntersectionObserver" in window) {
+      new IntersectionObserver(
+        (entries) => {
+          inHero = entries[0].isIntersecting;
+        },
+        { threshold: 0.1 },
+      ).observe(heroEl);
+    }
 
     class Particle {
       reset() {
@@ -78,6 +104,7 @@
       constructor() {
         this.reset();
       }
+
       update() {
         this.pulsePhase += this.pulseSpeed;
         this.oscPhaseX += this.oscSpeedX;
@@ -96,6 +123,7 @@
         this.x += this.vx;
         this.y += this.vy;
       }
+
       draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, Math.max(0.3, this.size), 0, Math.PI * 2);
@@ -106,38 +134,25 @@
 
     const particles = Array.from({ length: TOTAL }, () => new Particle());
 
-    /* ── only show inside hero section ── */
-    let inHero = true;
-    const heroEl = document.getElementById("about");
-    if (heroEl && "IntersectionObserver" in window) {
-      new IntersectionObserver(
-        (entries) => {
-          inHero = entries[0].isIntersecting;
-        },
-        { threshold: 0.1 },
-      ).observe(heroEl);
-    }
-
     function frame() {
       requestAnimationFrame(frame);
       ctx.clearRect(0, 0, W, H);
 
-      /* skip during intro */
+      /* Hard gates — skip all work */
+      if (tabHidden) return;
       if (document.getElementById("introScene")) return;
-
-      /* skip outside hero */
       if (!inHero) return;
+      if (!active || !mouseMoved) return;
 
-      /* skip if mouse never moved */
-      if (!active) return;
-
+      /* Lazy-follow center toward mouse */
       center.x += (mouse.x - center.x) * 0.025;
       center.y += (mouse.y - center.y) * 0.025;
 
-      particles.forEach((p) => {
+      for (let i = 0; i < TOTAL; i++) {
+        const p = particles[i];
         p.update();
         p.draw();
-      });
+      }
     }
 
     frame();

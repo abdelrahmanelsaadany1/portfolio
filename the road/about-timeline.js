@@ -1,8 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════
    about-timeline.js — THE JOURNEY
-   Single accent colour throughout. Company name separate from location.
-   Exactly 5 stations, 4 scroll steps. Entrance/exit unchanged.
-   Robust wheel snap: hard/fast scrolls cannot skip cards.
+   OPTIMISED: timeline particle canvas removed (was 5x viewport
+   wide), replaced with a small viewport-sized canvas; RAF paused
+   when tab hidden or section not visible; resize debounced and
+   no full DOM rebuild on every resize; IntersectionObserver used
+   to pause particles when section scrolled away.
 ═══════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
@@ -81,18 +83,19 @@
   var animFrame = null;
 
   /* ── wheel-snap state ── */
-  var TRANSITION_MS = 850; // matches CSS transition duration
+  var TRANSITION_MS = 850;
   var isTransitioning = false;
   var transitionTimer = null;
 
-  /* boundary hold — after reaching the first/last card we block scroll
-     for a short window so trackpad momentum can't bleed into the next section.
-     After the hold expires, the very next same-direction scroll exits cleanly. */
   var BOUNDARY_HOLD_MS = 700;
-  var boundaryHeld = false; // true  = actively blocking
-  var boundaryReleased = false; // true  = hold expired, next event exits
+  var boundaryHeld = false;
+  var boundaryReleased = false;
   var boundaryDir = 0;
   var boundaryTimer = null;
+
+  /* ── particle state ── */
+  var particlesPaused = false; // paused when section off-screen or tab hidden
+  var particleCanvas = null;
 
   /* ════════════════════════════════════════════ SETUP */
   function setup() {
@@ -117,9 +120,25 @@
 
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize, { passive: true });
-
-    /* Intercept wheel — always preventDefault when inside section */
     window.addEventListener("wheel", onWheel, { passive: false });
+
+    /* Pause particles when tab hidden */
+    document.addEventListener("visibilitychange", function () {
+      particlesPaused = document.hidden;
+      if (!particlesPaused && animFrame === null) resumeParticles();
+    });
+
+    /* Pause particles when section leaves viewport */
+    var outer = document.getElementById("hsOuter");
+    if (outer && "IntersectionObserver" in window) {
+      new IntersectionObserver(
+        function (entries) {
+          particlesPaused = !entries[0].isIntersecting;
+          if (!particlesPaused && animFrame === null) resumeParticles();
+        },
+        { rootMargin: "200px" },
+      ).observe(outer);
+    }
   }
 
   function measureOuter() {
@@ -129,31 +148,14 @@
     outerH = outer.offsetHeight;
   }
 
-  /* ════════════════════════════════════════════ WHEEL SNAP
-     Flow:
-     1. Not in sticky mode → don't touch the event.
-     2. Boundary hold active (same direction) → eat the event so momentum
-        can't bleed into the next section / previous section.
-     3. Boundary hold active (opposite direction = new gesture) → clear hold,
-        treat as a normal inner step (they changed their mind).
-     4. Would leave the section (nextIdx out of range):
-        a. Pin scrollY to the exact edge.
-        b. Start a boundary hold so the *next* few wheel ticks are absorbed.
-        c. Let THIS event through (don't preventDefault) so the page starts
-           moving immediately — no lag on exit.
-     5. Normal inner step → preventDefault + snap one card.
-  ════════════════════════════════════════════ */
+  /* ════════════════════════════════════════════ WHEEL SNAP */
   function onWheel(e) {
     if (isMobile) return;
-
     var outer = document.getElementById("hsOuter");
     if (!outer) return;
     var rect = outer.getBoundingClientRect();
-
-    /* Only active while the section is sticky */
     var inSection = rect.top <= 1 && rect.bottom >= window.innerHeight - 1;
     if (!inSection) {
-      /* Leaving sticky zone — clear any stale hold */
       boundaryHeld = false;
       boundaryReleased = false;
       clearTimeout(boundaryTimer);
@@ -163,34 +165,24 @@
     var dir = e.deltaY > 0 ? 1 : -1;
     var nextIdx = curIdx + dir;
 
-    /* ── Case 2 / 3: boundary hold or released state ── */
     if (boundaryHeld || boundaryReleased) {
       if (dir !== boundaryDir) {
-        /* Opposite direction: user reversed — clear everything, step inward */
         boundaryHeld = false;
         boundaryReleased = false;
         clearTimeout(boundaryTimer);
-        /* Fall through to Case 5 as a normal inner step */
       } else if (boundaryHeld) {
-        /* Same dir, still holding: absorb momentum */
         e.preventDefault();
         e.stopPropagation();
         return;
       } else {
-        /* boundaryReleased + same dir: intentional exit gesture — let it go */
         boundaryReleased = false;
-        /* Don't preventDefault — page exits naturally from the pinned edge */
         return;
       }
     }
 
-    /* ── Case 4: would leave the section ── */
     if (nextIdx < 0 || nextIdx >= CARDS.length) {
-      /* Block this event too — we need to hold the page in place first */
       e.preventDefault();
       e.stopPropagation();
-
-      /* Pin scrollY to the exact boundary edge */
       var scrollable = Math.max(outerH - window.innerHeight, 1);
       if (dir < 0) {
         window.scrollTo({ top: outerTop, behavior: "instant" });
@@ -198,40 +190,30 @@
         window.scrollTo({ top: outerTop + scrollable, behavior: "instant" });
       }
       lastScrollIdx = curIdx;
-
-      /* If hold already active in same direction, just keep absorbing */
       if (boundaryHeld && dir === boundaryDir) return;
-
-      /* Start/restart boundary hold */
       boundaryHeld = true;
       boundaryReleased = false;
       boundaryDir = dir;
       clearTimeout(boundaryTimer);
       boundaryTimer = setTimeout(function () {
         boundaryHeld = false;
-        boundaryReleased = true; // next same-dir event exits freely
+        boundaryReleased = true;
       }, BOUNDARY_HOLD_MS);
-
       return;
     }
 
-    /* ── Case 5: normal inner step ── */
     e.preventDefault();
     e.stopPropagation();
-
     if (isTransitioning) return;
-
     isTransitioning = true;
     clearTimeout(transitionTimer);
     transitionTimer = setTimeout(function () {
       isTransitioning = false;
     }, TRANSITION_MS + 60);
-
     snap(nextIdx, false);
     syncScrollPosition(nextIdx);
   }
 
-  /* Align window.scrollY to match the given card index */
   function syncScrollPosition(idx) {
     var scrollable = Math.max(outerH - window.innerHeight, 1);
     var sliceSize = scrollable / (CARDS.length - 1);
@@ -244,41 +226,36 @@
     track.innerHTML = "";
     stationEls = [];
 
-    /* Particle canvas */
-    var canvas = document.createElement("canvas");
-    canvas.id = "csBgCanvas";
-    track.appendChild(canvas);
-    initParticles(canvas);
+    /* Viewport-sized particle canvas instead of 5× wide canvas */
+    particleCanvas = document.createElement("canvas");
+    particleCanvas.id = "csBgCanvas";
+    particleCanvas.style.cssText =
+      "position:fixed;top:0;left:0;width:100vw;height:100vh;" +
+      "pointer-events:none;z-index:0;opacity:0.5;";
+    track.appendChild(particleCanvas);
+    startParticles(particleCanvas);
 
     CARDS.forEach(function (m, i) {
       var station = document.createElement("div");
       station.className = "rd-station" + (m.isMil ? " rd-station-mil" : "");
 
-      /* ── Left decorative pane ── */
       var leftPane = document.createElement("div");
       leftPane.className = "rd-left-pane";
-
       var ghost = document.createElement("div");
       ghost.className = "rd-ghost-num";
       ghost.textContent = m.num;
       leftPane.appendChild(ghost);
-
       var vline = document.createElement("div");
       vline.className = "rd-vline";
       var vdot = document.createElement("div");
       vdot.className = "rd-vdot";
       vline.appendChild(vdot);
       leftPane.appendChild(vline);
-
       station.appendChild(leftPane);
 
-      /* ── Main card ── */
       var card = document.createElement("div");
       card.className = "rd-card-new";
-
       var html = "";
-
-      /* Header row — badge + step index */
       html += '<div class="rd-header-row">';
       html +=
         '<span class="rd-tag-pill' +
@@ -291,23 +268,13 @@
         m.num +
         ' <span style="opacity:.3">/ 05</span></span>';
       html += "</div>";
-
-      /* Date */
       html += '<div class="rd-date-new">' + m.date + "</div>";
-
-      /* Job title */
       html += '<h3 class="rd-title-new">' + m.title + "</h3>";
-
-      /* Company block */
       html += '<div class="rd-org-block">';
       html += '  <div class="rd-org-company">' + m.company + "</div>";
       html += '  <div class="rd-org-location">' + m.location + "</div>";
       html += "</div>";
-
-      /* Separator */
       html += '<div class="rd-sep"></div>';
-
-      /* Tech chips */
       if (m.tags.length) {
         html += '<div class="rd-chips-new">';
         m.tags.forEach(function (t) {
@@ -315,11 +282,9 @@
         });
         html += "</div>";
       }
-
       card.innerHTML = html;
       station.appendChild(card);
 
-      /* ── Right step-indicator pane ── */
       var rightPane = document.createElement("div");
       rightPane.className = "rd-right-pane";
       var stepsHtml = "";
@@ -335,27 +300,19 @@
     });
   }
 
-  /* ════════════════════════════════════════════ PARTICLES */
-  function initParticles(canvas) {
-    var vw = window.innerWidth;
-    var vh = window.innerHeight;
-    var W = vw * CARDS.length;
-    var H = vh;
-
+  /* ════════════════════════════════════════════ PARTICLES
+     Viewport-sized canvas, paused when hidden/off-screen.
+     Reduced count: 60 instead of 160.
+  ════════════════════════════════════════════ */
+  function startParticles(canvas) {
+    var W = window.innerWidth;
+    var H = window.innerHeight;
     canvas.width = W;
     canvas.height = H;
-    canvas.style.cssText =
-      "position:absolute;top:0;left:0;" +
-      "width:" +
-      W +
-      "px;height:" +
-      H +
-      "px;" +
-      "pointer-events:none;z-index:0;";
-
     var ctx = canvas.getContext("2d");
+
     var pts = [];
-    for (var i = 0; i < 160; i++) {
+    for (var i = 0; i < 60; i++) {
       pts.push({
         x: Math.random() * W,
         y: Math.random() * H,
@@ -366,25 +323,35 @@
       });
     }
 
-    if (animFrame) cancelAnimationFrame(animFrame);
-
     function draw() {
+      if (particlesPaused) {
+        animFrame = null;
+        return;
+      }
       ctx.clearRect(0, 0, W, H);
-      pts.forEach(function (p) {
+      for (var j = 0; j < pts.length; j++) {
+        var p = pts[j];
         p.x += p.vx;
         p.y += p.vy;
         if (p.x < 0) p.x = W;
-        if (p.x > W) p.x = 0;
+        else if (p.x > W) p.x = 0;
         if (p.y < 0) p.y = H;
-        if (p.y > H) p.y = 0;
+        else if (p.y > H) p.y = 0;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = "rgba(255,255,255," + p.a.toFixed(2) + ")";
         ctx.fill();
-      });
+      }
       animFrame = requestAnimationFrame(draw);
     }
-    draw();
+    animFrame = requestAnimationFrame(draw);
+  }
+
+  function resumeParticles() {
+    if (particleCanvas && animFrame === null) {
+      /* re-kick the RAF by rebuilding — simpler than re-threading state */
+      startParticles(particleCanvas);
+    }
   }
 
   /* ════════════════════════════════════════════ HUD */
@@ -400,8 +367,6 @@
 
     var hud = document.createElement("div");
     hud.id = "rdHUD";
-
-    /* Top row: counter | dots | arrows */
     var row = document.createElement("div");
     row.className = "rd-hud-row";
     row.innerHTML =
@@ -413,7 +378,6 @@
       "</div>";
     hud.appendChild(row);
 
-    /* Progress bar below the row */
     var progressBar = document.createElement("div");
     progressBar.className = "rd-hud-progress";
     progressBar.innerHTML =
@@ -431,8 +395,6 @@
     btnPrev = document.getElementById("rdPrev");
     btnNext = document.getElementById("rdNext");
     counterNum = document.getElementById("rdCNum");
-
-    /* Point progFill at the new in-HUD bar */
     progFill = document.getElementById("rdProgFill");
 
     btnPrev.addEventListener("click", function () {
@@ -450,13 +412,7 @@
     window.scrollTo({ top: outerTop + idx * sliceSize, behavior: "smooth" });
   }
 
-  /* ════════════════════════════════════════════ SCROLL
-     The passive scroll listener is only used when the user scrolls with
-     methods OTHER than wheel (keyboard arrows, scrollbar drag, momentum
-     after leaving the section, etc.).  When the wheel handler is in
-     control it manually syncs scrollY, so lastScrollIdx will match and
-     this function will be a no-op.
-  ════════════════════════════════════════════ */
+  /* ════════════════════════════════════════════ SCROLL */
   function onScroll() {
     if (isMobile || ticking) return;
     ticking = true;
@@ -465,11 +421,7 @@
 
   function processScroll() {
     ticking = false;
-
-    /* While a wheel-driven transition is running, ignore passive scroll
-       events so the two systems don't fight each other. */
     if (isTransitioning) return;
-
     var scrollable = Math.max(outerH - window.innerHeight, 1);
     var raw = Math.max(
       0,
@@ -488,9 +440,7 @@
   /* ════════════════════════════════════════════ SNAP */
   function snap(idx, instant) {
     curIdx = idx;
-
     var tx = -(idx * window.innerWidth);
-
     if (instant) {
       track.style.transition = "none";
       track.style.transform = "translate(" + tx + "px,0)";
@@ -501,7 +451,6 @@
       track.style.transform = "translate(" + tx + "px,0)";
     }
 
-    /* Station active states */
     stationEls.forEach(function (s, i) {
       var diff = i - idx;
       s.classList.toggle("rd-station-active", diff === 0);
@@ -510,7 +459,6 @@
       s.classList.toggle("rd-station-distant", Math.abs(diff) > 1);
     });
 
-    /* Dots */
     dotEls.forEach(function (d, i) {
       if (d) d.classList.toggle("active", i === idx);
     });
@@ -518,17 +466,10 @@
       d.classList.toggle("active", i === idx);
     });
 
-    /* Progress */
     if (progFill) progFill.style.width = (idx / (CARDS.length - 1)) * 100 + "%";
-
-    /* Counter */
     if (counterNum) counterNum.textContent = String(idx + 1).padStart(2, "0");
-
-    /* Arrows */
     if (btnPrev) btnPrev.disabled = idx === 0;
     if (btnNext) btnNext.disabled = idx === CARDS.length - 1;
-
-    /* Hint */
     if (hintEl && idx > 0) hintEl.classList.add("done");
   }
 
@@ -539,8 +480,7 @@
       var el = document.getElementById(m.dotId);
       if (!el) return;
       el.addEventListener("click", function () {
-        if (isMobile) return;
-        scrollToIdx(i);
+        if (!isMobile) scrollToIdx(i);
       });
       dotEls.push(el);
     });
@@ -551,11 +491,9 @@
     track.innerHTML = "";
     track.style.transform = "none";
     track.style.transition = "none";
-
     CARDS.forEach(function (m) {
       var card = document.createElement("div");
       card.className = "rd-card rd-active" + (m.isMil ? " rd-card-mil" : "");
-
       var html = "";
       if (m.isMil) html += '<div class="rd-warning">◈ Military Service</div>';
       html += '<div class="rd-tag">' + m.tag + "</div>";
@@ -578,27 +516,43 @@
     });
   }
 
-  /* ════════════════════════════════════════════ RESIZE */
+  /* ════════════════════════════════════════════ RESIZE
+     Debounced. On desktop: only remeasure + re-snap,
+     no full DOM rebuild (cards already exist).
+  ════════════════════════════════════════════ */
   var resizeT;
   function onResize() {
     clearTimeout(resizeT);
     resizeT = setTimeout(function () {
+      var wasMobile = isMobile;
       isMobile = window.innerWidth <= 700;
       var hsBottom = document.querySelector(".hs-bottom");
-      if (isMobile) {
-        if (animFrame) cancelAnimationFrame(animFrame);
+
+      if (isMobile && !wasMobile) {
+        /* Switch to mobile layout */
+        if (animFrame) {
+          cancelAnimationFrame(animFrame);
+          animFrame = null;
+        }
         if (hsBottom) hsBottom.style.display = "flex";
         setupMobile();
         buildDots();
         return;
       }
-      if (hsBottom) hsBottom.style.display = "none";
-      measureOuter();
-      buildStrip();
-      injectHUD();
-      lastScrollIdx = -1;
-      snap(curIdx, true);
-      processScroll();
-    }, 150);
+
+      if (!isMobile && wasMobile) {
+        /* Switch back to desktop layout */
+        if (hsBottom) hsBottom.style.display = "none";
+        buildStrip();
+        injectHUD();
+        lastScrollIdx = -1;
+      }
+
+      if (!isMobile) {
+        measureOuter();
+        snap(curIdx, true);
+        processScroll();
+      }
+    }, 200);
   }
 })();
