@@ -4,15 +4,47 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Abdelrahman Elsaadany</title>
+    <meta
+      name="description"
+      content="Abdelrahman Elsaadany — Full Stack .NET Developer based in Egypt. Experienced in ASP.NET Core, Angular, SQL Server, and API architecture. Open to remote opportunities."
+    />
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
+
+    <!-- Preconnects -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://prod.spline.design" crossorigin />
+
+    <!-- Fonts — non-blocking -->
     <link
       href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media = 'all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+
+    <!-- Boxicons — non-blocking -->
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
+      media="print"
+      onload="this.media = 'all'"
     />
+    <noscript>
+      <link
+        href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+        rel="stylesheet"
+      />
+    </noscript>
+
+    <!-- Local CSS -->
     <link rel="stylesheet" href="intro.css" />
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/background.css" />
@@ -27,8 +59,6 @@
     <link rel="stylesheet" href="css/contact.css" />
     <link rel="stylesheet" href="css/glass-cards.css" />
     <link rel="stylesheet" href="the road/about-timeline.css" />
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="preconnect" href="https://prod.spline.design" crossorigin />
 
     <style>
       .hero-bio-line {
@@ -155,13 +185,21 @@
           <a
             href="https://www.linkedin.com/in/abdelrahman-elsaadany-a20"
             target="_blank"
+            aria-label="LinkedIn profile"
             ><i class="bx bxl-linkedin"></i
           ></a>
-          <a href="https://github.com/abdelrahmanelsaadany1" target="_blank"
+          <a
+            href="https://github.com/abdelrahmanelsaadany1"
+            target="_blank"
+            aria-label="GitHub profile"
             ><i class="bx bxl-github"></i
           ></a>
         </div>
-        <button class="hamburger" id="hamburger" aria-label="Menu">
+        <button
+          class="hamburger"
+          id="hamburger"
+          aria-label="Open navigation menu"
+        >
           <span></span><span></span><span></span>
         </button>
       </div>
@@ -208,757 +246,803 @@
     <!-- ═══════════════════════════════════════════
          HERO
     ═══════════════════════════════════════════ -->
-    <section class="hero" id="about">
-      <div class="hero-content">
-        <div class="hero-bio">
-          <h1 class="hero-bio-line">
-            <span class="typing-row">
-              <span class="hero-bio-prefix">I'm a </span>
-              <span class="typing-wrap">
-                <span id="typing-target"></span>
+    <main>
+      <section class="hero" id="about">
+        <div class="hero-content">
+          <div class="hero-bio">
+            <h1 class="hero-bio-line">
+              <span class="typing-row">
+                <span class="hero-bio-prefix">I'm a </span>
+                <span class="typing-wrap">
+                  <span id="typing-target"></span>
+                </span>
               </span>
-            </span>
-          </h1>
-          <p class="hero-bio-sub">
-            Sharpened by 1 year of experience — from database design and API
-            architecture to Angular UI.
-          </p>
-        </div>
+            </h1>
+            <p class="hero-bio-sub">
+              Sharpened by 1 year of experience — from database design and API
+              architecture to Angular UI.
+            </p>
+          </div>
 
-        <div class="web-wrap">
-          <canvas id="webCanvas"></canvas>
-          <div class="web-center-node" id="webCenter">
-            <div class="wcn-rings"></div>
-            <div class="wcn-inner">
-              <span class="wcn-top">I AM A</span>
-              <span class="wcn-main">.NET</span>
-              <span class="wcn-sub">DEVELOPER</span>
+          <div class="web-wrap">
+            <canvas id="webCanvas"></canvas>
+            <div class="web-center-node" id="webCenter">
+              <div class="wcn-rings"></div>
+              <div class="wcn-inner">
+                <span class="wcn-top">I AM A</span>
+                <span class="wcn-main">.NET</span>
+                <span class="wcn-sub">DEVELOPER</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="hero-robot">
-        <spline-viewer
-          url="https://prod.spline.design/xasrifDpZA-6mgqp/scene.splinecode"
-        ></spline-viewer>
-      </div>
-    </section>
-    <div class="section-divider"></div>
+        <div class="hero-robot">
+          <spline-viewer
+            url="https://prod.spline.design/xasrifDpZA-6mgqp/scene.splinecode"
+          ></spline-viewer>
+        </div>
+      </section>
+      <div class="section-divider"></div>
 
-    <!-- ═══════════════════════════════════════════
+      <!-- ═══════════════════════════════════════════
          ABOUT / THE ROAD
     ═══════════════════════════════════════════ -->
-    <section class="section-page" id="about-section">
-      <div class="hs-outer" id="hsOuter">
-        <div class="hs-sticky">
-          <div class="hs-top">
-            <h2 class="hs-h2">The <span>Journey</span></h2>
-          </div>
-          <div class="hs-progress">
-            <div class="hs-progress-fill" id="hsProgFill"></div>
-          </div>
-          <div class="hs-viewport" id="hsViewport">
-            <div class="hs-track" id="hsTrack">
-              <!-- road content is built entirely by about-timeline.js -->
+      <section class="section-page" id="about-section">
+        <div class="hs-outer" id="hsOuter">
+          <div class="hs-sticky">
+            <div class="hs-top">
+              <h2 class="hs-h2">The <span>Journey</span></h2>
             </div>
-          </div>
-          <div class="hs-bottom">
-            <div class="hs-dots">
-              <div class="hs-dot hs-dot-ac" id="hsDot0">
-                <div class="hs-dot-star"></div>
-                <span class="hs-dot-label">Arab Computers</span>
-              </div>
-              <div class="hs-dot hs-dot-iti" id="hsDot1">
-                <div class="hs-dot-star"></div>
-                <span class="hs-dot-label">ITI</span>
-              </div>
-              <div class="hs-dot hs-dot-mil" id="hsDotMil">
-                <div class="hs-dot-star"></div>
-                <span class="hs-dot-label">Military</span>
-              </div>
-              <div class="hs-dot hs-dot-iot" id="hsDot2">
-                <div class="hs-dot-star"></div>
-                <span class="hs-dot-label">IoT</span>
-              </div>
-              <div class="hs-dot hs-dot-asu" id="hsDot3">
-                <div class="hs-dot-star"></div>
-                <span class="hs-dot-label">ASU</span>
+            <div class="hs-progress">
+              <div class="hs-progress-fill" id="hsProgFill"></div>
+            </div>
+            <div class="hs-viewport" id="hsViewport">
+              <div class="hs-track" id="hsTrack">
+                <!-- road content is built entirely by about-timeline.js -->
               </div>
             </div>
-            <span class="hs-hint" id="hsHint">scroll to explore →</span>
+            <div class="hs-bottom">
+              <div class="hs-dots">
+                <div class="hs-dot hs-dot-ac" id="hsDot0">
+                  <div class="hs-dot-star"></div>
+                  <span class="hs-dot-label">Arab Computers</span>
+                </div>
+                <div class="hs-dot hs-dot-iti" id="hsDot1">
+                  <div class="hs-dot-star"></div>
+                  <span class="hs-dot-label">ITI</span>
+                </div>
+                <div class="hs-dot hs-dot-mil" id="hsDotMil">
+                  <div class="hs-dot-star"></div>
+                  <span class="hs-dot-label">Military</span>
+                </div>
+                <div class="hs-dot hs-dot-iot" id="hsDot2">
+                  <div class="hs-dot-star"></div>
+                  <span class="hs-dot-label">IoT</span>
+                </div>
+                <div class="hs-dot hs-dot-asu" id="hsDot3">
+                  <div class="hs-dot-star"></div>
+                  <span class="hs-dot-label">ASU</span>
+                </div>
+              </div>
+              <span class="hs-hint" id="hsHint">scroll to explore →</span>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <div class="section-divider"></div>
+      <div class="section-divider"></div>
 
-    <!-- ═══════════════════════════════════════════
+      <!-- ═══════════════════════════════════════════
          PROJECTS
     ═══════════════════════════════════════════ -->
-    <section class="section-page pw-section" id="projects-section">
-      <div class="pw-top">
-        <div class="pw-heading-block">
-          <h2 class="pw-heading"><span>Projects</span></h2>
-          <span class="pw-heading-line"></span>
-        </div>
-        <div class="pw-counter-block">
-          <span class="pw-cur" id="pwCur">01</span>
-          <svg class="pw-arc-svg" viewBox="0 0 48 48">
-            <circle
-              cx="24"
-              cy="24"
-              r="20"
-              fill="none"
-              stroke="rgba(48,205,207,0.12)"
-              stroke-width="1"
-            />
-            <circle
-              id="pwArcCircle"
-              cx="24"
-              cy="24"
-              r="20"
-              fill="none"
-              stroke="#30cdcf"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-dasharray="125.66"
-              stroke-dashoffset="125.66"
-              transform="rotate(-90 24 24)"
-            />
-          </svg>
-          <span class="pw-tot" id="pwTot">08</span>
-        </div>
-      </div>
-      <div class="pw-film-outer" id="pwOuter">
-        <div class="pw-film-track" id="pwTrack"></div>
-      </div>
-      <div class="pw-dots" id="pwDots"></div>
-    </section>
-
-    <!-- MODAL -->
-    <div id="modal-overlay">
-      <div id="modal">
-        <button class="m-close" id="m-close">
-          <svg viewBox="0 0 12 12">
-            <line x1="1" y1="1" x2="11" y2="11" />
-            <line x1="11" y1="1" x2="1" y2="11" />
-          </svg>
-        </button>
-        <div class="m-body">
-          <div class="m-meta">
-            <span class="m-num" id="m-num"></span>
-            <span class="m-badge" id="m-badge">Live</span>
+      <section class="section-page pw-section" id="projects-section">
+        <div class="pw-top">
+          <div class="pw-heading-block">
+            <h2 class="pw-heading"><span>Projects</span></h2>
+            <span class="pw-heading-line"></span>
           </div>
-          <div class="m-title" id="m-title"></div>
-          <div class="m-desc" id="m-desc"></div>
-          <div class="m-tags" id="m-tags"></div>
-          <div class="m-links" id="m-links"></div>
+          <div class="pw-counter-block">
+            <span class="pw-cur" id="pwCur">01</span>
+            <svg class="pw-arc-svg" viewBox="0 0 48 48">
+              <circle
+                cx="24"
+                cy="24"
+                r="20"
+                fill="none"
+                stroke="rgba(48,205,207,0.12)"
+                stroke-width="1"
+              />
+              <circle
+                id="pwArcCircle"
+                cx="24"
+                cy="24"
+                r="20"
+                fill="none"
+                stroke="#30cdcf"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-dasharray="125.66"
+                stroke-dashoffset="125.66"
+                transform="rotate(-90 24 24)"
+              />
+            </svg>
+            <span class="pw-tot" id="pwTot">08</span>
+          </div>
+        </div>
+        <div class="pw-film-outer" id="pwOuter">
+          <div class="pw-film-track" id="pwTrack"></div>
+        </div>
+        <div class="pw-dots" id="pwDots"></div>
+      </section>
+
+      <!-- MODAL -->
+      <div id="modal-overlay">
+        <div id="modal">
+          <button class="m-close" id="m-close" aria-label="Close modal">
+            <svg viewBox="0 0 12 12">
+              <line x1="1" y1="1" x2="11" y2="11" />
+              <line x1="11" y1="1" x2="1" y2="11" />
+            </svg>
+          </button>
+          <div class="m-body">
+            <div class="m-meta">
+              <span class="m-num" id="m-num"></span>
+              <span class="m-badge" id="m-badge">Live</span>
+            </div>
+            <div class="m-title" id="m-title"></div>
+            <div class="m-desc" id="m-desc"></div>
+            <div class="m-tags" id="m-tags"></div>
+            <div class="m-links" id="m-links"></div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="section-divider"></div>
+      <div class="section-divider"></div>
 
-    <!-- ═══════════════════════════════════════════
+      <!-- ═══════════════════════════════════════════
          CONTACT
     ═══════════════════════════════════════════ -->
-    <section class="section-page contact-section-new" id="contact-section">
-      <div class="section-heading reveal">
-        <h2>Contact <span>Me</span></h2>
-        <span class="sec-line"></span>
-      </div>
-      <div id="ct-flash"></div>
-      <div id="ct-success">
-        <div class="ct-s-emblem">
-          <svg viewBox="0 0 32 32"><polyline points="5,16 12,23 27,8" /></svg>
+      <section class="section-page contact-section-new" id="contact-section">
+        <div class="section-heading reveal">
+          <h2>Contact <span>Me</span></h2>
+          <span class="sec-line"></span>
         </div>
-        <h2>Thanks! You'll hear<br />from me <span>shortly.</span></h2>
-        <p>
-          Your message landed safely. I'll get back to you within a day or two.
-        </p>
-        <button id="ct-btn-reset">Send another message</button>
-      </div>
-      <div class="ct-wrap reveal reveal-delay-1">
-        <div class="ct-left">
-          <h3 class="ct-headline">
-            Let's build<br />something<br /><em id="ct-em-word">great</em>.
-          </h3>
-          <p class="ct-subtext">
-            Whether you have a project in mind, want to collaborate, or just say
-            hi — my inbox is always open.
+        <div id="ct-flash"></div>
+        <div id="ct-success">
+          <div class="ct-s-emblem">
+            <svg viewBox="0 0 32 32"><polyline points="5,16 12,23 27,8" /></svg>
+          </div>
+          <h2>Thanks! You'll hear<br />from me <span>shortly.</span></h2>
+          <p>
+            Your message landed safely. I'll get back to you within a day or
+            two.
           </p>
-          <div class="ct-contact-links">
-            <div class="contact-item">
-              <div class="contact-item-icon">
-                <i class="bx bx-envelope"></i>
+          <button id="ct-btn-reset">Send another message</button>
+        </div>
+        <div class="ct-wrap reveal reveal-delay-1">
+          <div class="ct-left">
+            <h3 class="ct-headline">
+              Let's build<br />something<br /><em id="ct-em-word">great</em>.
+            </h3>
+            <p class="ct-subtext">
+              Whether you have a project in mind, want to collaborate, or just
+              say hi — my inbox is always open.
+            </p>
+            <div class="ct-contact-links">
+              <div class="contact-item">
+                <div class="contact-item-icon">
+                  <i class="bx bx-envelope"></i>
+                </div>
+                <div class="contact-item-text">
+                  <span class="contact-item-label">Email</span>
+                  <a
+                    href="mailto:abdelrahmanelsaadany18@gmail.com"
+                    class="contact-item-val"
+                    >abdelrahmanelsaadany18@gmail.com</a
+                  >
+                </div>
               </div>
-              <div class="contact-item-text">
-                <span class="contact-item-label">Email</span>
-                <a
-                  href="mailto:abdelrahmanelsaadany18@gmail.com"
-                  class="contact-item-val"
-                  >abdelrahmanelsaadany18@gmail.com</a
-                >
+              <div class="contact-item">
+                <div class="contact-item-icon">
+                  <i class="bx bxl-linkedin"></i>
+                </div>
+                <div class="contact-item-text">
+                  <span class="contact-item-label">LinkedIn</span>
+                  <a
+                    href="https://www.linkedin.com/in/abdelrahman-elsaadany-a20"
+                    target="_blank"
+                    rel="noopener"
+                    class="contact-item-val"
+                    >LinkedIn Profile</a
+                  >
+                </div>
               </div>
-            </div>
-            <div class="contact-item">
-              <div class="contact-item-icon">
-                <i class="bx bxl-linkedin"></i>
+              <div class="contact-item">
+                <div class="contact-item-icon">
+                  <i class="bx bxl-github"></i>
+                </div>
+                <div class="contact-item-text">
+                  <span class="contact-item-label">GitHub</span>
+                  <a
+                    href="https://github.com/abdelrahmanelsaadany1"
+                    target="_blank"
+                    rel="noopener"
+                    class="contact-item-val"
+                    >GitHub Profile</a
+                  >
+                </div>
               </div>
-              <div class="contact-item-text">
-                <span class="contact-item-label">LinkedIn</span>
-                <a
-                  href="https://www.linkedin.com/in/abdelrahman-elsaadany-a20"
-                  target="_blank"
-                  rel="noopener"
-                  class="contact-item-val"
-                  >LinkedIn Profile</a
-                >
-              </div>
-            </div>
-            <div class="contact-item">
-              <div class="contact-item-icon"><i class="bx bxl-github"></i></div>
-              <div class="contact-item-text">
-                <span class="contact-item-label">GitHub</span>
-                <a
-                  href="https://github.com/abdelrahmanelsaadany1"
-                  target="_blank"
-                  rel="noopener"
-                  class="contact-item-val"
-                  >GitHub Profile</a
-                >
-              </div>
-            </div>
-            <div class="contact-item">
-              <div class="contact-item-icon"><i class="bx bx-map"></i></div>
-              <div class="contact-item-text">
-                <span class="contact-item-label">Location</span>
-                <span class="contact-item-val"
-                  >Alexandria, Egypt · Open to Remote &amp; Relocation</span
-                >
+              <div class="contact-item">
+                <div class="contact-item-icon"><i class="bx bx-map"></i></div>
+                <div class="contact-item-text">
+                  <span class="contact-item-label">Location</span>
+                  <span class="contact-item-val"
+                    >Alexandria, Egypt · Open to Remote &amp; Relocation</span
+                  >
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="ct-right">
-          <svg
-            id="ct-ring-svg"
-            viewBox="0 0 800 800"
-            xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="xMidYMid meet"
-          >
-            <defs>
-              <filter
-                id="ct-glow-p"
-                x="-80%"
-                y="-80%"
-                width="260%"
-                height="260%"
-              >
-                <feGaussianBlur stdDeviation="6" result="b" />
-                <feMerge>
-                  <feMergeNode in="b" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-              <filter
-                id="ct-glow-lg"
-                x="-120%"
-                y="-120%"
-                width="340%"
-                height="340%"
-              >
-                <feGaussianBlur stdDeviation="14" result="b" />
-                <feMerge>
-                  <feMergeNode in="b" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-              <filter
-                id="ct-glow-sm"
-                x="-40%"
-                y="-40%"
-                width="180%"
-                height="180%"
-              >
-                <feGaussianBlur stdDeviation="3" result="b" />
-                <feMerge>
-                  <feMergeNode in="b" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-              <radialGradient id="ct-rg-center" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#30cdcf" stop-opacity="0.10" />
-                <stop offset="100%" stop-color="#30cdcf" stop-opacity="0" />
-              </radialGradient>
-            </defs>
-            <circle
-              cx="400"
-              cy="400"
-              r="380"
-              fill="none"
-              stroke="#30cdcf"
-              stroke-width="0.5"
-              opacity="0.04"
-            />
-            <circle
-              cx="400"
-              cy="400"
-              r="345"
-              fill="none"
-              stroke="#30cdcf"
-              stroke-width="0.5"
-              opacity="0.07"
-            />
-            <circle
-              cx="400"
-              cy="400"
-              r="308"
-              fill="none"
-              stroke="#30cdcf"
-              stroke-width="22"
-              opacity="0.022"
-            />
-            <circle
-              id="ct-tr-out"
-              cx="400"
-              cy="400"
-              r="319"
-              fill="none"
-              stroke="#30cdcf"
-              stroke-width="0.8"
-              opacity="0.14"
-            />
-            <circle
-              id="ct-tr-mid"
-              cx="400"
-              cy="400"
-              r="308"
-              fill="none"
-              stroke="#30cdcf"
-              stroke-width="1.6"
-              opacity="0.20"
-            />
-            <circle
-              id="ct-tr-in"
-              cx="400"
-              cy="400"
-              r="297"
-              fill="none"
-              stroke="#30cdcf"
-              stroke-width="0.8"
-              opacity="0.14"
-            />
-            <g
-              id="ct-ticks"
-              stroke="#30cdcf"
-              stroke-linecap="round"
-              opacity="0.22"
+          <div class="ct-right">
+            <svg
+              id="ct-ring-svg"
+              viewBox="0 0 800 800"
+              xmlns="http://www.w3.org/2000/svg"
+              preserveAspectRatio="xMidYMid meet"
             >
-              <line x1="400" y1="86" x2="400" y2="100" stroke-width="2.2" />
-              <line x1="714" y1="400" x2="700" y2="400" stroke-width="2.2" />
-              <line x1="400" y1="714" x2="400" y2="700" stroke-width="2.2" />
-              <line x1="86" y1="400" x2="100" y2="400" stroke-width="2.2" />
-              <line
-                x1="620.9"
-                y1="179.1"
-                x2="611.1"
-                y2="188.9"
-                stroke-width="1.2"
-              />
-              <line
-                x1="620.9"
-                y1="620.9"
-                x2="611.1"
-                y2="611.1"
-                stroke-width="1.2"
-              />
-              <line
-                x1="179.1"
-                y1="620.9"
-                x2="188.9"
-                y2="611.1"
-                stroke-width="1.2"
-              />
-              <line
-                x1="179.1"
-                y1="179.1"
-                x2="188.9"
-                y2="188.9"
-                stroke-width="1.2"
-              />
-              <line
-                x1="516.8"
-                y1="95.4"
-                x2="513.5"
-                y2="104.4"
-                stroke-width="0.7"
-              />
-              <line
-                x1="283.2"
-                y1="95.4"
-                x2="286.5"
-                y2="104.4"
-                stroke-width="0.7"
-              />
-              <line
-                x1="704.6"
-                y1="283.2"
-                x2="695.6"
-                y2="286.5"
-                stroke-width="0.7"
-              />
-              <line
-                x1="704.6"
-                y1="516.8"
-                x2="695.6"
-                y2="513.5"
-                stroke-width="0.7"
-              />
-              <line
-                x1="516.8"
-                y1="704.6"
-                x2="513.5"
-                y2="695.6"
-                stroke-width="0.7"
-              />
-              <line
-                x1="283.2"
-                y1="704.6"
-                x2="286.5"
-                y2="695.6"
-                stroke-width="0.7"
-              />
-              <line
-                x1="95.4"
-                y1="516.8"
-                x2="104.4"
-                y2="513.5"
-                stroke-width="0.7"
-              />
-              <line
-                x1="95.4"
-                y1="283.2"
-                x2="104.4"
-                y2="286.5"
-                stroke-width="0.7"
-              />
-            </g>
-            <g id="ct-nd0" filter="url(#ct-glow-sm)">
+              <defs>
+                <filter
+                  id="ct-glow-p"
+                  x="-80%"
+                  y="-80%"
+                  width="260%"
+                  height="260%"
+                >
+                  <feGaussianBlur stdDeviation="6" result="b" />
+                  <feMerge>
+                    <feMergeNode in="b" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <filter
+                  id="ct-glow-lg"
+                  x="-120%"
+                  y="-120%"
+                  width="340%"
+                  height="340%"
+                >
+                  <feGaussianBlur stdDeviation="14" result="b" />
+                  <feMerge>
+                    <feMergeNode in="b" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <filter
+                  id="ct-glow-sm"
+                  x="-40%"
+                  y="-40%"
+                  width="180%"
+                  height="180%"
+                >
+                  <feGaussianBlur stdDeviation="3" result="b" />
+                  <feMerge>
+                    <feMergeNode in="b" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <radialGradient id="ct-rg-center" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#30cdcf" stop-opacity="0.10" />
+                  <stop offset="100%" stop-color="#30cdcf" stop-opacity="0" />
+                </radialGradient>
+              </defs>
               <circle
                 cx="400"
-                cy="92"
-                r="9"
-                fill="#03060e"
-                stroke="#30cdcf"
-                stroke-width="1"
-                opacity="0.5"
-              />
-              <circle cx="400" cy="92" r="3.5" fill="#30cdcf" opacity="0.55" />
-            </g>
-            <g id="ct-nd1" filter="url(#ct-glow-sm)">
-              <circle
-                cx="708"
                 cy="400"
-                r="9"
-                fill="#03060e"
+                r="380"
+                fill="none"
                 stroke="#30cdcf"
-                stroke-width="1"
-                opacity="0.5"
+                stroke-width="0.5"
+                opacity="0.04"
               />
-              <circle cx="708" cy="400" r="3.5" fill="#30cdcf" opacity="0.55" />
-            </g>
-            <g id="ct-nd2" filter="url(#ct-glow-sm)">
               <circle
                 cx="400"
-                cy="708"
-                r="9"
-                fill="#03060e"
-                stroke="#30cdcf"
-                stroke-width="1"
-                opacity="0.5"
-              />
-              <circle cx="400" cy="708" r="3.5" fill="#30cdcf" opacity="0.55" />
-            </g>
-            <g id="ct-nd3" filter="url(#ct-glow-sm)">
-              <circle
-                cx="92"
                 cy="400"
-                r="9"
-                fill="#03060e"
+                r="345"
+                fill="none"
                 stroke="#30cdcf"
-                stroke-width="1"
-                opacity="0.5"
+                stroke-width="0.5"
+                opacity="0.07"
               />
-              <circle cx="92" cy="400" r="3.5" fill="#30cdcf" opacity="0.55" />
-            </g>
-            <circle
-              id="ct-amb"
-              cx="400"
-              cy="400"
-              r="308"
-              fill="none"
-              stroke="#30cdcf"
-              stroke-width="1.5"
-              stroke-dasharray="16 2400"
-              opacity="0.55"
-            />
-            <circle
-              id="ct-core"
-              cx="400"
-              cy="400"
-              r="260"
-              fill="url(#ct-rg-center)"
-              opacity="0"
-            />
-            <circle
-              id="ct-rp"
-              cx="400"
-              cy="400"
-              r="308"
-              fill="none"
-              stroke="#30cdcf"
-              stroke-width="10"
-              opacity="0"
-            />
-            <circle
-              cx="400"
-              cy="400"
-              r="240"
-              fill="none"
-              stroke="#30cdcf"
-              stroke-width="0.5"
-              opacity="0.06"
-            />
-            <circle
-              cx="400"
-              cy="400"
-              r="190"
-              fill="none"
-              stroke="#30cdcf"
-              stroke-width="0.5"
-              opacity="0.04"
-            />
-
-            <!-- Particles — IDs are required by contact-form.js to animate the balls -->
-            <g id="ct-pa" opacity="0" filter="url(#ct-glow-p)">
-              <circle id="ct-pa-c" cx="400" cy="92" r="6" fill="#30cdcf" />
               <circle
-                id="ct-pa-h"
                 cx="400"
-                cy="92"
-                r="11"
+                cy="400"
+                r="308"
+                fill="none"
+                stroke="#30cdcf"
+                stroke-width="22"
+                opacity="0.022"
+              />
+              <circle
+                id="ct-tr-out"
+                cx="400"
+                cy="400"
+                r="319"
+                fill="none"
+                stroke="#30cdcf"
+                stroke-width="0.8"
+                opacity="0.14"
+              />
+              <circle
+                id="ct-tr-mid"
+                cx="400"
+                cy="400"
+                r="308"
+                fill="none"
+                stroke="#30cdcf"
+                stroke-width="1.6"
+                opacity="0.20"
+              />
+              <circle
+                id="ct-tr-in"
+                cx="400"
+                cy="400"
+                r="297"
+                fill="none"
+                stroke="#30cdcf"
+                stroke-width="0.8"
+                opacity="0.14"
+              />
+              <g
+                id="ct-ticks"
+                stroke="#30cdcf"
+                stroke-linecap="round"
+                opacity="0.22"
+              >
+                <line x1="400" y1="86" x2="400" y2="100" stroke-width="2.2" />
+                <line x1="714" y1="400" x2="700" y2="400" stroke-width="2.2" />
+                <line x1="400" y1="714" x2="400" y2="700" stroke-width="2.2" />
+                <line x1="86" y1="400" x2="100" y2="400" stroke-width="2.2" />
+                <line
+                  x1="620.9"
+                  y1="179.1"
+                  x2="611.1"
+                  y2="188.9"
+                  stroke-width="1.2"
+                />
+                <line
+                  x1="620.9"
+                  y1="620.9"
+                  x2="611.1"
+                  y2="611.1"
+                  stroke-width="1.2"
+                />
+                <line
+                  x1="179.1"
+                  y1="620.9"
+                  x2="188.9"
+                  y2="611.1"
+                  stroke-width="1.2"
+                />
+                <line
+                  x1="179.1"
+                  y1="179.1"
+                  x2="188.9"
+                  y2="188.9"
+                  stroke-width="1.2"
+                />
+                <line
+                  x1="516.8"
+                  y1="95.4"
+                  x2="513.5"
+                  y2="104.4"
+                  stroke-width="0.7"
+                />
+                <line
+                  x1="283.2"
+                  y1="95.4"
+                  x2="286.5"
+                  y2="104.4"
+                  stroke-width="0.7"
+                />
+                <line
+                  x1="704.6"
+                  y1="283.2"
+                  x2="695.6"
+                  y2="286.5"
+                  stroke-width="0.7"
+                />
+                <line
+                  x1="704.6"
+                  y1="516.8"
+                  x2="695.6"
+                  y2="513.5"
+                  stroke-width="0.7"
+                />
+                <line
+                  x1="516.8"
+                  y1="704.6"
+                  x2="513.5"
+                  y2="695.6"
+                  stroke-width="0.7"
+                />
+                <line
+                  x1="283.2"
+                  y1="704.6"
+                  x2="286.5"
+                  y2="695.6"
+                  stroke-width="0.7"
+                />
+                <line
+                  x1="95.4"
+                  y1="516.8"
+                  x2="104.4"
+                  y2="513.5"
+                  stroke-width="0.7"
+                />
+                <line
+                  x1="95.4"
+                  y1="283.2"
+                  x2="104.4"
+                  y2="286.5"
+                  stroke-width="0.7"
+                />
+              </g>
+              <g id="ct-nd0" filter="url(#ct-glow-sm)">
+                <circle
+                  cx="400"
+                  cy="92"
+                  r="9"
+                  fill="#03060e"
+                  stroke="#30cdcf"
+                  stroke-width="1"
+                  opacity="0.5"
+                />
+                <circle
+                  cx="400"
+                  cy="92"
+                  r="3.5"
+                  fill="#30cdcf"
+                  opacity="0.55"
+                />
+              </g>
+              <g id="ct-nd1" filter="url(#ct-glow-sm)">
+                <circle
+                  cx="708"
+                  cy="400"
+                  r="9"
+                  fill="#03060e"
+                  stroke="#30cdcf"
+                  stroke-width="1"
+                  opacity="0.5"
+                />
+                <circle
+                  cx="708"
+                  cy="400"
+                  r="3.5"
+                  fill="#30cdcf"
+                  opacity="0.55"
+                />
+              </g>
+              <g id="ct-nd2" filter="url(#ct-glow-sm)">
+                <circle
+                  cx="400"
+                  cy="708"
+                  r="9"
+                  fill="#03060e"
+                  stroke="#30cdcf"
+                  stroke-width="1"
+                  opacity="0.5"
+                />
+                <circle
+                  cx="400"
+                  cy="708"
+                  r="3.5"
+                  fill="#30cdcf"
+                  opacity="0.55"
+                />
+              </g>
+              <g id="ct-nd3" filter="url(#ct-glow-sm)">
+                <circle
+                  cx="92"
+                  cy="400"
+                  r="9"
+                  fill="#03060e"
+                  stroke="#30cdcf"
+                  stroke-width="1"
+                  opacity="0.5"
+                />
+                <circle
+                  cx="92"
+                  cy="400"
+                  r="3.5"
+                  fill="#30cdcf"
+                  opacity="0.55"
+                />
+              </g>
+              <circle
+                id="ct-amb"
+                cx="400"
+                cy="400"
+                r="308"
+                fill="none"
+                stroke="#30cdcf"
+                stroke-width="1.5"
+                stroke-dasharray="16 2400"
+                opacity="0.55"
+              />
+              <circle
+                id="ct-core"
+                cx="400"
+                cy="400"
+                r="260"
+                fill="url(#ct-rg-center)"
+                opacity="0"
+              />
+              <circle
+                id="ct-rp"
+                cx="400"
+                cy="400"
+                r="308"
+                fill="none"
+                stroke="#30cdcf"
+                stroke-width="10"
+                opacity="0"
+              />
+              <circle
+                cx="400"
+                cy="400"
+                r="240"
+                fill="none"
+                stroke="#30cdcf"
+                stroke-width="0.5"
+                opacity="0.06"
+              />
+              <circle
+                cx="400"
+                cy="400"
+                r="190"
+                fill="none"
+                stroke="#30cdcf"
+                stroke-width="0.5"
+                opacity="0.04"
+              />
+              <g id="ct-pa" opacity="0" filter="url(#ct-glow-p)">
+                <circle id="ct-pa-c" cx="400" cy="92" r="6" fill="#30cdcf" />
+                <circle
+                  id="ct-pa-h"
+                  cx="400"
+                  cy="92"
+                  r="11"
+                  fill="none"
+                  stroke="#30cdcf"
+                  stroke-width="1"
+                  opacity="0.35"
+                />
+              </g>
+              <g id="ct-pb" opacity="0" filter="url(#ct-glow-p)">
+                <circle id="ct-pb-c" cx="708" cy="400" r="6" fill="#30cdcf" />
+                <circle
+                  id="ct-pb-h"
+                  cx="708"
+                  cy="400"
+                  r="11"
+                  fill="none"
+                  stroke="#30cdcf"
+                  stroke-width="1"
+                  opacity="0.35"
+                />
+              </g>
+              <g id="ct-pc" opacity="0" filter="url(#ct-glow-lg)">
+                <circle id="ct-pc-c" cx="400" cy="708" r="7.5" fill="#30cdcf" />
+                <circle
+                  id="ct-pc-h"
+                  cx="400"
+                  cy="708"
+                  r="14"
+                  fill="none"
+                  stroke="#30cdcf"
+                  stroke-width="1.5"
+                  opacity="0.45"
+                />
+              </g>
+              <circle
+                id="ct-sw1"
+                cx="400"
+                cy="400"
+                r="8"
+                fill="none"
+                stroke="#30cdcf"
+                stroke-width="3"
+                opacity="0"
+              />
+              <circle
+                id="ct-sw2"
+                cx="400"
+                cy="400"
+                r="8"
+                fill="none"
+                stroke="#30cdcf"
+                stroke-width="1.8"
+                opacity="0"
+              />
+              <circle
+                id="ct-sw3"
+                cx="400"
+                cy="400"
+                r="8"
                 fill="none"
                 stroke="#30cdcf"
                 stroke-width="1"
-                opacity="0.35"
+                opacity="0"
               />
-            </g>
-            <g id="ct-pb" opacity="0" filter="url(#ct-glow-p)">
-              <circle id="ct-pb-c" cx="708" cy="400" r="6" fill="#30cdcf" />
               <circle
-                id="ct-pb-h"
-                cx="708"
-                cy="400"
-                r="11"
-                fill="none"
-                stroke="#30cdcf"
-                stroke-width="1"
-                opacity="0.35"
-              />
-            </g>
-            <g id="ct-pc" opacity="0" filter="url(#ct-glow-lg)">
-              <circle id="ct-pc-c" cx="400" cy="708" r="7.5" fill="#30cdcf" />
-              <circle
-                id="ct-pc-h"
+                id="ct-cburst"
                 cx="400"
-                cy="708"
-                r="14"
-                fill="none"
+                cy="400"
+                r="18"
+                fill="#30cdcf"
+                opacity="0"
+              />
+              <g
+                id="ct-rays"
                 stroke="#30cdcf"
-                stroke-width="1.5"
-                opacity="0.45"
-              />
-            </g>
-
-            <!-- Shockwaves -->
-            <circle
-              id="ct-sw1"
-              cx="400"
-              cy="400"
-              r="8"
-              fill="none"
-              stroke="#30cdcf"
-              stroke-width="3"
-              opacity="0"
-            />
-            <circle
-              id="ct-sw2"
-              cx="400"
-              cy="400"
-              r="8"
-              fill="none"
-              stroke="#30cdcf"
-              stroke-width="1.8"
-              opacity="0"
-            />
-            <circle
-              id="ct-sw3"
-              cx="400"
-              cy="400"
-              r="8"
-              fill="none"
-              stroke="#30cdcf"
-              stroke-width="1"
-              opacity="0"
-            />
-            <circle
-              id="ct-cburst"
-              cx="400"
-              cy="400"
-              r="18"
-              fill="#30cdcf"
-              opacity="0"
-            />
-            <g id="ct-rays" stroke="#30cdcf" stroke-linecap="round" opacity="0">
-              <line
-                id="ct-r0"
-                x1="400"
-                y1="400"
-                x2="400"
-                y2="400"
-                stroke-width="1.5"
-              />
-              <line
-                id="ct-r1"
-                x1="400"
-                y1="400"
-                x2="400"
-                y2="400"
-                stroke-width="1.5"
-              />
-              <line
-                id="ct-r2"
-                x1="400"
-                y1="400"
-                x2="400"
-                y2="400"
-                stroke-width="1.5"
-              />
-              <line
-                id="ct-r3"
-                x1="400"
-                y1="400"
-                x2="400"
-                y2="400"
-                stroke-width="1.5"
-              />
-              <line
-                id="ct-r4"
-                x1="400"
-                y1="400"
-                x2="400"
-                y2="400"
-                stroke-width="1.2"
-              />
-              <line
-                id="ct-r5"
-                x1="400"
-                y1="400"
-                x2="400"
-                y2="400"
-                stroke-width="1.2"
-              />
-              <line
-                id="ct-r6"
-                x1="400"
-                y1="400"
-                x2="400"
-                y2="400"
-                stroke-width="1.2"
-              />
-              <line
-                id="ct-r7"
-                x1="400"
-                y1="400"
-                x2="400"
-                y2="400"
-                stroke-width="1.2"
-              />
-            </g>
-          </svg>
-          <div id="ct-form-wrap">
-            <div class="ct-progress-row">
-              <div class="ct-pdots">
-                <div class="ct-pdot" id="ct-d0"></div>
-                <div class="ct-pdot" id="ct-d1"></div>
-                <div class="ct-pdot" id="ct-d2"></div>
+                stroke-linecap="round"
+                opacity="0"
+              >
+                <line
+                  id="ct-r0"
+                  x1="400"
+                  y1="400"
+                  x2="400"
+                  y2="400"
+                  stroke-width="1.5"
+                />
+                <line
+                  id="ct-r1"
+                  x1="400"
+                  y1="400"
+                  x2="400"
+                  y2="400"
+                  stroke-width="1.5"
+                />
+                <line
+                  id="ct-r2"
+                  x1="400"
+                  y1="400"
+                  x2="400"
+                  y2="400"
+                  stroke-width="1.5"
+                />
+                <line
+                  id="ct-r3"
+                  x1="400"
+                  y1="400"
+                  x2="400"
+                  y2="400"
+                  stroke-width="1.5"
+                />
+                <line
+                  id="ct-r4"
+                  x1="400"
+                  y1="400"
+                  x2="400"
+                  y2="400"
+                  stroke-width="1.2"
+                />
+                <line
+                  id="ct-r5"
+                  x1="400"
+                  y1="400"
+                  x2="400"
+                  y2="400"
+                  stroke-width="1.2"
+                />
+                <line
+                  id="ct-r6"
+                  x1="400"
+                  y1="400"
+                  x2="400"
+                  y2="400"
+                  stroke-width="1.2"
+                />
+                <line
+                  id="ct-r7"
+                  x1="400"
+                  y1="400"
+                  x2="400"
+                  y2="400"
+                  stroke-width="1.2"
+                />
+              </g>
+            </svg>
+            <div id="ct-form-wrap">
+              <div class="ct-progress-row">
+                <div class="ct-pdots">
+                  <div class="ct-pdot" id="ct-d0"></div>
+                  <div class="ct-pdot" id="ct-d1"></div>
+                  <div class="ct-pdot" id="ct-d2"></div>
+                </div>
+                <div class="ct-prog-track">
+                  <div class="ct-prog-fill" id="ct-pfill"></div>
+                </div>
+                <span class="ct-prog-label" id="ct-plbl">0 / 3</span>
               </div>
-              <div class="ct-prog-track">
-                <div class="ct-prog-fill" id="ct-pfill"></div>
+              <div class="ct-field" id="ct-fn">
+                <label for="ct-in">Name</label>
+                <input
+                  type="text"
+                  id="ct-in"
+                  placeholder="Your name"
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+                <span class="ct-fcheck"
+                  ><svg viewBox="0 0 14 14">
+                    <polyline points="2,7 5.5,10.5 12,3.5" /></svg
+                ></span>
+                <span class="ct-fhint" id="ct-hn"></span>
               </div>
-              <span class="ct-prog-label" id="ct-plbl">0 / 3</span>
+              <div class="ct-field" id="ct-fe">
+                <label for="ct-ie">Email</label>
+                <input
+                  type="email"
+                  id="ct-ie"
+                  placeholder="your@email.com"
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+                <span class="ct-fcheck"
+                  ><svg viewBox="0 0 14 14">
+                    <polyline points="2,7 5.5,10.5 12,3.5" /></svg
+                ></span>
+                <span class="ct-fhint" id="ct-he"></span>
+              </div>
+              <div class="ct-field ct-textarea-f" id="ct-fm">
+                <label for="ct-im">Message</label>
+                <textarea
+                  id="ct-im"
+                  placeholder="Tell me about your project..."
+                ></textarea>
+                <span class="ct-fcheck"
+                  ><svg viewBox="0 0 14 14">
+                    <polyline points="2,7 5.5,10.5 12,3.5" /></svg
+                ></span>
+                <span class="ct-fhint" id="ct-hm"></span>
+              </div>
+              <button id="ct-btn" disabled>Send Message</button>
             </div>
-            <div class="ct-field" id="ct-fn">
-              <label for="ct-in">Name</label>
-              <input
-                type="text"
-                id="ct-in"
-                placeholder="Your name"
-                autocomplete="off"
-                spellcheck="false"
-              />
-              <span class="ct-fcheck"
-                ><svg viewBox="0 0 14 14">
-                  <polyline points="2,7 5.5,10.5 12,3.5" /></svg
-              ></span>
-              <span class="ct-fhint" id="ct-hn"></span>
-            </div>
-            <div class="ct-field" id="ct-fe">
-              <label for="ct-ie">Email</label>
-              <input
-                type="email"
-                id="ct-ie"
-                placeholder="your@email.com"
-                autocomplete="off"
-                spellcheck="false"
-              />
-              <span class="ct-fcheck"
-                ><svg viewBox="0 0 14 14">
-                  <polyline points="2,7 5.5,10.5 12,3.5" /></svg
-              ></span>
-              <span class="ct-fhint" id="ct-he"></span>
-            </div>
-            <div class="ct-field ct-textarea-f" id="ct-fm">
-              <label for="ct-im">Message</label>
-              <textarea
-                id="ct-im"
-                placeholder="Tell me about your project..."
-              ></textarea>
-              <span class="ct-fcheck"
-                ><svg viewBox="0 0 14 14">
-                  <polyline points="2,7 5.5,10.5 12,3.5" /></svg
-              ></span>
-              <span class="ct-fhint" id="ct-hm"></span>
-            </div>
-            <button id="ct-btn" disabled>Send Message</button>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </main>
 
+    <!-- ── SCRIPTS ── -->
+
+    <!-- Cloudflare email decode — must stay non-deferred -->
     <script
       data-cfasync="false"
       src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"
     ></script>
-    <script
-      type="module"
-      src="https://cdn.jsdelivr.net/npm/@splinetool/viewer/build/spline-viewer.js"
-    ></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 
+    <!-- Spline 3D viewer — loaded after page is interactive -->
+    <script>
+      window.addEventListener("load", function () {
+        var s = document.createElement("script");
+        s.type = "module";
+        s.src =
+          "https://cdn.jsdelivr.net/npm/@splinetool/viewer/build/spline-viewer.js";
+        document.body.appendChild(s);
+      });
+    </script>
+
+    <!-- GSAP — deferred -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+      defer
+    ></script>
+
+    <!-- Typing animation — inline, runs on DOMContentLoaded -->
     <script>
       (function () {
         const roles = ["Software Engineer", "Full Stack .NET Developer"];
@@ -1017,83 +1101,75 @@
       })();
     </script>
 
-    <script src="intro.js"></script>
-    <script src="js/bg-particles.js"></script>
-    <script src="heading-reveal.js"></script>
-    <script src="js/text-scramble.js"></script>
-    <script src="js/magnetic.js"></script>
-    <script src="js/parallax-scroll.js"></script>
-    <script src="js/cursor-effects.js"></script>
-    <script src="js/scroll-header.js"></script>
-    <script src="js/constellation-nav.js"></script>
-    <script src="js/mobile-nav.js"></script>
-    <script src="js/active-nav.js"></script>
-    <script src="js/spider-web-canvas.js"></script>
-    <script src="js/spider-hang-cv.js"></script>
-    <script src="js/cursor-cloud.js"></script>
-    <script src="js/sections-core.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script src="js/contact-form.js"></script>
-    <script src="the road/about-timeline.js"></script>
+    <!-- All local scripts — deferred to avoid blocking -->
+    <script src="intro.js" defer></script>
+    <script src="js/bg-particles.js" defer></script>
+    <script src="heading-reveal.js" defer></script>
+    <script src="js/text-scramble.js" defer></script>
+    <script src="js/magnetic.js" defer></script>
+    <script src="js/parallax-scroll.js" defer></script>
+    <script src="js/cursor-effects.js" defer></script>
+    <script src="js/scroll-header.js" defer></script>
+    <script src="js/constellation-nav.js" defer></script>
+    <script src="js/mobile-nav.js" defer></script>
+    <script src="js/active-nav.js" defer></script>
+    <script src="js/spider-web-canvas.js" defer></script>
+    <script src="js/spider-hang-cv.js" defer></script>
+    <script src="js/cursor-cloud.js" defer></script>
+    <script src="js/sections-core.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
+      defer
+    ></script>
+    <script src="js/contact-form.js" defer></script>
+    <script src="the road/about-timeline.js" defer></script>
 
-    <!-- Neural Logo Interaction Script -->
-    <script>
-      const wrap = document.getElementById("logoWrap");
-      const logo = document.getElementById("neuralLogo");
-      let resetTimeout;
+    <!-- Neural Logo Interaction -->
+    <script defer>
+      document.addEventListener("DOMContentLoaded", function () {
+        const wrap = document.getElementById("logoWrap");
+        const logo = document.getElementById("neuralLogo");
+        let resetTimeout;
 
-      function handleInteraction(e) {
-        const rect = wrap.getBoundingClientRect();
-        let clientX, clientY;
-
-        // Handle both touch and mouse
-        if (e.type.startsWith("touch")) {
-          clientX = e.touches[0].clientX;
-          clientY = e.touches[0].clientY;
-          wrap.classList.add("active"); // Keep active state on touch
-        } else {
-          clientX = e.clientX;
-          clientY = e.clientY;
+        function handleInteraction(e) {
+          const rect = wrap.getBoundingClientRect();
+          let clientX, clientY;
+          if (e.type.startsWith("touch")) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+            wrap.classList.add("active");
+          } else {
+            clientX = e.clientX;
+            clientY = e.clientY;
+          }
+          const x = clientX - rect.left - rect.width / 2;
+          const y = clientY - rect.top - rect.height / 2;
+          const tiltX = (y / (rect.height / 2)) * -12;
+          const tiltY = (x / (rect.width / 2)) * 12;
+          logo.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.08)`;
+          clearTimeout(resetTimeout);
+          resetTimeout = setTimeout(resetLogo, 2000);
         }
 
-        const x = clientX - rect.left - rect.width / 2;
-        const y = clientY - rect.top - rect.height / 2;
+        function resetLogo() {
+          logo.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
+          wrap.classList.remove("active");
+        }
 
-        // Calculate tilt (Max 12 degrees for elegant feel)
-        const tiltX = (y / (rect.height / 2)) * -12;
-        const tiltY = (x / (rect.width / 2)) * 12;
-
-        logo.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.08)`;
-
-        // Auto-reset after inactivity (helpful for mobile taps)
-        clearTimeout(resetTimeout);
-        resetTimeout = setTimeout(resetLogo, 2000);
-      }
-
-      function resetLogo() {
-        logo.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
-        wrap.classList.remove("active");
-      }
-
-      // Mouse Events
-      wrap.addEventListener("mousemove", handleInteraction);
-      wrap.addEventListener("mouseleave", resetLogo);
-
-      // Touch Events
-      wrap.addEventListener(
-        "touchstart",
-        (e) => {
-          handleInteraction(e);
-          // Optional: Haptic feedback if supported
-          if (window.navigator.vibrate) window.navigator.vibrate(10);
-        },
-        { passive: true },
-      );
-
-      wrap.addEventListener("touchmove", handleInteraction, { passive: true });
-      wrap.addEventListener("touchend", () => {
-        // Keep the state for a brief moment after touch ends
-        setTimeout(resetLogo, 500);
+        wrap.addEventListener("mousemove", handleInteraction);
+        wrap.addEventListener("mouseleave", resetLogo);
+        wrap.addEventListener(
+          "touchstart",
+          (e) => {
+            handleInteraction(e);
+            if (window.navigator.vibrate) window.navigator.vibrate(10);
+          },
+          { passive: true },
+        );
+        wrap.addEventListener("touchmove", handleInteraction, {
+          passive: true,
+        });
+        wrap.addEventListener("touchend", () => setTimeout(resetLogo, 500));
       });
     </script>
   </body>

@@ -1,11 +1,11 @@
 /* ═══════════════════════════════════════════
-   intro.js — Logo intro → GSAP split-screen reveal
-   Requires: GSAP (loaded before this script in index.html)
+   intro.js — Logo intro → Awwwards strip reveal
+   Requires: GSAP (loaded before this in index.html)
 ═══════════════════════════════════════════ */
 (function () {
   "use strict";
 
-  /* ── Remove Spline watermark logo ── */
+  /* ── Remove Spline watermark ── */
   var _wm = setInterval(function () {
     var viewer = document.querySelector("spline-viewer");
     if (!viewer) return;
@@ -25,17 +25,22 @@
     return;
   }
 
-  /* Clear any old intro DOM */
   scene.innerHTML = "";
 
-  /* ── Panels ── */
-  var panelL = document.createElement("div");
-  panelL.id = "intro-panel-left";
-  scene.appendChild(panelL);
+  /* ══════════════════════════════════════
+     BUILD 3 STRIPS
+     Alternate direction: strip 0 → left, 1 → right, 2 → left
+     Gives that classic Awwwards staggered feel
+  ══════════════════════════════════════ */
+  var strips = [];
+  var dirs = [-1, 1, -1]; /* -1 = slide left, 1 = slide right */
 
-  var panelR = document.createElement("div");
-  panelR.id = "intro-panel-right";
-  scene.appendChild(panelR);
+  for (var s = 0; s < 3; s++) {
+    var strip = document.createElement("div");
+    strip.className = "intro-strip";
+    scene.appendChild(strip);
+    strips.push({ el: strip, dir: dirs[s] });
+  }
 
   /* ── Particle canvas ── */
   var bgCanvas = document.createElement("canvas");
@@ -166,7 +171,7 @@
   }
 
   /* ══════════════════════════════════════
-     KILL SCENE — guaranteed, no race conditions
+     KILL SCENE
   ══════════════════════════════════════ */
   var killed = false;
   function killScene() {
@@ -180,44 +185,43 @@
   }
 
   /* ══════════════════════════════════════
-     SPLIT REVEAL
+     STRIP REVEAL — Awwwards style
+     3 strips stagger out alternating left/right
+     Duration: 0.9s each, stagger 0.08s apart
+     Ease: expo.inOut — the signature premium feel
   ══════════════════════════════════════ */
-  function splitReveal() {
+  function stripReveal() {
     bgRunning = false;
     ctx.clearRect(0, 0, W, H);
 
+    /* Fade logo + name simultaneously */
     gsap.to([logoWrap, nameEl], {
       opacity: 0,
-      duration: 0.28,
+      duration: 0.2,
       ease: "power2.in",
     });
 
-    var tl = gsap.timeline({ onComplete: killScene });
+    var tl = gsap.timeline({
+      delay: 0.15,
+      onComplete: killScene,
+    });
 
-    tl.to(
-      panelL,
-      {
-        xPercent: -100,
-        duration: 0.72,
-        ease: "expo.inOut",
-        force3D: true,
-      },
-      0.22,
-    );
-
-    tl.to(
-      panelR,
-      {
-        xPercent: 100,
-        duration: 0.72,
-        ease: "expo.inOut",
-        force3D: true,
-      },
-      0.22,
-    );
+    /* Stagger each strip 0.08s apart, alternating direction */
+    for (var s = 0; s < strips.length; s++) {
+      tl.to(
+        strips[s].el,
+        {
+          xPercent: strips[s].dir * 100,
+          duration: 0.9,
+          ease: "expo.inOut",
+          force3D: true,
+        },
+        s * 0.08,
+      ); /* stagger offset */
+    }
 
     /* Safety net */
-    setTimeout(killScene, 2000);
+    setTimeout(killScene, 3000);
   }
 
   /* ══════════════════════════════════════
@@ -236,6 +240,7 @@
 
   function runIntro() {
     resetSVG();
+    scene.style.background = "transparent";
 
     tweenDash("il1", 72, 0, 700, 300);
     tweenOp("in1", 0, 1, 320, 320, easeBack);
@@ -253,7 +258,7 @@
       gsap.to(nameEl, { opacity: 1, duration: 0.65, ease: "power2.out" });
     }, 1550);
 
-    /* Hold → reverse → split */
+    /* Hold → reverse → strip reveal */
     setTimeout(function () {
       gsap.to(nameEl, { opacity: 0, duration: 0.3, ease: "power2.in" });
 
@@ -269,7 +274,7 @@
         tweenDash("il1", 0, 72, 560, 330);
       }, 300);
 
-      setTimeout(splitReveal, 980);
+      setTimeout(stripReveal, 980);
     }, 3200);
   }
 

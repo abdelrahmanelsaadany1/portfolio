@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   intro.css — Intro overlay + split-screen reveal
+   intro.css — Intro overlay + Awwwards strip reveal
 ═══════════════════════════════════════════ */
 
 #introScene {
@@ -7,8 +7,8 @@
   inset: 0;
   z-index: 99999;
   overflow: hidden;
-  pointer-events: none; /* scene never blocks — panels do */
-  background: #03060e;
+  pointer-events: all; /* block clicks immediately */
+  background: #03060e; /* ← cover the page instantly */
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -17,33 +17,27 @@
   }
 }
 
-/* Left panel — covers left half, slides left on reveal */
-#intro-panel-left {
+/* ── 3 horizontal strips — stack to cover full screen ── */
+.intro-strip {
   position: absolute;
-  top: 0;
   left: 0;
-  width: 50%;
-  height: 100%;
+  width: 100%;
+  height: 33.334%; /* 3 equal rows */
   background: #03060e;
-  z-index: 2;
   will-change: transform;
-  pointer-events: all;
+  pointer-events: all; /* blocks clicks during intro */
 }
-
-/* Right panel — covers right half, slides right on reveal */
-#intro-panel-right {
-  position: absolute;
+.intro-strip:nth-child(1) {
   top: 0;
-  right: 0;
-  width: 50%;
-  height: 100%;
-  background: #03060e;
-  z-index: 2;
-  will-change: transform;
-  pointer-events: all;
+}
+.intro-strip:nth-child(2) {
+  top: 33.333%;
+}
+.intro-strip:nth-child(3) {
+  top: 66.666%;
 }
 
-/* Particle canvas — above panels, below logo */
+/* ── Particle canvas ── */
 #intro-bg-canvas {
   position: absolute;
   inset: 0;
@@ -53,7 +47,7 @@
   z-index: 3;
 }
 
-/* Logo */
+/* ── Logo ── */
 #intro-logo-wrap {
   position: absolute;
   z-index: 4;
@@ -71,7 +65,7 @@
   overflow: visible;
 }
 
-/* Name */
+/* ── Name ── */
 #intro-name {
   position: absolute;
   z-index: 4;
