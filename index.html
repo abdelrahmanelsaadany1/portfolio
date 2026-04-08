@@ -10,25 +10,50 @@
     />
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
 
-    <!-- Preconnects -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Preconnects — only needed for external resources now (CDNs, Spline) -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="preconnect" href="https://prod.spline.design" crossorigin />
 
-    <!-- Fonts — non-blocking -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap"
-      rel="stylesheet"
-      media="print"
-      onload="this.media = 'all'"
-    />
-    <noscript>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap"
-        rel="stylesheet"
-      />
-    </noscript>
+    <!-- =====================================================
+         LOCAL FONTS — served from your own server, zero
+         network round-trips to Google. Replaces the two
+         blocking/non-blocking Google Fonts <link> tags.
+         font-display: swap keeps text visible while the
+         font file loads (same behaviour as before, but faster).
+    ====================================================== -->
+    <style>
+      /* Rajdhani */
+      @font-face {
+        font-family: "Rajdhani";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("fonts/rajdhani-400.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "Rajdhani";
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+        src: url("fonts/rajdhani-600.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "Rajdhani";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url("fonts/rajdhani-700.woff2") format("woff2");
+      }
+
+      /* Share Tech Mono */
+      @font-face {
+        font-family: "Share Tech Mono";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("fonts/share-tech-mono.woff2") format("woff2");
+      }
+    </style>
 
     <!-- Boxicons — non-blocking -->
     <link
@@ -1099,8 +1124,6 @@
          type="module" is deferred by spec — won't block render,
          but starts downloading RIGHT NOW in parallel with the
          intro animation, so it's ready when intro exits.
-         (Previously: window.addEventListener("load", ...) which
-         waited for everything else to finish before even starting.)
     ====================================================== -->
     <script
       type="module"
