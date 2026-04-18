@@ -35,7 +35,7 @@
   z-index: 2;
 }
 
-/* Bio text — shifted right to sit above spider center */
+/* Bio text */
 .hero-bio {
   width: 100%;
   height: auto;
@@ -69,7 +69,7 @@
   max-width: 42ch;
 }
 
-/* Spider wrap — pushed down a bit, slightly bigger */
+/* Spider wrap */
 .web-wrap {
   flex: 1;
   width: 100%;
@@ -83,7 +83,6 @@
   transform-origin: center top;
 }
 
-/* Canvas sets its own size via JS — don't override it */
 #webCanvas {
   display: block;
   pointer-events: all;
@@ -210,19 +209,268 @@
   line-height: 1;
 }
 
-/* ── Robot — right 50% ── */
+/* ══════════════════════════════════════════════════════════════
+   ROBOT — Quantum Gyroscope Hologram
+══════════════════════════════════════════════════════════════ */
+
 .hero-robot {
   flex: 0 0 50%;
   width: 50%;
   height: 100%;
   position: relative;
-}
-.hero-robot spline-viewer {
-  width: 100%;
-  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
-/* Section divider */
+/* ── Orbital SVG shell ─────────────────────────────────────── */
+
+.holo-orbits {
+  position: absolute;
+  width: min(450px, 86%);
+  aspect-ratio: 1;
+  z-index: 1;
+  pointer-events: none;
+  animation: robotFloat 3.6s ease-in-out infinite;
+  will-change: transform;
+}
+
+/*
+  Animating stroke-dashoffset makes the dashes appear to
+  travel around each ring — giving motion even when a ring
+  is viewed nearly edge-on.
+*/
+.h-r1 ellipse {
+  animation: ringDash 5s linear infinite;
+}
+.h-r2 ellipse {
+  animation: ringDash 9s linear infinite reverse;
+}
+.h-r3 ellipse {
+  animation: ringDash 13s linear infinite;
+}
+
+@keyframes ringDash {
+  to {
+    stroke-dashoffset: -400;
+  }
+}
+
+/* ── Holographic base platform ─────────────────────────────── */
+
+.holo-platform {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(180px, 40%);
+  height: 36px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hp-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(48, 205, 207, 0.55);
+  background: radial-gradient(
+    ellipse,
+    rgba(48, 205, 207, 0.08) 0%,
+    transparent 70%
+  );
+}
+
+.hp-r1 {
+  width: 100%;
+  height: 100%;
+  animation: hpPulse 3s ease-in-out infinite;
+}
+.hp-r2 {
+  width: 165%;
+  height: 165%;
+  border-color: rgba(48, 205, 207, 0.28);
+  animation: hpPulse 3s ease-in-out 0.6s infinite;
+}
+.hp-r3 {
+  width: 240%;
+  height: 240%;
+  border-color: rgba(48, 205, 207, 0.1);
+  animation: hpPulse 3s ease-in-out 1.2s infinite;
+}
+
+/* Rising energy column — appears between pulses */
+.hp-beam {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 0;
+  background: linear-gradient(
+    to top,
+    rgba(48, 205, 207, 0.65),
+    rgba(48, 205, 207, 0)
+  );
+  animation: hpBeam 3s ease-in-out infinite;
+}
+
+@keyframes hpPulse {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 0.25;
+    transform: translate(-50%, -50%) scale(1.12);
+  }
+}
+
+@keyframes hpBeam {
+  0%,
+  100% {
+    height: 0;
+    opacity: 0;
+  }
+  25%,
+  75% {
+    height: clamp(70px, 14vw, 115px);
+    opacity: 1;
+  }
+}
+
+/* ── Robot (Lottie) — exact #30cdcf color fix ──────────────── */
+
+/*
+  Filter chain:
+    grayscale(1)        strips all color from the Lottie
+    sepia(1)            maps grey to ~HSL 35° warm tone
+    hue-rotate(143deg)  35° + 143° = ~178° (teal/cyan)
+    saturate(6)         pushes to vivid #30cdcf
+    brightness(1.08)    compensates for saturation darkening
+*/
+.hero-robot dotlottie-player {
+  position: relative;
+  z-index: 3;
+  width: min(420px, 76%);
+  height: min(420px, 76%);
+  filter: grayscale(1) sepia(1) hue-rotate(143deg) saturate(6) brightness(1.08);
+  animation: robotFloat 3.6s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes robotFloat {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+/* ── Floating data chips ────────────────────────────────────── */
+
+.d-chip {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: clamp(0.52rem, 0.82vw, 0.66rem);
+  color: #30cdcf;
+  background: rgba(48, 205, 207, 0.04);
+  border: 1px solid rgba(48, 205, 207, 0.18);
+  padding: 5px 13px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  pointer-events: none;
+  z-index: 4;
+  backdrop-filter: blur(8px);
+  white-space: nowrap;
+}
+
+/* Hairline connector pointing inward toward robot */
+.d-chip::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 22px;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+/* Left-side chips — line extends rightward */
+.dc-1::after,
+.dc-3::after {
+  right: -22px;
+  background: linear-gradient(90deg, rgba(48, 205, 207, 0.45), transparent);
+}
+
+/* Right-side chips — line extends leftward */
+.dc-2::after,
+.dc-4::after {
+  left: -22px;
+  background: linear-gradient(270deg, rgba(48, 205, 207, 0.45), transparent);
+}
+
+/*
+  Each chip has two animations that target different properties:
+    chipShow → opacity only  (no conflict)
+    chipBob  → transform only (no conflict)
+*/
+.dc-1 {
+  top: 20%;
+  left: 4%;
+  animation:
+    chipShow 0.7s var(--ease) 1s both,
+    chipBob 4s ease-in-out 1.7s infinite;
+}
+.dc-2 {
+  top: 36%;
+  right: 4%;
+  animation:
+    chipShow 0.7s var(--ease) 1.3s both,
+    chipBob 4.5s ease-in-out 2s infinite;
+}
+.dc-3 {
+  bottom: 32%;
+  left: 5%;
+  animation:
+    chipShow 0.7s var(--ease) 1.6s both,
+    chipBob 5.2s ease-in-out 2.3s infinite;
+}
+.dc-4 {
+  bottom: 22%;
+  right: 5%;
+  animation:
+    chipShow 0.7s var(--ease) 1.9s both,
+    chipBob 3.8s ease-in-out 2.6s infinite;
+}
+
+@keyframes chipShow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes chipBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SECTION DIVIDER
+══════════════════════════════════════════════════════════════ */
+
 .section-divider {
   width: 100%;
   height: 1px;
@@ -272,7 +520,10 @@
   }
 }
 
-/* ── Mobile ── */
+/* ══════════════════════════════════════════════════════════════
+   MOBILE
+══════════════════════════════════════════════════════════════ */
+
 @media (max-width: 768px) {
   .hero {
     flex-direction: column;
@@ -301,9 +552,41 @@
     transform: scale(0.9);
     transform-origin: center top;
   }
+
+  /* Robot */
   .hero-robot {
-    flex: 1;
+    flex: 0 0 auto;
     width: 100%;
-    min-height: 280px;
+    height: auto;
+    min-height: 300px;
+    padding: 1.5rem 0 2rem;
+  }
+  .hero-robot dotlottie-player {
+    width: min(280px, 72vw);
+    height: min(280px, 72vw);
+  }
+  .holo-orbits {
+    width: min(330px, 90vw);
+  }
+  .d-chip {
+    font-size: 0.5rem;
+    padding: 4px 8px;
+    letter-spacing: 1.5px;
+  }
+  .dc-1 {
+    top: 16%;
+    left: 1%;
+  }
+  .dc-2 {
+    top: 34%;
+    right: 1%;
+  }
+  .dc-3 {
+    bottom: 28%;
+    left: 1%;
+  }
+  .dc-4 {
+    bottom: 18%;
+    right: 1%;
   }
 }

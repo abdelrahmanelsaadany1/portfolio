@@ -10,16 +10,12 @@
     />
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
 
-    <!-- Preconnects — only needed for external resources now (CDNs, Spline) -->
+    <!-- Preconnects — only needed for external CDNs -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="preconnect" href="https://prod.spline.design" crossorigin />
+    <!-- REMOVED: Spline preconnect (no longer needed) -->
 
     <!-- =====================================================
-         LOCAL FONTS — served from your own server, zero
-         network round-trips to Google. Replaces the two
-         blocking/non-blocking Google Fonts <link> tags.
-         font-display: swap keeps text visible while the
-         font file loads (same behaviour as before, but faster).
+         LOCAL FONTS
     ====================================================== -->
     <style>
       /* Rajdhani */
@@ -68,11 +64,6 @@
         rel="stylesheet"
       />
     </noscript>
-
-    <!-- =====================================================
-         FIX 1: Only critical above-fold CSS is blocking.
-         Everything else loads async behind the intro.
-    ====================================================== -->
 
     <!-- BLOCKING: needed before first paint -->
     <link rel="stylesheet" href="intro.css" />
@@ -142,7 +133,7 @@
       onload="this.media = 'all'"
     />
 
-    <!-- noscript fallbacks for non-blocking CSS -->
+    <!-- noscript fallbacks -->
     <noscript>
       <link rel="stylesheet" href="css/background.css" />
       <link rel="stylesheet" href="css/header.css" />
@@ -232,12 +223,9 @@
             viewBox="0 0 100 100"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <!-- Connecting Lines (forming 'A') -->
             <path class="neural-line line-1" d="M50 20 L20 85" />
             <path class="neural-line line-2" d="M50 20 L80 85" />
             <path class="neural-line line-3" d="M32 62 L68 62" />
-
-            <!-- Nodes (Dots) -->
             <circle class="neural-node node-top" cx="50" cy="20" r="4.5" />
             <circle class="neural-node node-left" cx="20" cy="85" r="4.5" />
             <circle class="neural-node node-right" cx="80" cy="85" r="4.5" />
@@ -371,17 +359,264 @@
           </div>
         </div>
 
+        <!-- ══ ROBOT: Lottie + HUD Frame ══ -->
+        <!--
+  ═══════════════════════════════════════════════════════════
+  REPLACE the entire <div class="hero-robot">…</div> block
+  in index.html with this snippet.
+  ═══════════════════════════════════════════════════════════
+-->
+
         <div class="hero-robot">
-          <spline-viewer
-            url="https://prod.spline.design/xasrifDpZA-6mgqp/scene.splinecode"
-          ></spline-viewer>
+          <!-- ════ QUANTUM GYROSCOPE ORBITAL SYSTEM ════ -->
+          <svg
+            class="holo-orbits"
+            viewBox="-200 -200 400 400"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <defs>
+              <!-- Glow filters -->
+              <filter
+                id="hf-glow"
+                x="-100%"
+                y="-100%"
+                width="300%"
+                height="300%"
+              >
+                <feGaussianBlur stdDeviation="4" result="b" />
+                <feMerge>
+                  <feMergeNode in="b" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              <filter id="hf-sm" x="-60%" y="-60%" width="220%" height="220%">
+                <feGaussianBlur stdDeviation="2.5" result="b" />
+                <feMerge>
+                  <feMergeNode in="b" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+
+              <!-- Ambient core gradient -->
+              <radialGradient id="hcore" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#30cdcf" stop-opacity="0.14" />
+                <stop offset="55%" stop-color="#30cdcf" stop-opacity="0.03" />
+                <stop offset="100%" stop-color="#30cdcf" stop-opacity="0" />
+              </radialGradient>
+
+              <!-- Motion paths (invisible) — dots follow these exactly -->
+              <path
+                id="hmp1"
+                d="M 152,0 A 152,40 0 1,0 -152,0 A 152,40 0 1,0 152,0"
+                fill="none"
+                stroke="none"
+              />
+              <path
+                id="hmp2"
+                d="M 40,0 A 40,145 0 1,0 -40,0 A 40,145 0 1,0 40,0"
+                fill="none"
+                stroke="none"
+              />
+              <path
+                id="hmp3"
+                d="M 118,0 A 118,58 0 1,0 -118,0 A 118,58 0 1,0 118,0"
+                fill="none"
+                stroke="none"
+              />
+            </defs>
+
+            <!-- Ambient core glow behind robot -->
+            <circle cx="0" cy="0" r="178" fill="url(#hcore)" />
+            <circle
+              cx="0"
+              cy="0"
+              r="188"
+              fill="none"
+              stroke="#30cdcf"
+              stroke-width="0.4"
+              opacity="0.06"
+            />
+            <circle
+              cx="0"
+              cy="0"
+              r="172"
+              fill="none"
+              stroke="#30cdcf"
+              stroke-width="0.6"
+              opacity="0.09"
+            />
+
+            <!-- ══ RING 1 — Flat horizontal (Saturn-like) ══ -->
+            <g class="h-ring h-r1">
+              <ellipse
+                cx="0"
+                cy="0"
+                rx="152"
+                ry="40"
+                fill="none"
+                stroke="#30cdcf"
+                stroke-width="1.1"
+                opacity="0.45"
+                stroke-dasharray="8 12"
+              />
+
+              <!-- Leading orb + wide halo -->
+              <g filter="url(#hf-glow)">
+                <circle r="5.5" fill="#30cdcf" opacity="0.95">
+                  <animateMotion dur="8s" repeatCount="indefinite">
+                    <mpath href="#hmp1" />
+                  </animateMotion>
+                </circle>
+                <circle r="15" fill="#30cdcf" opacity="0.06">
+                  <animateMotion dur="8s" repeatCount="indefinite">
+                    <mpath href="#hmp1" />
+                  </animateMotion>
+                </circle>
+              </g>
+
+              <!-- Counter dot (offset half-orbit) -->
+              <circle r="2.5" fill="#30cdcf" opacity="0.4" filter="url(#hf-sm)">
+                <animateMotion dur="8s" begin="-4s" repeatCount="indefinite">
+                  <mpath href="#hmp1" />
+                </animateMotion>
+              </circle>
+            </g>
+
+            <!-- ══ RING 2 — Near-vertical orbital ══ -->
+            <g class="h-ring h-r2" transform="rotate(-18)">
+              <ellipse
+                cx="0"
+                cy="0"
+                rx="40"
+                ry="145"
+                fill="none"
+                stroke="#30cdcf"
+                stroke-width="0.8"
+                opacity="0.3"
+                stroke-dasharray="5 15"
+              />
+              <g filter="url(#hf-sm)">
+                <circle r="4" fill="#30cdcf" opacity="0.88">
+                  <animateMotion dur="11s" repeatCount="indefinite">
+                    <mpath href="#hmp2" />
+                  </animateMotion>
+                </circle>
+                <circle r="10" fill="#30cdcf" opacity="0.05">
+                  <animateMotion dur="11s" repeatCount="indefinite">
+                    <mpath href="#hmp2" />
+                  </animateMotion>
+                </circle>
+              </g>
+            </g>
+
+            <!-- ══ RING 3 — Diagonal orbital ══ -->
+            <g class="h-ring h-r3" transform="rotate(-28)">
+              <ellipse
+                cx="0"
+                cy="0"
+                rx="118"
+                ry="58"
+                fill="none"
+                stroke="#30cdcf"
+                stroke-width="0.7"
+                opacity="0.22"
+                stroke-dasharray="4 20"
+              />
+              <circle r="3.5" fill="#30cdcf" opacity="0.7" filter="url(#hf-sm)">
+                <animateMotion dur="15s" repeatCount="indefinite">
+                  <mpath href="#hmp3" />
+                </animateMotion>
+              </circle>
+            </g>
+
+            <!-- Outer atmosphere tick marks -->
+            <g stroke="#30cdcf" stroke-linecap="round" opacity="0.18">
+              <line x1="0" y1="-185" x2="0" y2="-176" stroke-width="2.5" />
+              <line x1="185" y1="0" x2="176" y2="0" stroke-width="2.5" />
+              <line x1="0" y1="185" x2="0" y2="176" stroke-width="2.5" />
+              <line x1="-185" y1="0" x2="-176" y2="0" stroke-width="2.5" />
+              <line x1="130" y1="-130" x2="124" y2="-124" stroke-width="1.4" />
+              <line x1="130" y1="130" x2="124" y2="124" stroke-width="1.4" />
+              <line x1="-130" y1="130" x2="-124" y2="124" stroke-width="1.4" />
+              <line
+                x1="-130"
+                y1="-130"
+                x2="-124"
+                y2="-124"
+                stroke-width="1.4"
+              />
+            </g>
+
+            <!-- Node markers at ring axis endpoints -->
+            <g filter="url(#hf-sm)">
+              <circle
+                cx="152"
+                cy="0"
+                r="3"
+                fill="#03060e"
+                stroke="#30cdcf"
+                stroke-width="1"
+                opacity="0.65"
+              />
+              <circle
+                cx="-152"
+                cy="0"
+                r="3"
+                fill="#03060e"
+                stroke="#30cdcf"
+                stroke-width="1"
+                opacity="0.65"
+              />
+              <!-- Ring 2 poles (rotated group coords) -->
+              <circle
+                cx="0"
+                cy="-145"
+                r="2.5"
+                fill="#03060e"
+                stroke="#30cdcf"
+                stroke-width="1"
+                opacity="0.5"
+                transform="rotate(18)"
+              />
+              <circle
+                cx="0"
+                cy="145"
+                r="2.5"
+                fill="#03060e"
+                stroke="#30cdcf"
+                stroke-width="1"
+                opacity="0.5"
+                transform="rotate(18)"
+              />
+            </g>
+          </svg>
+
+          <!-- ════ HOLOGRAPHIC BASE PLATFORM ════ -->
+          <div class="holo-platform">
+            <div class="hp-ring hp-r1"></div>
+            <div class="hp-ring hp-r2"></div>
+            <div class="hp-ring hp-r3"></div>
+            <div class="hp-beam"></div>
+          </div>
+
+          <!-- ════ ROBOT (Lottie — unchanged) ════ -->
+          <dotlottie-player
+            src="robot.json"
+            background="transparent"
+            speed="1"
+            loop
+            autoplay
+          ></dotlottie-player>
+
+          <!-- ════ FLOATING DATA CHIPS ════ -->
         </div>
       </section>
       <div class="section-divider"></div>
 
       <!-- ═══════════════════════════════════════════
-         ABOUT / THE ROAD
-    ═══════════════════════════════════════════ -->
+           ABOUT / THE ROAD
+      ═══════════════════════════════════════════ -->
       <section class="section-page" id="about-section">
         <div class="hs-outer" id="hsOuter">
           <div class="hs-sticky">
@@ -392,9 +627,7 @@
               <div class="hs-progress-fill" id="hsProgFill"></div>
             </div>
             <div class="hs-viewport" id="hsViewport">
-              <div class="hs-track" id="hsTrack">
-                <!-- road content is built entirely by about-timeline.js -->
-              </div>
+              <div class="hs-track" id="hsTrack"></div>
             </div>
             <div class="hs-bottom">
               <div class="hs-dots">
@@ -428,8 +661,8 @@
       <div class="section-divider"></div>
 
       <!-- ═══════════════════════════════════════════
-         PROJECTS
-    ═══════════════════════════════════════════ -->
+           PROJECTS
+      ═══════════════════════════════════════════ -->
       <section class="section-page pw-section" id="projects-section">
         <div class="pw-top">
           <div class="pw-heading-block">
@@ -481,8 +714,8 @@
           </button>
           <div class="m-body">
             <div class="m-meta">
-              <span class="m-num" id="m-num"></span>
-              <span class="m-badge" id="m-badge">Live</span>
+              <span class="m-num" id="m-num"></span
+              ><span class="m-badge" id="m-badge">Live</span>
             </div>
             <div class="m-title" id="m-title"></div>
             <div class="m-desc" id="m-desc"></div>
@@ -495,8 +728,8 @@
       <div class="section-divider"></div>
 
       <!-- ═══════════════════════════════════════════
-         CONTACT
-    ═══════════════════════════════════════════ -->
+           CONTACT
+      ═══════════════════════════════════════════ -->
       <section class="section-page contact-section-new" id="contact-section">
         <div class="section-heading reveal">
           <h2>Contact <span>Me</span></h2>
@@ -724,62 +957,6 @@
                   x2="188.9"
                   y2="188.9"
                   stroke-width="1.2"
-                />
-                <line
-                  x1="516.8"
-                  y1="95.4"
-                  x2="513.5"
-                  y2="104.4"
-                  stroke-width="0.7"
-                />
-                <line
-                  x1="283.2"
-                  y1="95.4"
-                  x2="286.5"
-                  y2="104.4"
-                  stroke-width="0.7"
-                />
-                <line
-                  x1="704.6"
-                  y1="283.2"
-                  x2="695.6"
-                  y2="286.5"
-                  stroke-width="0.7"
-                />
-                <line
-                  x1="704.6"
-                  y1="516.8"
-                  x2="695.6"
-                  y2="513.5"
-                  stroke-width="0.7"
-                />
-                <line
-                  x1="516.8"
-                  y1="704.6"
-                  x2="513.5"
-                  y2="695.6"
-                  stroke-width="0.7"
-                />
-                <line
-                  x1="283.2"
-                  y1="704.6"
-                  x2="286.5"
-                  y2="695.6"
-                  stroke-width="0.7"
-                />
-                <line
-                  x1="95.4"
-                  y1="516.8"
-                  x2="104.4"
-                  y2="513.5"
-                  stroke-width="0.7"
-                />
-                <line
-                  x1="95.4"
-                  y1="283.2"
-                  x2="104.4"
-                  y2="286.5"
-                  stroke-width="0.7"
                 />
               </g>
               <g id="ct-nd0" filter="url(#ct-glow-sm)">
@@ -1113,21 +1290,21 @@
 
     <!-- ── SCRIPTS ── -->
 
-    <!-- Cloudflare email decode — must stay non-deferred -->
+    <!-- Cloudflare email decode -->
     <script
       data-cfasync="false"
       src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"
     ></script>
 
     <!-- =====================================================
-         FIX 2: Spline loads immediately as a module script.
-         type="module" is deferred by spec — won't block render,
-         but starts downloading RIGHT NOW in parallel with the
-         intro animation, so it's ready when intro exits.
+         Lottie Player — replaces Spline viewer.
+         Loaded as defer so it never blocks render.
+         The dotlottie-player custom element is defined before
+         DOMContentLoaded fires, which is early enough.
     ====================================================== -->
     <script
-      type="module"
-      src="https://cdn.jsdelivr.net/npm/@splinetool/viewer/build/spline-viewer.js"
+      src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.js"
+      defer
     ></script>
 
     <!-- GSAP — deferred -->
@@ -1136,7 +1313,7 @@
       defer
     ></script>
 
-    <!-- Typing animation — inline, runs on DOMContentLoaded -->
+    <!-- Typing animation -->
     <script>
       (function () {
         const roles = ["Software Engineer", "Full Stack .NET Developer"];
@@ -1195,8 +1372,9 @@
       })();
     </script>
 
-    <!-- All local scripts — deferred to avoid blocking -->
+    <!-- All local scripts — deferred -->
     <script src="intro.js" defer></script>
+    <script src="js/tear-effect.js" defer></script>
     <script src="js/bg-particles.js" defer></script>
     <script src="heading-reveal.js" defer></script>
     <script src="js/text-scramble.js" defer></script>
@@ -1218,17 +1396,12 @@
     <script src="js/contact-form.js" defer></script>
     <script src="the road/about-timeline.js" defer></script>
 
-    <!-- =====================================================
-         FIX 3: Neural Logo uses window load instead of
-         DOMContentLoaded — runs after everything is ready,
-         not during the critical parsing phase.
-    ====================================================== -->
+    <!-- Neural Logo interaction -->
     <script defer>
       window.addEventListener("load", function () {
         const wrap = document.getElementById("logoWrap");
         const logo = document.getElementById("neuralLogo");
         let resetTimeout;
-
         function handleInteraction(e) {
           const rect = wrap.getBoundingClientRect();
           let clientX, clientY;
@@ -1248,12 +1421,10 @@
           clearTimeout(resetTimeout);
           resetTimeout = setTimeout(resetLogo, 2000);
         }
-
         function resetLogo() {
           logo.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
           wrap.classList.remove("active");
         }
-
         wrap.addEventListener("mousemove", handleInteraction);
         wrap.addEventListener("mouseleave", resetLogo);
         wrap.addEventListener(
