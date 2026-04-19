@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   intro.css — Intro overlay + Awwwards strip reveal
+   intro.css — Intro overlay + strip reveal
 ═══════════════════════════════════════════ */
 
 #introScene {
@@ -7,8 +7,8 @@
   inset: 0;
   z-index: 99999;
   overflow: hidden;
-  pointer-events: all; /* block clicks immediately */
-  background: #03060e; /* ← cover the page instantly */
+  pointer-events: all;
+  background: #03060e;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -17,15 +17,15 @@
   }
 }
 
-/* ── 3 horizontal strips — stack to cover full screen ── */
+/* ── 3 horizontal strips ── */
 .intro-strip {
   position: absolute;
   left: 0;
   width: 100%;
-  height: 33.334%; /* 3 equal rows */
+  height: 33.334%;
   background: #03060e;
   will-change: transform;
-  pointer-events: all; /* blocks clicks during intro */
+  pointer-events: all;
 }
 .intro-strip:nth-child(1) {
   top: 0;

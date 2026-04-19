@@ -1,31 +1,13 @@
 /* ═══════════════════════════════════════════
-   intro.js — Logo intro → Awwwards strip reveal
+   intro.js — Logo intro → strip reveal
    Requires: GSAP (loaded before this in index.html)
-   OPTIMISED: particle RAF stopped on kill, watermark
-   interval capped, manual tweens replaced with GSAP,
-   canvas sized only once, passive resize
 ═══════════════════════════════════════════ */
 (function () {
   "use strict";
 
-  /* ── Remove Spline watermark — cap retries so it never runs forever ── */
-  var _wmTries = 0;
-  var _wm = setInterval(function () {
-    _wmTries++;
-    if (_wmTries > 40) {
-      clearInterval(_wm);
-      return;
-    } // give up after ~12s
-    var viewer = document.querySelector("spline-viewer");
-    if (!viewer) return;
-    var el = viewer.shadowRoot && viewer.shadowRoot.querySelector("#logo");
-    if (el) {
-      el.remove();
-      clearInterval(_wm);
-    }
-  }, 300);
+  /* ── Safety guard ── */
+  if (typeof gsap === "undefined") return;
 
-  /* ── Scene ── */
   var scene = document.getElementById("introScene");
   if (!scene) return;
 
@@ -59,7 +41,6 @@
     H = bgCanvas.height = window.innerHeight;
   }
   resizeCanvas();
-  /* Only resize if intro is still alive — removed in killScene anyway */
   window.addEventListener("resize", resizeCanvas, { passive: true });
 
   /* ── Logo ── */
@@ -93,7 +74,7 @@
     '<span class="first">Abdelrahman </span><span class="last">Elsaadany</span>';
   scene.appendChild(nameEl);
 
-  /* ── Particles — lighter count, stopped immediately on kill ── */
+  /* ── Particles ── */
   var pts = [];
   var bgRafId = null;
   var bgRunning = false;
@@ -133,10 +114,7 @@
     bgRafId = requestAnimationFrame(drawParticles);
   }
 
-  /* ══════════════════════════════════════
-     SVG TWEENS — delegate all to GSAP so
-     we only have one RAF loop running
-  ══════════════════════════════════════ */
+  /* ── GSAP helpers ── */
   function tweenDash(id, from, to, dur, delay) {
     var el = document.getElementById(id);
     if (!el) return;
@@ -167,14 +145,11 @@
     );
   }
 
-  /* ══════════════════════════════════════
-     KILL SCENE
-  ══════════════════════════════════════ */
+  /* ── Kill scene ── */
   var killed = false;
   function killScene() {
     if (killed) return;
     killed = true;
-    /* Stop particle loop immediately */
     bgRunning = false;
     if (bgRafId) cancelAnimationFrame(bgRafId);
     ctx.clearRect(0, 0, W, H);
@@ -184,9 +159,7 @@
     if (scene.parentNode) scene.parentNode.removeChild(scene);
   }
 
-  /* ══════════════════════════════════════
-     STRIP REVEAL
-  ══════════════════════════════════════ */
+  /* ── Strip reveal ── */
   function stripReveal() {
     bgRunning = false;
     if (bgRafId) cancelAnimationFrame(bgRafId);
@@ -212,12 +185,10 @@
       );
     }
 
-    setTimeout(killScene, 3000); /* safety net */
+    setTimeout(killScene, 3000);
   }
 
-  /* ══════════════════════════════════════
-     LOGO SEQUENCE
-  ══════════════════════════════════════ */
+  /* ── Logo sequence ── */
   function resetSVG() {
     document.getElementById("il1").setAttribute("stroke-dashoffset", "72");
     document.getElementById("il2").setAttribute("stroke-dashoffset", "72");
@@ -234,7 +205,6 @@
     startParticles();
     scene.style.background = "transparent";
 
-    /* Draw phase — all GSAP, one RAF */
     tweenDash("il1", 72, 0, 700, 300);
     tweenOp("in1", 0, 1, 320, 320, true);
     tweenOp("in2", 0, 1, 320, 950, true);
@@ -244,7 +214,6 @@
     tweenOp("in4", 0, 1, 300, 1020, true);
     tweenOp("in5", 0, 1, 300, 1220, true);
 
-    /* Name fade in */
     gsap.to(nameEl, {
       opacity: 1,
       duration: 0.65,
@@ -252,7 +221,6 @@
       ease: "power2.out",
     });
 
-    /* Hold → reverse → strip reveal */
     gsap.delayedCall(3.2, function () {
       gsap.to(nameEl, { opacity: 0, duration: 0.3, ease: "power2.in" });
 
@@ -272,16 +240,6 @@
     });
   }
 
-  /* ══════════════════════════════════════
-     BOOT
-  ══════════════════════════════════════ */
-  function boot() {
-    setTimeout(runIntro, 300);
-  }
-
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(boot);
-  } else {
-    setTimeout(boot, 150);
-  }
+  /* ── Boot — no font wait needed, fonts are local ── */
+  setTimeout(runIntro, 100);
 })();
