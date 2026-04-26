@@ -1,11 +1,3 @@
-/* ═══════════════════════════════════════════════════════════════
-   about-timeline.js — THE JOURNEY
-   OPTIMISED: timeline particle canvas removed (was 5x viewport
-   wide), replaced with a small viewport-sized canvas; RAF paused
-   when tab hidden or section not visible; resize debounced and
-   no full DOM rebuild on every resize; IntersectionObserver used
-   to pause particles when section scrolled away.
-═══════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
 
@@ -15,15 +7,35 @@
     });
   });
 
+  /* ─── DATA ─── */
   var CARDS = [
     {
       dotId: "hsDot0",
-      tag: "Live Now",
-      date: "Oct 2025 — Present",
+      tag: "Full-Time",
+      date: "Oct 2025 — Apr 2026",
       title: "Full Stack .NET Developer",
       company: "Arab Computers",
-      location: "Alexandria, Egypt",
-      tags: ["ASP.NET Core", "Angular", "CQRS", "Docker", "Azure DevOps"],
+      location: "Alexandria, Egypt · 7 months",
+      bullets: [
+        "Built a multi-tenant logistics & freight management system with .NET 8 Web API + Angular — shipment tracking, invoicing, tariffs, multi-currency transactions",
+        "Maintained an enterprise HR & payroll system (ASP.NET MVC / .NET Framework) covering employee lifecycle, attendance, payroll, recruitment & KPI workflows",
+        "Containerised services with Docker and ran Agile sprints via Azure DevOps",
+      ],
+      tags: [
+        { name: "ASP.NET Core", accent: true },
+        { name: "Angular", accent: true },
+        { name: "CQRS", accent: true },
+        { name: ".NET 8", accent: false },
+        { name: "Docker", accent: false },
+        { name: "Azure DevOps", accent: false },
+        { name: "SQL Server", accent: false },
+        { name: "JWT", accent: false },
+        { name: "EF Core", accent: false },
+        { name: "REST API", accent: false },
+        { name: "SignalR", accent: false },
+        { name: "C#", accent: true },
+      ],
+      layout: "job",
       num: "01",
     },
     {
@@ -32,8 +44,27 @@
       date: "Mar 2025 — Aug 2025",
       title: "Full Stack .NET Intern",
       company: "ITI — Intensive Code Camp",
-      location: "Alexandria, Egypt",
-      tags: ["ASP.NET Core", "Angular", "EF Core", "SQL Server"],
+      location: "Alexandria, Egypt · 6 months",
+      bullets: [
+        "C#, ASP.NET Core, LINQ, Entity Framework Core and SQL Server deep-dive track",
+        "Front-end track: HTML5, CSS3, Bootstrap, JavaScript (ES6+), Angular",
+        "Applied Agile, version control, secure coding & software testing on real-world projects",
+      ],
+      tags: [
+        { name: "ASP.NET Core", accent: true },
+        { name: "Angular", accent: true },
+        { name: "EF Core", accent: true },
+        { name: "SQL Server", accent: false },
+        { name: "JWT", accent: false },
+        { name: "Bootstrap", accent: false },
+        { name: "C#", accent: true },
+        { name: "LINQ", accent: false },
+        { name: "JavaScript", accent: false },
+        { name: "REST API", accent: false },
+        { name: "HTML5", accent: false },
+        { name: "CSS3", accent: false },
+      ],
+      layout: "job",
       num: "02",
     },
     {
@@ -42,10 +73,15 @@
       date: "Dec 2024",
       title: "Military Service",
       company: "Egyptian Armed Forces",
-      location: "Completed",
-      tags: ["Discipline", "Leadership", "Teamwork"],
-      num: "03",
+      location: "Completed · Dec 2024",
+      bullets: [
+        "Successfully completed mandatory national military service",
+        "Strengthened discipline, leadership under pressure & teamwork in high-stakes environments",
+      ],
+      tags: [],
+      layout: "full-left",
       isMil: true,
+      num: "03",
     },
     {
       dotId: "hsDot2",
@@ -54,7 +90,12 @@
       title: "IoT Development Program",
       company: "ITI — Smart Village",
       location: "Cairo, Egypt",
-      tags: ["IoTik", "SigFox", "BLE Gateway", "Sensors"],
+      bullets: [
+        "Hands-on IoT application development with IoTik, Sense SigFox & Minew BLE Gateway",
+        "Implemented wireless communication protocols and tested sensor-to-cloud data pipelines",
+      ],
+      tags: [],
+      layout: "full-left",
       num: "04",
     },
     {
@@ -63,8 +104,24 @@
       date: "2019 — 2023",
       title: "B.Sc. Computer Science",
       company: "Alexandria University",
-      location: "CGPA 3.2 / 4.0",
-      tags: ["OOP", "Algorithms", "C#", "Java", "Flutter"],
+      location: "Faculty of Science · CGPA 3.2 / 4.0",
+      bullets: [
+        "SIM Department — Software, Internet & Multimedia engineering track",
+        "Graduation Project: SIMplify — student management platform (Flutter, Laravel, MySQL)",
+        "Core modules: OOP, Algorithms, Data Structures, Databases, Software Engineering",
+      ],
+      tags: [
+        { name: "OOP", accent: false },
+        { name: "Algorithms", accent: false },
+        { name: "C#", accent: true },
+        { name: "Java", accent: false },
+        { name: "Flutter", accent: true },
+        { name: "Laravel", accent: true },
+        { name: "MySQL", accent: false },
+        { name: "Data Structures", accent: false },
+        { name: "Sw Engineering", accent: false },
+      ],
+      layout: "job",
       num: "05",
     },
   ];
@@ -77,13 +134,12 @@
   var curIdx = 0;
   var ticking = false;
   var lastScrollIdx = -1;
-  var outerTop = 0;
-  var outerH = 0;
+  var outerTop = 0,
+    outerH = 0;
   var btnPrev, btnNext, counterNum;
   var animFrame = null;
 
-  /* ── wheel-snap state ── */
-  var TRANSITION_MS = 850;
+  var TRANSITION_MS = 880;
   var isTransitioning = false;
   var transitionTimer = null;
 
@@ -93,11 +149,10 @@
   var boundaryDir = 0;
   var boundaryTimer = null;
 
-  /* ── particle state ── */
-  var particlesPaused = false; // paused when section off-screen or tab hidden
+  var particlesPaused = false;
   var particleCanvas = null;
 
-  /* ════════════════════════════════════════════ SETUP */
+  /* ═══ SETUP ═══ */
   function setup() {
     track = document.getElementById("hsTrack");
     viewport = document.getElementById("hsViewport");
@@ -122,13 +177,11 @@
     window.addEventListener("resize", onResize, { passive: true });
     window.addEventListener("wheel", onWheel, { passive: false });
 
-    /* Pause particles when tab hidden */
     document.addEventListener("visibilitychange", function () {
       particlesPaused = document.hidden;
       if (!particlesPaused && animFrame === null) resumeParticles();
     });
 
-    /* Pause particles when section leaves viewport */
     var outer = document.getElementById("hsOuter");
     if (outer && "IntersectionObserver" in window) {
       new IntersectionObserver(
@@ -148,7 +201,7 @@
     outerH = outer.offsetHeight;
   }
 
-  /* ════════════════════════════════════════════ WHEEL SNAP */
+  /* ═══ WHEEL SNAP ═══ */
   function onWheel(e) {
     if (isMobile) return;
     var outer = document.getElementById("hsOuter");
@@ -184,11 +237,10 @@
       e.preventDefault();
       e.stopPropagation();
       var scrollable = Math.max(outerH - window.innerHeight, 1);
-      if (dir < 0) {
-        window.scrollTo({ top: outerTop, behavior: "instant" });
-      } else {
-        window.scrollTo({ top: outerTop + scrollable, behavior: "instant" });
-      }
+      window.scrollTo({
+        top: dir < 0 ? outerTop : outerTop + scrollable,
+        behavior: "instant",
+      });
       lastScrollIdx = curIdx;
       if (boundaryHeld && dir === boundaryDir) return;
       boundaryHeld = true;
@@ -221,78 +273,130 @@
     lastScrollIdx = idx;
   }
 
-  /* ════════════════════════════════════════════ BUILD STRIP */
+  /* ══════════════════════════════════════════════════════════
+     BUILD SKILL MARQUEE
+     3 horizontal rows, alternating scroll direction.
+     Each row duplicated once for seamless CSS loop.
+  ══════════════════════════════════════════════════════════ */
+  function buildSkillMarqueeHTML(tags) {
+    var rows = [[], [], []];
+    tags.forEach(function (t, i) {
+      rows[i % 3].push(t);
+    });
+
+    var html = '<div class="rd-marquee-wrap">';
+    rows.forEach(function (row, ri) {
+      if (!row.length) return;
+      var dir = ri % 2 === 0 ? "fwd" : "rev";
+      html += '<div class="rd-marquee-row">';
+      html += '<div class="rd-marquee-inner rd-mq-' + dir + '">';
+      /* Copy A */
+      row.forEach(function (t) {
+        html +=
+          '<span class="rd-mq-chip' +
+          (t.accent ? " rd-mq-accent" : "") +
+          '">' +
+          t.name +
+          "</span>";
+      });
+      /* Copy B — seamless duplicate */
+      row.forEach(function (t) {
+        html +=
+          '<span class="rd-mq-chip rd-mq-dup' +
+          (t.accent ? " rd-mq-accent" : "") +
+          '">' +
+          t.name +
+          "</span>";
+      });
+      html += "</div></div>";
+    });
+    html += "</div>";
+    return html;
+  }
+
+  /* ═══ BUILD STRIP ═══ */
   function buildStrip() {
     track.innerHTML = "";
     stationEls = [];
 
-    /* Viewport-sized particle canvas instead of 5× wide canvas */
     particleCanvas = document.createElement("canvas");
     particleCanvas.id = "csBgCanvas";
     particleCanvas.style.cssText =
-      "position:fixed;top:0;left:0;width:100vw;height:100vh;" +
-      "pointer-events:none;z-index:0;opacity:0.5;";
+      "position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:0;opacity:0.38;";
     track.appendChild(particleCanvas);
     startParticles(particleCanvas);
 
-    CARDS.forEach(function (m, i) {
+    CARDS.forEach(function (m) {
+      var isFull = m.layout === "full-left";
       var station = document.createElement("div");
-      station.className = "rd-station" + (m.isMil ? " rd-station-mil" : "");
+      station.className =
+        "rd-station" +
+        (m.isMil ? " rd-station-mil" : "") +
+        (isFull ? " rd-station-full" : "");
 
       var leftPane = document.createElement("div");
       leftPane.className = "rd-left-pane";
-      var ghost = document.createElement("div");
-      ghost.className = "rd-ghost-num";
-      ghost.textContent = m.num;
-      leftPane.appendChild(ghost);
-      var vline = document.createElement("div");
-      vline.className = "rd-vline";
-      var vdot = document.createElement("div");
-      vdot.className = "rd-vdot";
-      vline.appendChild(vdot);
-      leftPane.appendChild(vline);
       station.appendChild(leftPane);
 
       var card = document.createElement("div");
-      card.className = "rd-card-new";
-      var html = "";
-      html += '<div class="rd-header-row">';
-      html +=
-        '<span class="rd-tag-pill' +
-        (m.isMil ? " rd-tag-mil" : "") +
+      card.className = "rd-card-new" + (isFull ? " rd-card-full" : "");
+
+      /* LEFT COLUMN */
+      var leftHTML =
+        '<div class="rd-col-left' +
+        (isFull ? " rd-col-left-wide" : "") +
         '">' +
+        '<div class="rd-meta-row">' +
+        '<span class="rd-status' +
+        (m.isMil ? " rd-status-mil" : "") +
+        '">' +
+        '<span class="rd-status-dot"></span>' +
         m.tag +
-        "</span>";
-      html +=
-        '<span class="rd-idx">' +
-        m.num +
-        ' <span style="opacity:.3">/ 05</span></span>';
-      html += "</div>";
-      html += '<div class="rd-date-new">' + m.date + "</div>";
-      html += '<h3 class="rd-title-new">' + m.title + "</h3>";
-      html += '<div class="rd-org-block">';
-      html += '  <div class="rd-org-company">' + m.company + "</div>";
-      html += '  <div class="rd-org-location">' + m.location + "</div>";
-      html += "</div>";
-      html += '<div class="rd-sep"></div>';
-      if (m.tags.length) {
-        html += '<div class="rd-chips-new">';
-        m.tags.forEach(function (t) {
-          html += '<span class="rd-chip">' + t + "</span>";
+        "</span>" +
+        "</div>" +
+        '<div class="rd-date-new">' +
+        m.date +
+        "</div>" +
+        '<h3 class="rd-title-new">' +
+        m.title +
+        "</h3>" +
+        '<div class="rd-company-block">' +
+        '<div class="rd-company-name">' +
+        m.company +
+        "</div>" +
+        '<div class="rd-company-loc">' +
+        m.location +
+        "</div>" +
+        "</div>" +
+        '<div class="rd-col-divider"></div>';
+
+      if (m.bullets && m.bullets.length) {
+        leftHTML += '<ul class="rd-bullets">';
+        m.bullets.forEach(function (b) {
+          leftHTML += "<li>" + b + "</li>";
         });
-        html += "</div>";
+        leftHTML += "</ul>";
       }
-      card.innerHTML = html;
+      leftHTML += "</div>";
+
+      /* RIGHT COLUMN — job layout only */
+      var rightHTML = "";
+      if (!isFull && m.tags && m.tags.length) {
+        rightHTML =
+          '<div class="rd-col-right">' +
+          '<div class="rd-ghost-num">' +
+          m.num +
+          "</div>" +
+          '<div class="rd-right-label">Technologies</div>' +
+          buildSkillMarqueeHTML(m.tags) +
+          "</div>";
+      }
+
+      card.innerHTML = leftHTML + rightHTML;
       station.appendChild(card);
 
       var rightPane = document.createElement("div");
       rightPane.className = "rd-right-pane";
-      var stepsHtml = "";
-      CARDS.forEach(function (_, si) {
-        stepsHtml +=
-          '<div class="rd-step' + (si === i ? " rd-step-ac" : "") + '"></div>';
-      });
-      rightPane.innerHTML = stepsHtml;
       station.appendChild(rightPane);
 
       track.appendChild(station);
@@ -300,29 +404,24 @@
     });
   }
 
-  /* ════════════════════════════════════════════ PARTICLES
-     Viewport-sized canvas, paused when hidden/off-screen.
-     Reduced count: 60 instead of 160.
-  ════════════════════════════════════════════ */
+  /* ═══ PARTICLES ═══ */
   function startParticles(canvas) {
-    var W = window.innerWidth;
-    var H = window.innerHeight;
+    var W = window.innerWidth,
+      H = window.innerHeight;
     canvas.width = W;
     canvas.height = H;
     var ctx = canvas.getContext("2d");
-
     var pts = [];
-    for (var i = 0; i < 60; i++) {
+    for (var i = 0; i < 55; i++) {
       pts.push({
         x: Math.random() * W,
         y: Math.random() * H,
-        r: Math.random() * 1.0 + 0.2,
-        a: Math.random() * 0.4 + 0.05,
-        vx: (Math.random() - 0.5) * 0.12,
-        vy: (Math.random() - 0.5) * 0.06,
+        r: Math.random() * 1 + 0.2,
+        a: Math.random() * 0.38 + 0.04,
+        vx: (Math.random() - 0.5) * 0.11,
+        vy: (Math.random() - 0.5) * 0.055,
       });
     }
-
     function draw() {
       if (particlesPaused) {
         animFrame = null;
@@ -348,13 +447,10 @@
   }
 
   function resumeParticles() {
-    if (particleCanvas && animFrame === null) {
-      /* re-kick the RAF by rebuilding — simpler than re-threading state */
-      startParticles(particleCanvas);
-    }
+    if (particleCanvas && animFrame === null) startParticles(particleCanvas);
   }
 
-  /* ════════════════════════════════════════════ HUD */
+  /* ═══ HUD ═══ */
   function injectHUD() {
     var old = document.getElementById("rdHUD");
     if (old) old.parentNode.removeChild(old);
@@ -367,6 +463,7 @@
 
     var hud = document.createElement("div");
     hud.id = "rdHUD";
+
     var row = document.createElement("div");
     row.className = "rd-hud-row";
     row.innerHTML =
@@ -378,11 +475,10 @@
       "</div>";
     hud.appendChild(row);
 
-    var progressBar = document.createElement("div");
-    progressBar.className = "rd-hud-progress";
-    progressBar.innerHTML =
-      '<div class="rd-hud-progress-fill" id="rdProgFill"></div>';
-    hud.appendChild(progressBar);
+    var pb = document.createElement("div");
+    pb.className = "rd-hud-progress";
+    pb.innerHTML = '<div class="rd-hud-progress-fill" id="rdProgFill"></div>';
+    hud.appendChild(pb);
 
     sticky.appendChild(hud);
 
@@ -412,7 +508,7 @@
     window.scrollTo({ top: outerTop + idx * sliceSize, behavior: "smooth" });
   }
 
-  /* ════════════════════════════════════════════ SCROLL */
+  /* ═══ SCROLL ═══ */
   function onScroll() {
     if (isMobile || ticking) return;
     ticking = true;
@@ -437,10 +533,11 @@
     }
   }
 
-  /* ════════════════════════════════════════════ SNAP */
+  /* ═══ SNAP ═══ */
   function snap(idx, instant) {
     curIdx = idx;
     var tx = -(idx * window.innerWidth);
+
     if (instant) {
       track.style.transition = "none";
       track.style.transform = "translate(" + tx + "px,0)";
@@ -473,7 +570,7 @@
     if (hintEl && idx > 0) hintEl.classList.add("done");
   }
 
-  /* ════════════════════════════════════════════ DOTS */
+  /* ═══ DOTS ═══ */
   function buildDots() {
     dotEls = [];
     CARDS.forEach(function (m, i) {
@@ -486,7 +583,7 @@
     });
   }
 
-  /* ════════════════════════════════════════════ MOBILE */
+  /* ═══ MOBILE ═══ */
   function setupMobile() {
     track.innerHTML = "";
     track.style.transform = "none";
@@ -501,12 +598,19 @@
       html += '<div class="rd-title">' + m.title + "</div>";
       html +=
         '<div class="rd-org">' + m.company + " · " + m.location + "</div>";
-      if (m.tags.length) {
+      if (m.bullets && m.bullets.length) {
+        html += '<ul class="rd-mob-bullets">';
+        m.bullets.forEach(function (b) {
+          html += "<li>" + b + "</li>";
+        });
+        html += "</ul>";
+      }
+      if (m.tags && m.tags.length) {
         html +=
           '<div class="rd-chips">' +
           m.tags
             .map(function (t) {
-              return "<span>" + t + "</span>";
+              return "<span>" + t.name + "</span>";
             })
             .join("") +
           "</div>";
@@ -516,10 +620,7 @@
     });
   }
 
-  /* ════════════════════════════════════════════ RESIZE
-     Debounced. On desktop: only remeasure + re-snap,
-     no full DOM rebuild (cards already exist).
-  ════════════════════════════════════════════ */
+  /* ═══ RESIZE ═══ */
   var resizeT;
   function onResize() {
     clearTimeout(resizeT);
@@ -527,9 +628,7 @@
       var wasMobile = isMobile;
       isMobile = window.innerWidth <= 700;
       var hsBottom = document.querySelector(".hs-bottom");
-
       if (isMobile && !wasMobile) {
-        /* Switch to mobile layout */
         if (animFrame) {
           cancelAnimationFrame(animFrame);
           animFrame = null;
@@ -539,15 +638,12 @@
         buildDots();
         return;
       }
-
       if (!isMobile && wasMobile) {
-        /* Switch back to desktop layout */
         if (hsBottom) hsBottom.style.display = "none";
         buildStrip();
         injectHUD();
         lastScrollIdx = -1;
       }
-
       if (!isMobile) {
         measureOuter();
         snap(curIdx, true);
